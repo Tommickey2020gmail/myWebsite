@@ -1,6 +1,11 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
+/* Bind Tailwind 4's `dark:` variant to a `.dark` class on <html>
+   instead of relying on `prefers-color-scheme`. Required for our manual
+   theme toggle (see ThemeToggle.astro). */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   /* Light theme tokens */
   --color-bg: #FAF8F3;
@@ -10,12 +15,14 @@
   --color-muted: #6B6157;
   --color-border: #E5DFD3;
 
-  /* Fonts */
-  --font-serif-zh: "Noto Serif SC", "Source Han Serif SC", serif;
-  --font-serif-en: "Cardo", "EB Garamond", Georgia, serif;
-  --font-display-zh: "LXGW WenKai", "霞鹜文楷", serif;
-  --font-display-en: "Fraunces", Georgia, serif;
-  --font-mono: "JetBrains Mono", "Source Code Pro", monospace;
+  /* Fonts — Latin-first, CJK fallback, one generic at end of chain.
+     Per CSS spec, browsers iterate per-glyph; placing CJK fonts after
+     Latin ensures Cardo/Fraunces render Latin while Noto/LXGW fill in
+     Chinese characters. The single trailing `serif`/`monospace` is the
+     browser's last resort. */
+  --font-serif: "Cardo", "EB Garamond", "Noto Serif SC", "Source Han Serif SC", Georgia, serif;
+  --font-display: "Fraunces", "LXGW WenKai", "霞鹜文楷", Georgia, serif;
+  --font-mono: "JetBrains Mono", "Source Code Pro", ui-monospace, monospace;
 }
 
 @layer base {
@@ -36,7 +43,7 @@
   html {
     background-color: var(--color-bg);
     color: var(--color-fg);
-    font-family: var(--font-serif-zh), var(--font-serif-en);
+    font-family: var(--font-serif);
     font-size: 17px;
     line-height: 1.75;
     -webkit-font-smoothing: antialiased;
@@ -47,7 +54,7 @@
   }
 
   h1, h2, h3, h4, h5 {
-    font-family: var(--font-display-zh), var(--font-display-en);
+    font-family: var(--font-display);
     font-weight: 600;
     letter-spacing: -0.01em;
   }
