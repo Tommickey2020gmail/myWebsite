@@ -1,0 +1,17 @@
+# Tommy — Personal Digital Garden
+
+> A growing collection of notes, essays, and projects at the intersection of
+> philosophy, AI, robotics, EEG biofeedback, psychology, dementia prevention,
+> and science fiction. Bilingual (zh / en).
+
+## Sections
+- /garden/  : Digital garden — interlinked notes, evergreens
+- /essays/  : Long-form essays (zh + en)
+- /projects/: Software, hardware, robotics, AI projects
+- /library/ : Books and papers I recommend
+- /now/     : What I'm focused on right now
+- /about/   : About me + contact
+
+## Feeds
+- /rss.xml
+- /sitemap-index.xml
