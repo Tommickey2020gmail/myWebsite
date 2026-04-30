@@ -1,13 +1,15 @@
 ---
 // src/components/LangSwitch.astro
-const path = Astro.url.pathname;
-const isEnglish = path.startsWith('/en');
-const targetPath = isEnglish ? path.replace(/^\/en/, '') || '/' : `/en${path === '/' ? '' : path}`;
+import { detectLang, localizePath } from "../lib/i18n";
+
+const currentLang = detectLang(Astro.url.pathname);
+const targetLang = currentLang === 'en' ? 'zh' : 'en';
+const targetPath = localizePath(Astro.url.pathname, targetLang);
 ---
 <a
   href={targetPath}
   class="text-sm text-[color:var(--color-muted)] hover:text-[color:var(--color-accent)] transition-colors"
-  aria-label={isEnglish ? '中文' : 'English'}
+  aria-label={currentLang === 'en' ? '切换到中文' : 'Switch to English'}
 >
-  {isEnglish ? '中' : 'EN'}
+  {currentLang === 'en' ? '中' : 'EN'}
 </a>
