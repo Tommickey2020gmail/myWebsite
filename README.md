@@ -1,43 +1,46 @@
-# Astro Starter Kit: Minimal
+# tommickey.cn
 
-```sh
-pnpm create astro@latest -- --template minimal
+Personal digital garden — Astro 6 + Tailwind 4 + Obsidian-as-CMS.
+
+## Local development
+
+Requires Node ≥ 22.12 and pnpm 10. (`nvm use 22.17.1` if you have nvm.)
+
+```bash
+pnpm install
+pnpm dev          # http://localhost:4321
+pnpm build        # ./dist
+pnpm preview      # serve dist locally
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Project layout
 
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
+```
+src/
+  content/         ← markdown notes (the Obsidian vault)
+    garden/
+    essays/
+    projects/
+    library/   (books + papers)
+    now/
+  pages/           ← Astro routes
+  components/      ← header / footer / theme + lang toggle / PostMeta
+  layouts/BaseLayout.astro
+  lib/
+    i18n.ts        ← locale path helpers (hreflang, language switch)
+    url.ts         ← slugHref + paperHref helpers
+  styles/global.css
+public/            ← robots.txt, llms.txt, static assets
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+## Writing content
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+Notes are markdown files under `src/content/`. See [`docs/obsidian-setup.md`](./docs/obsidian-setup.md)
+for the recommended Obsidian-on-Windows workflow.
 
-Any static assets, like images, can be placed in the `public/` directory.
+The frontmatter schema for each collection lives in [`src/content.config.ts`](./src/content.config.ts).
 
-## 🧞 Commands
+## Deployment
 
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `pnpm install`             | Installs dependencies                            |
-| `pnpm dev`             | Starts local dev server at `localhost:4321`      |
-| `pnpm build`           | Build your production site to `./dist/`          |
-| `pnpm preview`         | Preview your build locally, before deploying     |
-| `pnpm astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `pnpm astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+Push to `main` → Cloudflare Pages auto-builds and deploys to https://tommickey.cn.
+Build settings live in the Cloudflare dashboard, not in this repo.
