@@ -1,17 +1,66 @@
 ---
+// src/pages/index.astro
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
 
+const allGarden = (await getCollection('garden', ({ data }) => !data.draft))
+  .sort((a, b) => (b.data.updated ?? b.data.created).getTime() - (a.data.updated ?? a.data.created).getTime())
+  .slice(0, 6);
+
+const featuredProjects = (await getCollection('projects', ({ data }) => !data.draft && data.featured))
+  .slice(0, 3);
 ---
+<BaseLayout title="Home" description="Tommy 的数字花园 — 哲学、AI、机器人、脑电反馈、心理学、科幻。">
+  <section class="py-10">
+    <h1 class="text-4xl sm:text-5xl font-serif leading-tight mb-4">
+      Hi, I'm Tommy.
+    </h1>
+    <p class="text-lg text-[color:var(--color-muted)] max-w-prose">
+      I think and build at the intersection of <em>philosophy</em>, <em>AI / robotics</em>,
+      <em>EEG biofeedback</em>, <em>psychology</em>, and <em>science fiction</em>.
+      This is my digital garden — perpetually growing, never finished.
+    </p>
+  </section>
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+  <section class="py-8">
+    <div class="flex items-baseline justify-between mb-4">
+      <h2 class="text-2xl font-serif">Recent notes</h2>
+      <a href="/garden" class="text-sm">All notes →</a>
+    </div>
+    {allGarden.length === 0 ? (
+      <p class="text-[color:var(--color-muted)]">No notes yet — first seedlings coming soon.</p>
+    ) : (
+      <ul class="space-y-3">
+        {allGarden.map((note) => (
+          <li>
+            <a href={`/garden/${note.id}`} class="block py-1 no-underline hover:text-[color:var(--color-accent)]">
+              <span class="font-medium">{note.data.title}</span>
+              {note.data.description && (
+                <span class="block text-sm text-[color:var(--color-muted)]">{note.data.description}</span>
+              )}
+            </a>
+          </li>
+        ))}
+      </ul>
+    )}
+  </section>
+
+  {featuredProjects.length > 0 && (
+    <section class="py-8">
+      <div class="flex items-baseline justify-between mb-4">
+        <h2 class="text-2xl font-serif">Selected projects</h2>
+        <a href="/projects" class="text-sm">All projects →</a>
+      </div>
+      <ul class="grid gap-4 sm:grid-cols-2">
+        {featuredProjects.map((p) => (
+          <li class="border border-[color:var(--color-border)] rounded-lg p-4">
+            <a href={`/projects/${p.id}`} class="font-medium no-underline">{p.data.title}</a>
+            {p.data.description && (
+              <p class="mt-1 text-sm text-[color:var(--color-muted)]">{p.data.description}</p>
+            )}
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
+</BaseLayout>
