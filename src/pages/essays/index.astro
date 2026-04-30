@@ -1,0 +1,48 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostMeta from '../../components/PostMeta.astro';
+
+const slugHref = (id: string) => id.split('/').map(encodeURIComponent).join('/');
+
+const all = (await getCollection('essays', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.created.getTime() - a.data.created.getTime());
+const zh = all.filter((e) => e.data.lang === 'zh');
+const en = all.filter((e) => e.data.lang === 'en');
+---
+<BaseLayout title="Essays" description="Long-form writing on philosophy, AI, robotics, EEG, psychology.">
+  <h1 class="text-3xl mb-2">Essays</h1>
+  <p class="text-[color:var(--color-muted)] mb-8">Longer thoughts, when seedlings grow into trees.</p>
+
+  {zh.length > 0 && (
+    <section class="mb-10">
+      <h2 class="text-xl mb-4">中文</h2>
+      <ul class="space-y-4">
+        {zh.map((e) => (
+          <li>
+            <a href={`/essays/${slugHref(e.id)}/`} class="font-medium no-underline">{e.data.title}</a>
+            {e.data.description && <p class="text-sm text-[color:var(--color-muted)]">{e.data.description}</p>}
+            <div class="mt-1"><PostMeta created={e.data.created} updated={e.data.updated} lang={e.data.lang} /></div>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
+
+  {en.length > 0 && (
+    <section>
+      <h2 class="text-xl mb-4">English</h2>
+      <ul class="space-y-4">
+        {en.map((e) => (
+          <li>
+            <a href={`/essays/${slugHref(e.id)}/`} class="font-medium no-underline">{e.data.title}</a>
+            {e.data.description && <p class="text-sm text-[color:var(--color-muted)]">{e.data.description}</p>}
+            <div class="mt-1"><PostMeta created={e.data.created} updated={e.data.updated} lang={e.data.lang} /></div>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
+
+  {all.length === 0 && <p>No essays yet.</p>}
+</BaseLayout>

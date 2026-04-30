@@ -1,0 +1,21 @@
+---
+// src/components/PostMeta.astro
+export interface Props {
+  created: Date;
+  updated?: Date;
+  lang?: 'zh' | 'en';
+  status?: string;
+}
+const { created, updated, lang = 'zh', status } = Astro.props;
+const fmt = (d: Date) => d.toISOString().slice(0, 10);
+---
+<div class="flex flex-wrap gap-3 text-xs text-[color:var(--color-muted)]">
+  <time datetime={created.toISOString()}>Planted {fmt(created)}</time>
+  {updated && updated.getTime() !== created.getTime() && (
+    <time datetime={updated.toISOString()}>· Tended {fmt(updated)}</time>
+  )}
+  {status && (
+    <span class="px-1.5 py-0.5 rounded bg-[color:var(--color-border)]">{status}</span>
+  )}
+  <span>· {lang === 'en' ? 'EN' : '中'}</span>
+</div>

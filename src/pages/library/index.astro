@@ -1,0 +1,45 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const books = (await getCollection('books', ({ data }) => !data.draft))
+  .sort((a, b) => (b.data.finished ?? b.data.created).getTime() - (a.data.finished ?? a.data.created).getTime());
+const papers = (await getCollection('papers', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.created.getTime() - a.data.created.getTime());
+---
+<BaseLayout title="Library" description="Books and papers I've read and recommend.">
+  <h1 class="text-3xl mb-2">Library</h1>
+  <p class="text-[color:var(--color-muted)] mb-8">Inputs that shaped my thinking.</p>
+
+  <section class="mb-12">
+    <h2 class="text-xl mb-4">Books</h2>
+    {books.length === 0 ? (
+      <p class="text-[color:var(--color-muted)]">No books logged yet.</p>
+    ) : (
+      <ul class="space-y-3">
+        {books.map((b) => (
+          <li class="flex flex-wrap items-baseline justify-between gap-2">
+            <span><strong>{b.data.title}</strong> <span class="text-[color:var(--color-muted)]">— {b.data.author}</span></span>
+            {b.data.rating && <span class="text-sm text-[color:var(--color-muted)]">{'★'.repeat(b.data.rating)}</span>}
+          </li>
+        ))}
+      </ul>
+    )}
+  </section>
+
+  <section>
+    <h2 class="text-xl mb-4">Papers & links</h2>
+    {papers.length === 0 ? (
+      <p class="text-[color:var(--color-muted)]">No papers logged yet.</p>
+    ) : (
+      <ul class="space-y-3">
+        {papers.map((p) => (
+          <li>
+            <a href={p.data.link} class="font-medium">{p.data.title} ↗</a>
+            {p.data.venue && <span class="text-sm text-[color:var(--color-muted)]"> · {p.data.venue}</span>}
+          </li>
+        ))}
+      </ul>
+    )}
+  </section>
+</BaseLayout>
