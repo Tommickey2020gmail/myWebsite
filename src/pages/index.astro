@@ -9,6 +9,11 @@ const allGarden = (await getCollection('garden', ({ data }) => !data.draft))
 
 const featuredProjects = (await getCollection('projects', ({ data }) => !data.draft && data.featured))
   .slice(0, 3);
+
+// `id` is the path-relative-to-collection-base minus extension; preserve `/`
+// separators (subdirectories are valid route segments) but URL-encode each
+// segment so spaces / CJK / other non-ASCII chars are safe in href.
+const slugHref = (id: string) => id.split('/').map(encodeURIComponent).join('/');
 ---
 <BaseLayout title="Home" description="Tommy 的数字花园 — 哲学、AI、机器人、脑电反馈、心理学、科幻。">
   <section class="py-10">
@@ -25,7 +30,7 @@ const featuredProjects = (await getCollection('projects', ({ data }) => !data.dr
   <section class="py-8">
     <div class="flex items-baseline justify-between mb-4">
       <h2 class="text-2xl font-serif">Recent notes</h2>
-      <a href="/garden" class="text-sm">All notes →</a>
+      <a href="/garden/" class="text-sm">All notes →</a>
     </div>
     {allGarden.length === 0 ? (
       <p class="text-[color:var(--color-muted)]">No notes yet — first seedlings coming soon.</p>
@@ -33,7 +38,7 @@ const featuredProjects = (await getCollection('projects', ({ data }) => !data.dr
       <ul class="space-y-3">
         {allGarden.map((note) => (
           <li>
-            <a href={`/garden/${note.id}`} class="block py-1 no-underline hover:text-[color:var(--color-accent)]">
+            <a href={`/garden/${slugHref(note.id)}/`} class="block py-1 no-underline hover:text-[color:var(--color-accent)]">
               <span class="font-medium">{note.data.title}</span>
               {note.data.description && (
                 <span class="block text-sm text-[color:var(--color-muted)]">{note.data.description}</span>
@@ -49,12 +54,12 @@ const featuredProjects = (await getCollection('projects', ({ data }) => !data.dr
     <section class="py-8">
       <div class="flex items-baseline justify-between mb-4">
         <h2 class="text-2xl font-serif">Selected projects</h2>
-        <a href="/projects" class="text-sm">All projects →</a>
+        <a href="/projects/" class="text-sm">All projects →</a>
       </div>
       <ul class="grid gap-4 sm:grid-cols-2">
         {featuredProjects.map((p) => (
           <li class="border border-[color:var(--color-border)] rounded-lg p-4">
-            <a href={`/projects/${p.id}`} class="font-medium no-underline">{p.data.title}</a>
+            <a href={`/projects/${slugHref(p.id)}/`} class="font-medium no-underline">{p.data.title}</a>
             {p.data.description && (
               <p class="mt-1 text-sm text-[color:var(--color-muted)]">{p.data.description}</p>
             )}
