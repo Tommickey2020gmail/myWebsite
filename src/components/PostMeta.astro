@@ -1,21 +1,27 @@
 ---
 // src/components/PostMeta.astro
+// Renders post metadata (created/updated date + optional status badge).
+// `kind` controls the verb pair: garden notes are "Planted/Tended" (alive,
+// always evolving); essays/projects are "Published/Updated" (versioned,
+// authoritative).
 export interface Props {
   created: Date;
   updated?: Date;
-  lang?: 'zh' | 'en';
   status?: string;
+  kind?: 'note' | 'essay' | 'project';
 }
-const { created, updated, lang = 'zh', status } = Astro.props;
+const { created, updated, status, kind = 'note' } = Astro.props;
 const fmt = (d: Date) => d.toISOString().slice(0, 10);
+const verbCreated = kind === 'note' ? 'Planted' : 'Published';
+const verbUpdated = kind === 'note' ? 'Tended' : 'Updated';
+const sameDay = updated && fmt(updated) === fmt(created);
 ---
 <div class="flex flex-wrap gap-3 text-xs text-[color:var(--color-muted)]">
-  <time datetime={created.toISOString()}>Planted {fmt(created)}</time>
-  {updated && updated.getTime() !== created.getTime() && (
-    <time datetime={updated.toISOString()}>· Tended {fmt(updated)}</time>
+  <time datetime={created.toISOString()}>{verbCreated} {fmt(created)}</time>
+  {updated && !sameDay && (
+    <time datetime={updated.toISOString()}>· {verbUpdated} {fmt(updated)}</time>
   )}
   {status && (
     <span class="px-1.5 py-0.5 rounded bg-[color:var(--color-border)]">{status}</span>
   )}
-  <span>· {lang === 'en' ? 'EN' : '中'}</span>
 </div>

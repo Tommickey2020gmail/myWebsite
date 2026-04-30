@@ -2,8 +2,7 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PostMeta from '../../components/PostMeta.astro';
-
-const slugHref = (id: string) => id.split('/').map(encodeURIComponent).join('/');
+import { slugHref } from '../../lib/url';
 
 const all = (await getCollection('essays', ({ data }) => !data.draft))
   .sort((a, b) => b.data.created.getTime() - a.data.created.getTime());
@@ -22,7 +21,7 @@ const en = all.filter((e) => e.data.lang === 'en');
           <li>
             <a href={`/essays/${slugHref(e.id)}/`} class="font-medium no-underline">{e.data.title}</a>
             {e.data.description && <p class="text-sm text-[color:var(--color-muted)]">{e.data.description}</p>}
-            <div class="mt-1"><PostMeta created={e.data.created} updated={e.data.updated} lang={e.data.lang} /></div>
+            <div class="mt-1"><PostMeta created={e.data.created} updated={e.data.updated} kind="essay" /></div>
           </li>
         ))}
       </ul>
@@ -37,7 +36,7 @@ const en = all.filter((e) => e.data.lang === 'en');
           <li>
             <a href={`/essays/${slugHref(e.id)}/`} class="font-medium no-underline">{e.data.title}</a>
             {e.data.description && <p class="text-sm text-[color:var(--color-muted)]">{e.data.description}</p>}
-            <div class="mt-1"><PostMeta created={e.data.created} updated={e.data.updated} lang={e.data.lang} /></div>
+            <div class="mt-1"><PostMeta created={e.data.created} updated={e.data.updated} kind="essay" /></div>
           </li>
         ))}
       </ul>

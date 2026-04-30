@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { paperHref } from '../../lib/url';
 
 const books = (await getCollection('books', ({ data }) => !data.draft))
   .sort((a, b) => (b.data.finished ?? b.data.created).getTime() - (a.data.finished ?? a.data.created).getTime());
@@ -20,7 +21,12 @@ const papers = (await getCollection('papers', ({ data }) => !data.draft))
         {books.map((b) => (
           <li class="flex flex-wrap items-baseline justify-between gap-2">
             <span><strong>{b.data.title}</strong> <span class="text-[color:var(--color-muted)]">— {b.data.author}</span></span>
-            {b.data.rating && <span class="text-sm text-[color:var(--color-muted)]">{'★'.repeat(b.data.rating)}</span>}
+            {b.data.rating && (
+              <span class="text-sm text-[color:var(--color-muted)]"
+                    aria-label={`Rated ${b.data.rating} out of 5`}>
+                {'★'.repeat(b.data.rating)}
+              </span>
+            )}
           </li>
         ))}
       </ul>
@@ -35,7 +41,11 @@ const papers = (await getCollection('papers', ({ data }) => !data.draft))
       <ul class="space-y-3">
         {papers.map((p) => (
           <li>
-            <a href={p.data.link} class="font-medium">{p.data.title} ↗</a>
+            <a href={paperHref(p.data.link, p.data.doi)} class="font-medium"
+               target="_blank" rel="noopener noreferrer"
+               aria-label={`${p.data.title} (opens in new tab)`}>
+              {p.data.title} <span aria-hidden="true">↗</span>
+            </a>
             {p.data.venue && <span class="text-sm text-[color:var(--color-muted)]"> · {p.data.venue}</span>}
           </li>
         ))}

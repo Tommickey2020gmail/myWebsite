@@ -2,8 +2,7 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PostMeta from '../../components/PostMeta.astro';
-
-const slugHref = (id: string) => id.split('/').map(encodeURIComponent).join('/');
+import { slugHref } from '../../lib/url';
 
 const notes = (await getCollection('garden', ({ data }) => !data.draft))
   .sort((a, b) => (b.data.updated ?? b.data.created).getTime() - (a.data.updated ?? a.data.created).getTime());
@@ -21,7 +20,7 @@ const notes = (await getCollection('garden', ({ data }) => !data.draft))
             <h2 class="text-xl">{n.data.title}</h2>
           </a>
           {n.data.description && <p class="text-sm text-[color:var(--color-muted)] mt-1">{n.data.description}</p>}
-          <div class="mt-2"><PostMeta created={n.data.created} updated={n.data.updated} lang={n.data.lang} status={n.data.status} /></div>
+          <div class="mt-2"><PostMeta created={n.data.created} updated={n.data.updated} status={n.data.status} kind="note" /></div>
         </li>
       ))}
     </ul>

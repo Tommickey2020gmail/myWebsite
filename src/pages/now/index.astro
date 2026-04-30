@@ -10,7 +10,7 @@ const Content = latest ? (await render(latest)).Content : null;
 <BaseLayout title="Now" description="What I'm focused on right now.">
   <h1 class="text-3xl mb-2">Now</h1>
   <p class="text-[color:var(--color-muted)] mb-8">
-    Inspired by <a href="https://nownownow.com/about">nownownow.com</a> — a snapshot of where my attention is.
+    Inspired by <a href="https://nownownow.com/about" target="_blank" rel="noopener noreferrer">nownownow.com <span aria-hidden="true">↗</span></a> — a snapshot of where my attention is.
   </p>
   {latest ? (
     <article class="prose prose-lg max-w-none">

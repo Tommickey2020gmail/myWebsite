@@ -2,6 +2,7 @@
 // src/pages/index.astro
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { slugHref } from '../lib/url';
 
 const allGarden = (await getCollection('garden', ({ data }) => !data.draft))
   .sort((a, b) => (b.data.updated ?? b.data.created).getTime() - (a.data.updated ?? a.data.created).getTime())
@@ -9,11 +10,6 @@ const allGarden = (await getCollection('garden', ({ data }) => !data.draft))
 
 const featuredProjects = (await getCollection('projects', ({ data }) => !data.draft && data.featured))
   .slice(0, 3);
-
-// `id` is the path-relative-to-collection-base minus extension; preserve `/`
-// separators (subdirectories are valid route segments) but URL-encode each
-// segment so spaces / CJK / other non-ASCII chars are safe in href.
-const slugHref = (id: string) => id.split('/').map(encodeURIComponent).join('/');
 ---
 <BaseLayout title="Home" description="Tommy 的数字花园 — 哲学、AI、机器人、脑电反馈、心理学、科幻。">
   <section class="py-10">
