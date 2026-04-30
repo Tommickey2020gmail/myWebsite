@@ -55,7 +55,10 @@ const papers = defineCollection({
     ...baseFields,
     authors: z.array(z.string()).default([]),
     venue: z.string().optional(),
-    link: z.string().url(),
+    // Accept full URL, DOI (e.g. "10.1038/nature12373"), or arXiv ID
+    // (e.g. "arXiv:2301.00001"). Layouts decide how to render.
+    link: z.string(),
+    doi: z.string().optional(),
   }),
 });
 
