@@ -1,0 +1,43 @@
+---
+// src/components/Header.astro
+import ThemeToggle from "./ThemeToggle.astro";
+import LangSwitch from "./LangSwitch.astro";
+
+const links = [
+  { href: '/', label: 'Home' },
+  { href: '/garden', label: 'Garden' },
+  { href: '/essays', label: 'Essays' },
+  { href: '/projects', label: 'Projects' },
+  { href: '/library', label: 'Library' },
+  { href: '/now', label: 'Now' },
+  { href: '/about', label: 'About' },
+];
+
+const current = Astro.url.pathname;
+---
+<header class="border-b border-[color:var(--color-border)]">
+  <div class="mx-auto max-w-3xl px-5 sm:px-6 py-4 flex items-center justify-between gap-4">
+    <a href="/" class="font-serif text-lg tracking-tight no-underline hover:opacity-80">
+      Tommy
+    </a>
+    <nav class="flex items-center gap-4 overflow-x-auto">
+      {links.map(({ href, label }) => (
+        <a
+          href={href}
+          class:list={[
+            'text-sm whitespace-nowrap no-underline hover:text-[color:var(--color-accent)]',
+            current === href || (href !== '/' && current.startsWith(href))
+              ? 'text-[color:var(--color-accent)]'
+              : 'text-[color:var(--color-fg)]',
+          ]}
+        >
+          {label}
+        </a>
+      ))}
+    </nav>
+    <div class="flex items-center gap-2">
+      <LangSwitch />
+      <ThemeToggle />
+    </div>
+  </div>
+</header>

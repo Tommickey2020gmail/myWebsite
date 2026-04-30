@@ -1,0 +1,13 @@
+---
+// src/components/LangSwitch.astro
+const path = Astro.url.pathname;
+const isEnglish = path.startsWith('/en');
+const targetPath = isEnglish ? path.replace(/^\/en/, '') || '/' : `/en${path === '/' ? '' : path}`;
+---
+<a
+  href={targetPath}
+  class="text-sm text-[color:var(--color-muted)] hover:text-[color:var(--color-accent)] transition-colors"
+  aria-label={isEnglish ? '中文' : 'English'}
+>
+  {isEnglish ? '中' : 'EN'}
+</a>

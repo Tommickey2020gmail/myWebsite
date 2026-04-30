@@ -1,0 +1,74 @@
+---
+import "../styles/global.css";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+
+export interface Props {
+  title: string;
+  description?: string;
+  lang?: 'zh' | 'en';
+  ogImage?: string;
+  canonical?: string;
+}
+
+const {
+  title,
+  description = "Tommy's digital garden — philosophy, AI, robotics, EEG biofeedback, psychology, science fiction.",
+  lang = 'zh',
+  ogImage = '/og-default.png',
+  canonical,
+} = Astro.props;
+
+const siteUrl = Astro.site?.toString().replace(/\/$/, '') ?? 'https://tommickey.cn';
+const canonicalUrl = canonical ?? new URL(Astro.url.pathname, siteUrl).toString();
+const fullTitle = title === 'Home' ? 'Tommy — Digital Garden' : `${title} · Tommy`;
+---
+<!DOCTYPE html>
+<html lang={lang === 'en' ? 'en-US' : 'zh-CN'}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+
+    {/* Open Graph */}
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={new URL(ogImage, siteUrl).toString()} />
+    <meta property="og:locale" content={lang === 'en' ? 'en_US' : 'zh_CN'} />
+
+    {/* Twitter */}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+
+    {/* hreflang */}
+    <link rel="alternate" hreflang="zh-CN" href={`${siteUrl}${Astro.url.pathname}`} />
+    <link rel="alternate" hreflang="en-US" href={`${siteUrl}${Astro.url.pathname}`} />
+    <link rel="alternate" hreflang="x-default" href={`${siteUrl}${Astro.url.pathname}`} />
+
+    {/* Theme: prevent FOUC */}
+    <script is:inline>
+      (function () {
+        const stored = localStorage.getItem('theme');
+        const prefers = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const theme = stored ?? (prefers ? 'dark' : 'light');
+        if (theme === 'dark') document.documentElement.classList.add('dark');
+      })();
+    </script>
+
+    {/* RSS auto-discovery */}
+    <link rel="alternate" type="application/rss+xml" title="Tommy's Garden" href="/rss.xml" />
+  </head>
+  <body class="min-h-dvh flex flex-col">
+    <Header />
+    <main class="flex-1 mx-auto w-full max-w-3xl px-5 sm:px-6 py-10">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

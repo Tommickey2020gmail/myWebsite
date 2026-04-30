@@ -1,0 +1,13 @@
+---
+// src/components/Footer.astro
+const year = new Date().getFullYear();
+---
+<footer class="border-t border-[color:var(--color-border)] mt-16">
+  <div class="mx-auto max-w-3xl px-5 sm:px-6 py-8 text-sm text-[color:var(--color-muted)] flex flex-wrap justify-between gap-4">
+    <span>© {year} Tommy · Cultivated in the open</span>
+    <div class="flex gap-4">
+      <a href="/rss.xml" class="hover:text-[color:var(--color-accent)]">RSS</a>
+      <a href="/sitemap-index.xml" class="hover:text-[color:var(--color-accent)]">Sitemap</a>
+    </div>
+  </div>
+</footer>
