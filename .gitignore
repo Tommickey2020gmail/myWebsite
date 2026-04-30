@@ -17,12 +17,6 @@ pnpm-debug.log*
 .env
 .env.production
 
-# macOS-specific files
-.DS_Store
-
-# jetbrains setting folder
-.idea/
-
 # Obsidian (vault state, not content)
 .obsidian/
 .trash/
@@ -38,4 +32,3 @@ Thumbs.db
 
 # Logs
 *.log
-
