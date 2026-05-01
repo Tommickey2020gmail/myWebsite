@@ -73,6 +73,17 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         });
       }
 
+      function highlight(text, tokens) {
+        // Escape first, then wrap matches in <mark>. Tokens are already lowercased.
+        let html = escapeHtml(text);
+        for (const tok of tokens) {
+          if (!tok) continue;
+          const safe = tok.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          html = html.replace(new RegExp('(' + safe + ')', 'gi'), '<mark>$1</mark>');
+        }
+        return html;
+      }
+
       function render(query) {
         const tokens = query.toLowerCase().split(/\s+/).filter(Boolean);
         $results.innerHTML = '';
@@ -88,9 +99,9 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           li.innerHTML =
             '<a href="' + e.href + '" class="block py-2 no-underline hover:text-accent">' +
               '<span class="text-xs text-muted uppercase tracking-wider mr-2">' + (kindLabel[e.kind] || e.kind) + '</span>' +
-              '<span class="font-medium">' + escapeHtml(e.title) + '</span>' +
-              (e.description ? '<p class="text-sm text-muted mt-1">' + escapeHtml(e.description) + '</p>' : '') +
-              '<p class="text-xs text-muted mt-1">' + escapeHtml(snippet(e, tokens)) + '</p>' +
+              '<span class="font-medium">' + highlight(e.title, tokens) + '</span>' +
+              (e.description ? '<p class="text-sm text-muted mt-1">' + highlight(e.description, tokens) + '</p>' : '') +
+              '<p class="text-xs text-muted mt-1">' + highlight(snippet(e, tokens), tokens) + '</p>' +
             '</a>';
           $results.appendChild(li);
         }

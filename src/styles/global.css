@@ -89,3 +89,11 @@
 :root.dark .prose .wikilink.broken {
   color: #f08080;
 }
+
+/* Search match highlight — used by /search/. */
+mark {
+  background-color: color-mix(in srgb, var(--color-accent) 30%, transparent);
+  color: inherit;
+  padding: 0 0.1em;
+  border-radius: 2px;
+}

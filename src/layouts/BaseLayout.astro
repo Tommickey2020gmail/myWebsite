@@ -83,5 +83,24 @@ const ogImageUrl = new URL(ogImage ?? '/og-default.svg', siteUrl).toString();
       <slot />
     </main>
     <Footer />
+
+    {/* Global keybindings: "/" jumps to search from anywhere. */}
+    <script is:inline>
+      (function () {
+        document.addEventListener('keydown', function (e) {
+          if (e.key !== '/') return;
+          const t = e.target;
+          if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+          if (e.ctrlKey || e.metaKey || e.altKey) return;
+          if (location.pathname === '/search/') {
+            const q = document.getElementById('q');
+            if (q) { e.preventDefault(); q.focus(); }
+            return;
+          }
+          e.preventDefault();
+          location.href = '/search/';
+        });
+      })();
+    </script>
   </body>
 </html>
