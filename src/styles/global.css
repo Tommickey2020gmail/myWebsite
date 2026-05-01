@@ -97,3 +97,52 @@ mark {
   padding: 0 0.1em;
   border-radius: 2px;
 }
+
+/* Heading anchors injected by inline script in BaseLayout.
+   Hidden until you hover the heading; clicking copies the URL with #id. */
+.prose h2, .prose h3, .prose h4 {
+  scroll-margin-top: 4rem;
+}
+.prose .heading-anchor {
+  margin-left: 0.4em;
+  opacity: 0;
+  font-weight: 400;
+  text-decoration: none;
+  color: var(--color-muted);
+  transition: opacity 0.15s ease;
+}
+.prose h2:hover .heading-anchor,
+.prose h3:hover .heading-anchor,
+.prose h4:hover .heading-anchor,
+.prose .heading-anchor:focus {
+  opacity: 1;
+}
+
+/* Print stylesheet — clean A4 reading copy.
+   Hides chrome (header/footer/nav), expands content, blackens links,
+   and shows the URL of inline links so the printed text remains useful. */
+@media print {
+  :root.dark, :root {
+    color-scheme: light;
+    --color-bg: #ffffff;
+    --color-fg: #000000;
+    --color-muted: #555555;
+    --color-border: #cccccc;
+  }
+  body { background: #ffffff; color: #000000; }
+  header, footer, nav, .no-print { display: none !important; }
+  main { max-width: 100% !important; padding: 0 !important; }
+  a { color: #000000; text-decoration: underline; }
+  .prose a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.85em;
+    color: #555555;
+    word-break: break-all;
+  }
+  .prose pre, .prose code {
+    background: #f4f4f4 !important;
+    border: 1px solid #dddddd;
+  }
+  h1, h2, h3, h4 { page-break-after: avoid; }
+  img, pre, blockquote { page-break-inside: avoid; }
+}
