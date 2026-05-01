@@ -8,21 +8,21 @@ const projects = (await getCollection('projects', ({ data }) => !data.draft))
 ---
 <BaseLayout title="Projects" description="Things I've built — robotics, EEG biofeedback, AI tools, software & hardware.">
   <h1 class="text-3xl mb-2">Projects</h1>
-  <p class="text-[color:var(--color-muted)] mb-8">Things I've actually built.</p>
+  <p class="text-muted mb-8">Things I've actually built.</p>
   {projects.length === 0 ? (
     <p>No projects published yet.</p>
   ) : (
     <ul class="grid gap-4 sm:grid-cols-2">
       {projects.map((p) => (
-        <li class="border border-[color:var(--color-border)] rounded-lg p-5">
+        <li class="border border-border rounded-lg p-5">
           <a href={`/projects/${slugHref(p.id)}/`} class="block no-underline">
             <h2 class="text-xl">{p.data.title}</h2>
           </a>
-          {p.data.description && <p class="mt-2 text-sm text-[color:var(--color-muted)]">{p.data.description}</p>}
+          {p.data.description && <p class="mt-2 text-sm text-muted">{p.data.description}</p>}
           {p.data.stack.length > 0 && (
             <div class="mt-3 flex flex-wrap gap-1.5">
               {p.data.stack.map((s) => (
-                <span class="text-xs px-2 py-0.5 rounded bg-[color:var(--color-border)]">{s}</span>
+                <span class="text-xs px-2 py-0.5 rounded bg-border">{s}</span>
               ))}
             </div>
           )}

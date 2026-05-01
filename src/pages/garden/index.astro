@@ -9,17 +9,17 @@ const notes = (await getCollection('garden', ({ data }) => !data.draft))
 ---
 <BaseLayout title="Garden" description="Tommy 的数字花园：碎片想法、读书笔记、概念地图。">
   <h1 class="text-3xl mb-2">Digital Garden</h1>
-  <p class="text-[color:var(--color-muted)] mb-8">A growing collection of seeds, sprouts, and evergreens.</p>
+  <p class="text-muted mb-8">A growing collection of seeds, sprouts, and evergreens.</p>
   {notes.length === 0 ? (
     <p>No notes planted yet.</p>
   ) : (
     <ul class="space-y-6">
       {notes.map((n) => (
         <li>
-          <a href={`/garden/${slugHref(n.id)}/`} class="block no-underline hover:text-[color:var(--color-accent)]">
+          <a href={`/garden/${slugHref(n.id)}/`} class="block no-underline hover:text-accent">
             <h2 class="text-xl">{n.data.title}</h2>
           </a>
-          {n.data.description && <p class="text-sm text-[color:var(--color-muted)] mt-1">{n.data.description}</p>}
+          {n.data.description && <p class="text-sm text-muted mt-1">{n.data.description}</p>}
           <div class="mt-2"><PostMeta created={n.data.created} updated={n.data.updated} status={n.data.status} kind="note" /></div>
         </li>
       ))}

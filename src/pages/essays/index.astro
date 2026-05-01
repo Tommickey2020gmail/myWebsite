@@ -11,7 +11,7 @@ const en = all.filter((e) => e.data.lang === 'en');
 ---
 <BaseLayout title="Essays" description="Long-form writing on philosophy, AI, robotics, EEG, psychology.">
   <h1 class="text-3xl mb-2">Essays</h1>
-  <p class="text-[color:var(--color-muted)] mb-8">Longer thoughts, when seedlings grow into trees.</p>
+  <p class="text-muted mb-8">Longer thoughts, when seedlings grow into trees.</p>
 
   {zh.length > 0 && (
     <section class="mb-10">
@@ -20,7 +20,7 @@ const en = all.filter((e) => e.data.lang === 'en');
         {zh.map((e) => (
           <li>
             <a href={`/essays/${slugHref(e.id)}/`} class="font-medium no-underline">{e.data.title}</a>
-            {e.data.description && <p class="text-sm text-[color:var(--color-muted)]">{e.data.description}</p>}
+            {e.data.description && <p class="text-sm text-muted">{e.data.description}</p>}
             <div class="mt-1"><PostMeta created={e.data.created} updated={e.data.updated} kind="essay" /></div>
           </li>
         ))}
@@ -35,7 +35,7 @@ const en = all.filter((e) => e.data.lang === 'en');
         {en.map((e) => (
           <li>
             <a href={`/essays/${slugHref(e.id)}/`} class="font-medium no-underline">{e.data.title}</a>
-            {e.data.description && <p class="text-sm text-[color:var(--color-muted)]">{e.data.description}</p>}
+            {e.data.description && <p class="text-sm text-muted">{e.data.description}</p>}
             <div class="mt-1"><PostMeta created={e.data.created} updated={e.data.updated} kind="essay" /></div>
           </li>
         ))}

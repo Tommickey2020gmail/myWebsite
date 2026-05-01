@@ -14,7 +14,7 @@ const links = [
 
 const current = Astro.url.pathname;
 ---
-<header class="border-b border-[color:var(--color-border)]">
+<header class="border-b border-border">
   <div class="mx-auto max-w-3xl px-5 sm:px-6 py-4 flex items-center justify-between gap-4">
     <a href="/" class="font-serif text-lg tracking-tight no-underline hover:opacity-80">
       Tommy
@@ -24,10 +24,10 @@ const current = Astro.url.pathname;
         <a
           href={href}
           class:list={[
-            'text-sm whitespace-nowrap no-underline hover:text-[color:var(--color-accent)]',
+            'text-sm whitespace-nowrap no-underline hover:text-accent',
             current === href || (href !== '/' && current.startsWith(href))
-              ? 'text-[color:var(--color-accent)]'
-              : 'text-[color:var(--color-fg)]',
+              ? 'text-accent'
+              : 'text-fg',
           ]}
         >
           {label}

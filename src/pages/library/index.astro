@@ -10,19 +10,19 @@ const papers = (await getCollection('papers', ({ data }) => !data.draft))
 ---
 <BaseLayout title="Library" description="Books and papers I've read and recommend.">
   <h1 class="text-3xl mb-2">Library</h1>
-  <p class="text-[color:var(--color-muted)] mb-8">Inputs that shaped my thinking.</p>
+  <p class="text-muted mb-8">Inputs that shaped my thinking.</p>
 
   <section class="mb-12">
     <h2 class="text-xl mb-4">Books</h2>
     {books.length === 0 ? (
-      <p class="text-[color:var(--color-muted)]">No books logged yet.</p>
+      <p class="text-muted">No books logged yet.</p>
     ) : (
       <ul class="space-y-3">
         {books.map((b) => (
           <li class="flex flex-wrap items-baseline justify-between gap-2">
-            <span><strong>{b.data.title}</strong> <span class="text-[color:var(--color-muted)]">— {b.data.author}</span></span>
+            <span><strong>{b.data.title}</strong> <span class="text-muted">— {b.data.author}</span></span>
             {b.data.rating && (
-              <span class="text-sm text-[color:var(--color-muted)]"
+              <span class="text-sm text-muted"
                     aria-label={`Rated ${b.data.rating} out of 5`}>
                 {'★'.repeat(b.data.rating)}
               </span>
@@ -36,7 +36,7 @@ const papers = (await getCollection('papers', ({ data }) => !data.draft))
   <section>
     <h2 class="text-xl mb-4">Papers & links</h2>
     {papers.length === 0 ? (
-      <p class="text-[color:var(--color-muted)]">No papers logged yet.</p>
+      <p class="text-muted">No papers logged yet.</p>
     ) : (
       <ul class="space-y-3">
         {papers.map((p) => (
@@ -46,7 +46,7 @@ const papers = (await getCollection('papers', ({ data }) => !data.draft))
                aria-label={`${p.data.title} (opens in new tab)`}>
               {p.data.title} <span aria-hidden="true">↗</span>
             </a>
-            {p.data.venue && <span class="text-sm text-[color:var(--color-muted)]"> · {p.data.venue}</span>}
+            {p.data.venue && <span class="text-sm text-muted"> · {p.data.venue}</span>}
           </li>
         ))}
       </ul>

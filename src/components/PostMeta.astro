@@ -16,12 +16,12 @@ const verbCreated = kind === 'note' ? 'Planted' : 'Published';
 const verbUpdated = kind === 'note' ? 'Tended' : 'Updated';
 const sameDay = updated && fmt(updated) === fmt(created);
 ---
-<div class="flex flex-wrap gap-3 text-xs text-[color:var(--color-muted)]">
+<div class="flex flex-wrap gap-3 text-xs text-muted">
   <time datetime={created.toISOString()}>{verbCreated} {fmt(created)}</time>
   {updated && !sameDay && (
     <time datetime={updated.toISOString()}>· {verbUpdated} {fmt(updated)}</time>
   )}
   {status && (
-    <span class="px-1.5 py-0.5 rounded bg-[color:var(--color-border)]">{status}</span>
+    <span class="px-1.5 py-0.5 rounded bg-border">{status}</span>
   )}
 </div>

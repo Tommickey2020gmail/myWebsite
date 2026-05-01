@@ -43,7 +43,7 @@ const jsonLd = [
     <h1 class="text-4xl sm:text-5xl font-serif leading-tight mb-4">
       Hi, I'm Tommy.
     </h1>
-    <p class="text-lg text-[color:var(--color-muted)] max-w-prose">
+    <p class="text-lg text-muted max-w-prose">
       I think and build at the intersection of <em>philosophy</em>, <em>AI / robotics</em>,
       <em>EEG biofeedback</em>, <em>psychology</em>, and <em>science fiction</em>.
       This is my digital garden — perpetually growing, never finished.
@@ -56,15 +56,15 @@ const jsonLd = [
       <a href="/garden/" class="text-sm">All notes →</a>
     </div>
     {allGarden.length === 0 ? (
-      <p class="text-[color:var(--color-muted)]">No notes yet — first seedlings coming soon.</p>
+      <p class="text-muted">No notes yet — first seedlings coming soon.</p>
     ) : (
       <ul class="space-y-3">
         {allGarden.map((note) => (
           <li>
-            <a href={`/garden/${slugHref(note.id)}/`} class="block py-1 no-underline hover:text-[color:var(--color-accent)]">
+            <a href={`/garden/${slugHref(note.id)}/`} class="block py-1 no-underline hover:text-accent">
               <span class="font-medium">{note.data.title}</span>
               {note.data.description && (
-                <span class="block text-sm text-[color:var(--color-muted)]">{note.data.description}</span>
+                <span class="block text-sm text-muted">{note.data.description}</span>
               )}
             </a>
           </li>
@@ -81,10 +81,10 @@ const jsonLd = [
       </div>
       <ul class="grid gap-4 sm:grid-cols-2">
         {featuredProjects.map((p) => (
-          <li class="border border-[color:var(--color-border)] rounded-lg p-4">
+          <li class="border border-border rounded-lg p-4">
             <a href={`/projects/${slugHref(p.id)}/`} class="font-medium no-underline">{p.data.title}</a>
             {p.data.description && (
-              <p class="mt-1 text-sm text-[color:var(--color-muted)]">{p.data.description}</p>
+              <p class="mt-1 text-sm text-muted">{p.data.description}</p>
             )}
           </li>
         ))}

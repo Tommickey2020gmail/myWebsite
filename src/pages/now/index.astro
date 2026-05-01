@@ -9,12 +9,12 @@ const Content = latest ? (await render(latest)).Content : null;
 ---
 <BaseLayout title="Now" description="What I'm focused on right now.">
   <h1 class="text-3xl mb-2">Now</h1>
-  <p class="text-[color:var(--color-muted)] mb-8">
+  <p class="text-muted mb-8">
     Inspired by <a href="https://nownownow.com/about" target="_blank" rel="noopener noreferrer">nownownow.com <span aria-hidden="true">↗</span></a> — a snapshot of where my attention is.
   </p>
   {latest ? (
     <article class="prose prose-lg max-w-none">
-      <p class="text-sm text-[color:var(--color-muted)]">
+      <p class="text-sm text-muted">
         Updated {(latest.data.updated ?? latest.data.created).toISOString().slice(0, 10)}
       </p>
       {Content && <Content />}

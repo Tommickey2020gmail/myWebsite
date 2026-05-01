@@ -8,7 +8,7 @@ const targetPath = localizePath(Astro.url.pathname, targetLang);
 ---
 <a
   href={targetPath}
-  class="inline-flex items-center justify-center min-w-[44px] min-h-[44px] rounded-md text-sm text-[color:var(--color-muted)] hover:text-[color:var(--color-accent)] hover:bg-[color:var(--color-border)] transition-colors no-underline"
+  class="inline-flex items-center justify-center min-w-[44px] min-h-[44px] rounded-md text-sm text-muted hover:text-accent hover:bg-border transition-colors no-underline"
   aria-label={currentLang === 'en' ? '切换到中文' : 'Switch to English'}
 >
   {currentLang === 'en' ? '中' : 'EN'}
