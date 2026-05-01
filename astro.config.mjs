@@ -5,21 +5,9 @@ import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
   site: 'https://tommickey.cn',
-  integrations: [
-    sitemap({
-      i18n: {
-        defaultLocale: 'zh',
-        locales: { zh: 'zh-CN', en: 'en-US' },
-      },
-    }),
-  ],
+  integrations: [sitemap()],
   vite: {
     plugins: [tailwindcss()],
-  },
-  i18n: {
-    defaultLocale: 'zh',
-    locales: ['zh', 'en'],
-    routing: { prefixDefaultLocale: false },
   },
   build: { format: 'directory' },
 });

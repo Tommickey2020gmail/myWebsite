@@ -1,7 +1,6 @@
 ---
 // src/components/Header.astro
 import ThemeToggle from "./ThemeToggle.astro";
-import LangSwitch from "./LangSwitch.astro";
 
 const links = [
   { href: '/', label: 'Home' },
@@ -36,7 +35,6 @@ const current = Astro.url.pathname;
       ))}
     </nav>
     <div class="flex items-center gap-2">
-      <LangSwitch />
       <ThemeToggle />
     </div>
   </div>
