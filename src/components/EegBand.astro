@@ -1,0 +1,54 @@
+---
+// src/components/EegBand.astro
+// Subtle synthesized EEG-style waveform band. Pure SVG path animated via
+// CSS transform; respects prefers-reduced-motion.
+//
+// Path is generated server-side by summing a few sine harmonics so the
+// output is reproducible and tiny. Two paths offset & translated horizontally
+// give the illusion of a continuous scrolling trace.
+const W = 800; // viewBox width per cycle (also width of one tile)
+const H = 60;
+const MID = H / 2;
+
+function trace(seed: number): string {
+  const pts: string[] = [];
+  for (let x = 0; x <= W; x += 4) {
+    const t = (x / W) * Math.PI * 2;
+    const y =
+      MID +
+      Math.sin(t * 3 + seed) * 8 +
+      Math.sin(t * 7 + seed * 1.7) * 4 +
+      Math.sin(t * 13 + seed * 0.3) * 2;
+    pts.push(`${x.toFixed(1)},${y.toFixed(2)}`);
+  }
+  return 'M' + pts.join(' L');
+}
+
+const path = trace(0.5);
+---
+<div class="eeg-band" aria-hidden="true">
+  <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <g class="eeg-scroll">
+      <path d={path} fill="none" stroke="var(--color-secondary)" stroke-width="1.2" stroke-opacity="0.55" />
+      <path d={path} transform={`translate(${W} 0)`} fill="none" stroke="var(--color-secondary)" stroke-width="1.2" stroke-opacity="0.55" />
+    </g>
+  </svg>
+</div>
+
+<style>
+  .eeg-band {
+    width: 100%;
+    height: 36px;
+    overflow: hidden;
+    opacity: 0.7;
+  }
+  .eeg-band svg { width: 200%; height: 100%; display: block; }
+  .eeg-scroll { animation: eeg-scroll 18s linear infinite; }
+  @keyframes eeg-scroll {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .eeg-scroll { animation: none; }
+  }
+</style>

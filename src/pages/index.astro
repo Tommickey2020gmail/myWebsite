@@ -2,6 +2,8 @@
 // src/pages/index.astro
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import HeroGraph from '../components/HeroGraph.astro';
+import EegBand from '../components/EegBand.astro';
 import { slugHref } from '../lib/url';
 
 const allGarden = (await getCollection('garden', ({ data }) => !data.draft))
@@ -43,11 +45,13 @@ const jsonLd = [
     <h1 class="text-4xl sm:text-5xl font-serif leading-tight mb-4">
       Hi, I'm Tommy.
     </h1>
-    <p class="text-lg text-muted max-w-prose">
+    <p class="text-lg text-muted max-w-prose mb-8">
       I think and build at the intersection of <em>philosophy</em>, <em>AI / robotics</em>,
       <em>EEG biofeedback</em>, <em>psychology</em>, and <em>science fiction</em>.
       This is my digital garden — perpetually growing, never finished.
     </p>
+    <HeroGraph />
+    <div class="mt-6"><EegBand /></div>
   </section>
 
   <section class="py-8">

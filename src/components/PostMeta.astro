@@ -4,6 +4,7 @@
 // `kind` controls the verb pair: garden notes are "Planted/Tended" (alive,
 // always evolving); essays/projects are "Published/Updated" (versioned,
 // authoritative).
+import Seedling from "./Seedling.astro";
 export interface Props {
   created: Date;
   updated?: Date;
@@ -16,12 +17,15 @@ const verbCreated = kind === 'note' ? 'Planted' : 'Published';
 const verbUpdated = kind === 'note' ? 'Tended' : 'Updated';
 const sameDay = updated && fmt(updated) === fmt(created);
 ---
-<div class="flex flex-wrap gap-3 text-xs text-muted">
+<div class="flex flex-wrap items-center gap-3 text-xs text-muted">
   <time datetime={created.toISOString()}>{verbCreated} {fmt(created)}</time>
   {updated && !sameDay && (
     <time datetime={updated.toISOString()}>· {verbUpdated} {fmt(updated)}</time>
   )}
   {status && (
-    <span class="px-1.5 py-0.5 rounded bg-border">{status}</span>
+    <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-border">
+      {status === 'seedling' && <Seedling />}
+      {status}
+    </span>
   )}
 </div>

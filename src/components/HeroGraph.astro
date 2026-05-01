@@ -1,0 +1,76 @@
+---
+// src/components/HeroGraph.astro
+// Six interlinked nodes representing Tommy's topic constellation. Pure SVG,
+// no JS, accessibility label provided. Pulse uses CSS prefers-reduced-motion.
+const topics = [
+  { id: 'phi', label: '哲学',     en: 'Philosophy',     x: 50,  y: 30  },
+  { id: 'ai',  label: 'AI',       en: 'AI',             x: 230, y: 30  },
+  { id: 'rob', label: '机器人',   en: 'Robotics',       x: 320, y: 110 },
+  { id: 'eeg', label: '脑电',     en: 'EEG',            x: 230, y: 190 },
+  { id: 'psy', label: '心理',     en: 'Psychology',     x: 50,  y: 190 },
+  { id: 'sci', label: '科幻',     en: 'Sci-Fi',         x: -40, y: 110 },
+];
+// Edges: each topic connects to its two neighbors plus one cross-link
+const edges: [string, string][] = [
+  ['phi', 'ai'], ['ai', 'rob'], ['rob', 'eeg'], ['eeg', 'psy'], ['psy', 'sci'], ['sci', 'phi'],
+  ['phi', 'eeg'], ['ai', 'psy'], ['rob', 'sci'],
+];
+const node = (id: string) => topics.find((t) => t.id === id)!;
+---
+<figure class="hero-graph" aria-label="Tommy 关注的六个主题相互连接：哲学、AI、机器人、脑电、心理、科幻">
+  <svg viewBox="-60 0 420 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
+    <g class="hg-edges" stroke="currentColor" stroke-width="0.8" stroke-opacity="0.35" fill="none">
+      {edges.map(([a, b]) => {
+        const A = node(a); const B = node(b);
+        return <line x1={A.x} y1={A.y} x2={B.x} y2={B.y} />;
+      })}
+    </g>
+    <g class="hg-nodes">
+      {topics.map((t, i) => (
+        <g style={`--i:${i}`}>
+          <circle cx={t.x} cy={t.y} r="6" fill="var(--color-accent)" class="hg-pulse" />
+          <text x={t.x} y={t.y - 12} text-anchor="middle"
+                font-family="var(--font-display)" font-size="11"
+                fill="currentColor" opacity="0.85">{t.label}</text>
+          <text x={t.x} y={t.y + 18} text-anchor="middle"
+                font-family="var(--font-mono)" font-size="8"
+                fill="currentColor" opacity="0.45">{t.en}</text>
+        </g>
+      ))}
+    </g>
+  </svg>
+</figure>
+
+<style>
+  .hero-graph {
+    color: var(--color-fg);
+    width: 100%;
+    max-width: 560px;
+    margin: 0 auto;
+  }
+  .hero-graph svg { width: 100%; height: auto; display: block; }
+
+  .hg-pulse {
+    transform-origin: center;
+    transform-box: fill-box;
+    animation: hg-pulse 4s ease-in-out infinite;
+    animation-delay: calc(var(--i, 0) * 0.4s);
+  }
+  @keyframes hg-pulse {
+    0%, 100% { transform: scale(1);    opacity: 0.85; }
+    50%      { transform: scale(1.6);  opacity: 0.45; }
+  }
+
+  /* Edges: a slow shimmer */
+  .hg-edges line {
+    stroke-dasharray: 4 6;
+    animation: hg-flow 14s linear infinite;
+  }
+  @keyframes hg-flow {
+    to { stroke-dashoffset: -100; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hg-pulse, .hg-edges line { animation: none; }
+  }
+</style>
