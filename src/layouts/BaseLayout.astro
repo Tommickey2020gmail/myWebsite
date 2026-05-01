@@ -25,7 +25,8 @@ const {
 const siteUrl = Astro.site?.toString().replace(/\/$/, '') ?? 'https://tommickey.cn';
 const canonicalUrl = canonical ?? new URL(Astro.url.pathname, siteUrl).toString();
 const fullTitle = title === 'Home' ? 'Tommy — Digital Garden' : `${title} · Tommy`;
-const ogImageUrl = ogImage ? new URL(ogImage, siteUrl).toString() : null;
+// Default OG image is the static branded SVG card; pages can override.
+const ogImageUrl = new URL(ogImage ?? '/og-default.svg', siteUrl).toString();
 
 // Site is currently zh-CN only. en-US hreflang will be re-added when /en/ pages exist.
 ---
@@ -44,14 +45,17 @@ const ogImageUrl = ogImage ? new URL(ogImage, siteUrl).toString() : null;
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonicalUrl} />
-    {ogImageUrl && <meta property="og:image" content={ogImageUrl} />}
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:type" content={ogImageUrl.endsWith('.svg') ? 'image/svg+xml' : 'image/png'} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
     <meta property="og:locale" content={lang === 'en' ? 'en_US' : 'zh_CN'} />
 
     {/* Twitter */}
-    <meta name="twitter:card" content={ogImageUrl ? 'summary_large_image' : 'summary'} />
+    <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={fullTitle} />
     <meta name="twitter:description" content={description} />
-    {ogImageUrl && <meta name="twitter:image" content={ogImageUrl} />}
+    <meta name="twitter:image" content={ogImageUrl} />
 
     {/* hreflang — single zh-CN locale for now. */}
     <link rel="alternate" hreflang="zh-CN" href={canonicalUrl} />

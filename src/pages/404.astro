@@ -1,5 +1,16 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { getAllTaggedEntries } from "../lib/tags";
+
+// Build a list of every known URL so the client-side script can suggest the
+// closest match for whatever the visitor mistyped. Tags + section indexes
+// are added so /tagsx or /gardenz also match well.
+const entries = await getAllTaggedEntries();
+const sections = ['/', '/garden/', '/essays/', '/projects/', '/library/', '/now/', '/tags/', '/about/'];
+const known = [
+  ...sections.map((href) => ({ href, label: href })),
+  ...entries.map((e) => ({ href: e.href, label: e.title })),
+];
 ---
 <BaseLayout title="Lost in the garden" description="404 — this page does not exist (yet).">
   <section class="py-16 text-center">
@@ -11,6 +22,12 @@ import BaseLayout from "../layouts/BaseLayout.astro";
       这片土壤里还没有种过这棵植物。也许它曾在这里、已被移走，或者从未存在。<br />
       <span class="block mt-2">This patch of soil hasn't grown that plant — yet.</span>
     </p>
+
+    <div id="fuzzy-suggest" class="hidden max-w-md mx-auto mb-8 text-left">
+      <p class="text-sm text-muted mb-2">您可能想找：/ Did you mean:</p>
+      <ul id="fuzzy-list" class="space-y-1"></ul>
+    </div>
+
     <div class="flex flex-wrap justify-center gap-3 text-sm">
       <a href="/" class="px-4 py-2 rounded-md border border-border hover:bg-border no-underline">
         ← Home
@@ -20,4 +37,58 @@ import BaseLayout from "../layouts/BaseLayout.astro";
       </a>
     </div>
   </section>
+
+  <script type="application/json" id="known-urls" set:html={JSON.stringify(known)} is:inline />
+  <script is:inline>
+    (function () {
+      const node = document.getElementById('known-urls');
+      if (!node) return;
+      let known;
+      try { known = JSON.parse(node.textContent || '[]'); } catch { return; }
+
+      // Cheap Levenshtein for short strings — both pathname and label scored.
+      function lev(a, b) {
+        if (a === b) return 0;
+        const m = a.length, n = b.length;
+        if (!m) return n;
+        if (!n) return m;
+        const row = new Array(n + 1);
+        for (let j = 0; j <= n; j++) row[j] = j;
+        for (let i = 1; i <= m; i++) {
+          let prev = row[0];
+          row[0] = i;
+          for (let j = 1; j <= n; j++) {
+            const tmp = row[j];
+            row[j] = a[i - 1] === b[j - 1]
+              ? prev
+              : Math.min(prev, row[j], row[j - 1]) + 1;
+            prev = tmp;
+          }
+        }
+        return row[n];
+      }
+
+      const path = decodeURIComponent(location.pathname);
+      const scored = known.map(function (k) {
+        const d = Math.min(lev(path, k.href), lev(path, k.label));
+        return { k: k, d: d };
+      }).sort(function (a, b) { return a.d - b.d; }).slice(0, 3)
+        .filter(function (x) { return x.d <= Math.max(4, Math.floor(path.length / 2)); });
+
+      if (!scored.length) return;
+      const list = document.getElementById('fuzzy-list');
+      const wrap = document.getElementById('fuzzy-suggest');
+      if (!list || !wrap) return;
+      scored.forEach(function (s) {
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = s.k.href;
+        a.className = 'block py-1 px-2 rounded hover:bg-border no-underline';
+        a.textContent = s.k.label === s.k.href ? s.k.href : s.k.label + '  →  ' + s.k.href;
+        li.appendChild(a);
+        list.appendChild(li);
+      });
+      wrap.classList.remove('hidden');
+    })();
+  </script>
 </BaseLayout>
