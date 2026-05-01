@@ -1,15 +1,31 @@
 ---
 // src/components/Footer.astro
 const year = new Date().getFullYear();
+const icp = '京ICP备2022028033号-1';
 ---
 <footer class="border-t border-border mt-16">
-  <div class="mx-auto max-w-3xl px-5 sm:px-6 py-8 text-sm text-muted flex flex-wrap justify-between gap-4">
-    <span>© {year} Tommy · Cultivated in the open</span>
-    <div class="flex flex-wrap gap-4">
-      <a href="/random/" class="hover:text-accent">Random</a>
-      <a href="/rss.xml" class="hover:text-accent">RSS</a>
-      <a href="/sitemap-index.xml" class="hover:text-accent">Sitemap</a>
-      <span class="hidden sm:inline">Press <kbd class="px-1.5 py-0.5 border border-border rounded text-xs">/</kbd> to search</span>
+  <div class="mx-auto max-w-3xl px-5 sm:px-6 py-8 text-sm text-muted">
+    <div class="flex flex-wrap justify-between gap-4">
+      <span>© {year} Tommy · Cultivated in the open</span>
+      <div class="flex flex-wrap gap-4">
+        <a href="/random/" class="hover:text-accent">Random</a>
+        <a href="/rss.xml" class="hover:text-accent">RSS</a>
+        <a href="/sitemap-index.xml" class="hover:text-accent">Sitemap</a>
+        <span class="hidden sm:inline">Press <kbd class="px-1.5 py-0.5 border border-border rounded text-xs">/</kbd> to search</span>
+      </div>
+    </div>
+    {/* ICP filing — required on the footer of every page for .cn domains.
+        Must link to the public registry. Do not remove. */}
+    <div class="mt-4 pt-4 border-t border-border text-xs">
+      <a
+        href="https://beian.miit.gov.cn/"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="hover:text-accent"
+        aria-label={`${icp} (opens in new tab)`}
+      >
+        {icp} <span aria-hidden="true">↗</span>
+      </a>
     </div>
   </div>
 </footer>
