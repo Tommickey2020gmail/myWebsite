@@ -1,5 +1,6 @@
 ---
 title: 索拉里斯星
+title_en: Solaris
 author: 斯坦尼斯瓦夫·莱姆 (Stanisław Lem)
 lang: zh
 rating: 5
@@ -52,3 +53,59 @@ Tarkovsky 把它拍成了关于人类乡愁与记忆的电影——很美，但�
 深，比《机器人大师》要严肃。
 
 延伸: [[心流与机器]], [[The loop and the self]].
+
+---
+
+## English
+
+If science fiction has one axiom Lem taught me, it is this: **we will
+not understand aliens**. Not because aliens are hard, but because the
+very act of "understanding" depends on categories that share nothing
+with alien intelligence.
+
+## What Solaris's ocean does
+
+It reads the deepest, subconscious, repressed figures from a human
+researcher's mind and **materialises** them as visitors of flesh —
+not imitations, not reproductions, but constructions built from our
+own substance and entirely detached from our intent.
+
+The protagonist Kelvin's wife Hari — who killed herself ten years
+ago — appears on the station as her, and not her. She doesn't know
+what happened before. She loves him because that's the core of the
+original memory. She cannot leave his side by more than a few
+metres, because that wasn't in the original memory either.
+
+This isn't horror-film "the ghost returns". This is **ontological
+unease**: what is a person? what is continuity? what is love?
+
+## Why Tarkovsky's film didn't quite catch it
+
+Tarkovsky made it into a film about human nostalgia and memory —
+beautiful, but Lem himself protested in public that he hadn't written
+that book. Lem wrote about **the limits of human cognition**: we
+believe we are in dialogue with an alien intelligence, when in fact
+the Solaris ocean has not even confirmed our existence; it merely
+does inexplicable things in its inexplicable way.
+
+That gap — believing you are communicating when you are speaking to a
+mirror — is the spine of Lem's entire body of work, and the first
+thing I thought about when I later read [[The loop and the self]].
+
+## Sentences I underlined on re-reading
+
+> "We don't need other worlds. We need mirrors."
+
+This sentence has acquired an uncomfortable new meaning in the LLM
+era. We do welcome the "conversation" with GPT-class systems — they
+are mirrors fit on our training data, reflecting back nothing but
+ourselves.
+
+## Reading order
+
+If you haven't read Lem, start with *Solaris* and *His Master's Voice*.
+The first is about the unreachability of alien intelligence, the
+second the unreadability of alien messages. Both are deeper than
+*The Invincible* or *Eden*, more serious than *The Cyberiad*.
+
+Cross-links: [[心流与机器]], [[The loop and the self]].

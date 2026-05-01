@@ -1,6 +1,8 @@
 ---
 title: 为什么写作
+title_en: Why write
 description: 关于"我已经想清楚了再写出来"是个谎言这件事。
+description_en: On why "I figured it out, then wrote it down" is a lie.
 lang: zh
 created: 2026-05-02
 tags: [writing, meta, philosophy, psychology]
@@ -68,3 +70,87 @@ LLM 极其擅长生产**听起来像思考过的文本**——结构合理、过
 当作风险信号而不是质量信号。
 
 延伸: [[什么是数字花园]], [[心流与机器]], [[The loop and the self]].
+
+---
+
+## English
+
+A lot of people — especially those with a thorough academic training —
+believe the writing process is: first figure out the problem, then
+write down what you've figured out.
+
+This is a respectable, false, pseudoscientific description.
+
+The real process is different. You believe you've figured it out, so
+you start writing. By the third paragraph, you notice the argument in
+the second won't hold. You go back and rewrite the second, only to
+realise it depends on a premise you've never actually tested. You
+pull out that premise, and the first paragraph collapses. You rewrite
+the first paragraph, accidentally discovering a more interesting
+direction than the one you started with. You follow the new direction
+and finish an essay completely different from the one you set out to
+write.
+
+> Writing is not the expression of thought. Writing is the **production**
+> of thought.
+
+## Why writing, specifically
+
+Conversation can also force thought, but it's too light — tone, smile,
+resonant echo can let a weak argument slide. The listener's goodwill
+patches the holes for you.
+
+Writing has no listener's goodwill. A paragraph on a screen has no
+eye contact to rescue it. Either it coheres or it doesn't; either
+there is content or there is filler dressed up as content. This
+**unevadability** is the mechanism by which writing trains thought.
+
+The real core of the Feynman method isn't "pretend you're teaching" —
+it's being forced to externalise vague inner monologue as sentences
+that can't be ambiguous.
+
+## Private writing vs. public writing
+
+Both matter, with different functions:
+
+- **Private writing** — journals, notes, Obsidian drafts — is a
+  reconnaissance report to your future self. The purpose is to
+  preserve today's thinking as a foothold tomorrow can climb on.
+  Mess, half-formed ideas, and direct transcription of others' words
+  are all allowed.
+- **Public writing** — blogs, essays, this digital garden — is for
+  strangers. The constraint is tighter: no metaphors only you
+  understand, no skipping "obvious" steps (because they're not
+  obvious to your reader). That tightness, in turn, forces clarity
+  back into the murky parts of your private writing.
+
+This is what digital gardens do: they **blur the boundary** between
+the two. You publish under the heading "this is just a seedling",
+which leaves yourself the dignity of revising. But publishing
+itself enforces a minimum standard — make the first sentence
+readable to a stranger. The standard is higher than purely private
+writing and lower than the polished-publication standard. It sits in
+the sweet spot: *forcing without killing*.
+
+## Writing with LLMs
+
+Since I started using LLMs heavily to assist my writing, my **trust**
+in what I write has actually dropped. This isn't a contradiction —
+it's a healthy signal.
+
+LLMs are extremely good at producing **text that sounds like it was
+thought through**: structure plausible, transitions natural, metaphors
+apt. If I equate "fluent" with "thought through", I will be fooled.
+So now after every paragraph I ask myself:
+
+> Did I write this because I thought it through, or did I keep it
+> because it reads like something thought through?
+
+The density of the second case in my drafts is alarmingly high.
+
+The implication is not "use LLMs less". It is **recalibrate what
+"finished" means**. Maybe the real discipline of our generation of
+writers is learning to treat "fluency" — the old writerly virtue — as
+a risk signal rather than a quality signal.
+
+Cross-links: [[什么是数字花园]], [[心流与机器]], [[The loop and the self]].

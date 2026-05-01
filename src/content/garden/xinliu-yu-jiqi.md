@@ -1,6 +1,8 @@
 ---
 title: 心流与机器
+title_en: Flow and the machine
 description: 当算法开始拟合"心流"时，我们对它的拥有还剩多少？
+description_en: When algorithms learn to fit "flow", how much of our ownership of it remains?
 lang: zh
 status: seedling
 created: 2026-05-02
@@ -44,3 +46,54 @@ hypofrontality）、特定频段的相位锁定、默认模式网络的回退。
   的失真：人们开始为指标而活。
 
 延伸: [[什么是数字花园]] —— 数字花园之所以慢，是对算法心流的反方向选择。
+
+---
+
+## English
+
+Csíkszentmihályi describes flow as the state where **challenge and skill
+are precisely balanced** — task difficulty above the autopilot
+threshold but below despair — so that self-consciousness drops out,
+time-sense dissolves, and action and awareness fuse.
+
+It sounds like a mystical experience. But the last decade of EEG and
+fMRI work has shown flow corresponds to a fairly specific neural
+signature: **transient hypofrontality**, phase-locking in particular
+frequency bands, retreat of the default-mode network.
+
+Which surfaces a question that unsettles me:
+
+> If flow is a detectable, induceable set of neural signatures,
+> what does it mean — ethically — to **manufacture** flow algorithmically?
+
+## Three flavours of "algorithmic flow"
+
+1. **Passive induction** — VR, ASMR, TikTok's infinite scroll are
+   cheap counterfeits of flow. They commandeer attention via stimulus
+   density without requiring skill on the user's side. That isn't
+   flow, it's **flow-shaped counterfeit currency**.
+2. **Closed-loop biofeedback** — EEG neurofeedback shapes the
+   signature with a reward signal. At least it requires the subject's
+   presence. But the reward is the signal, not the *doing* itself
+   (see [[Attention as relation, not state]]).
+3. **Task embedding** — good game design, good tools, good
+   apprenticeships shape the external world to fit the user's skill
+   curve. Flow is a side-effect, not the target.
+
+The third, I think, is the only defensible "algorithmic flow". The
+first two are mechanisms for stealing the subject's ownership over
+their own attention.
+
+## Directions I want to explore
+
+- The difference between flow and the meditative tradition of
+  *signless samādhi*: high arousal vs. low arousal; prediction error
+  compressed vs. prediction suspended.
+- Whether algorithmic recommender systems systematically train us to
+  **lose patience** — by guaranteeing the next reward is at most five
+  seconds away, they erode our latency-tolerance for deep tasks.
+- If a BCI exposes "flow frequencies" as overt output, do we get a
+  Goodhart-like distortion where people start living for the metric?
+
+Cross-link: [[什么是数字花园]] — digital gardens are slow on purpose,
+which is a directional choice *away from* algorithmic flow.

@@ -1,12 +1,20 @@
 ---
-title: tommickey.cn (this site)
-description: Astro 6 + Tailwind 4 + Obsidian-as-CMS digital garden.
-lang: en
+title: tommickey.cn（本站）
+title_en: tommickey.cn (this site)
+description: Astro 6 + Tailwind 4 + 以 Obsidian 为内容管理的数字花园。
+description_en: Astro 6 + Tailwind 4 + Obsidian-as-CMS digital garden.
+lang: zh
 created: 2026-04-30
 featured: true
 stack: [Astro, Tailwind, TypeScript, Cloudflare Pages, Obsidian]
 repo: https://github.com/Tommickey2020gmail/myWebsite
 tags: [meta, web]
 ---
+
+你正在阅读的这个网站。源码可见，内容开放。
+
+---
+
+## English
 
 The site you're reading. Source available, content open.

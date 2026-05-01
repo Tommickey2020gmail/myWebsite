@@ -1,6 +1,8 @@
 ---
-title: Welcome to the garden
+title: 欢迎来到花园
+title_en: Welcome to the garden
 description: 这里是我的数字花园 — 一个永远在生长、永远未完成的笔记空间。
+description_en: My digital garden — a perpetually growing, never-finished space for notes.
 lang: zh
 status: seedling
 created: 2026-04-30
@@ -18,3 +20,19 @@ tags: [meta, digital-garden]
 - 🌲 **Evergreen** — 反复打磨，可作长期参考
 
 每一篇笔记都会标注它当前的状态。
+
+---
+
+## English
+
+This is a **digital garden**, not a blog.
+
+A blog is broadcast — finished pieces, played back in reverse-chronological order. A garden is a forest — ideas growing in place, tangling with one another, slowly maturing.
+
+## Three stages of growth
+
+- 🌱 **Seedling** — a freshly sprouted idea, possibly wrong, possibly fragmentary
+- 🌿 **Budding** — leaves out, structure taking shape
+- 🌲 **Evergreen** — polished and re-polished, suitable as a long-term reference
+
+Each note is tagged with its current state.
