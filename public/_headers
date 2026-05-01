@@ -1,0 +1,28 @@
+# Cloudflare Pages headers — applied to every response.
+# Docs: https://developers.cloudflare.com/pages/configuration/headers/
+
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), interest-cohort=()
+  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'
+
+# Astro fingerprints filenames under /_astro/ — safe to cache forever.
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Static images and favicons — long cache, but allow revalidation.
+/favicon.ico
+  Cache-Control: public, max-age=86400
+/favicon.svg
+  Cache-Control: public, max-age=86400
+
+# Feeds and sitemaps — short cache so updates propagate.
+/rss.xml
+  Cache-Control: public, max-age=600
+/sitemap-index.xml
+  Cache-Control: public, max-age=600
+/sitemap-0.xml
+  Cache-Control: public, max-age=600

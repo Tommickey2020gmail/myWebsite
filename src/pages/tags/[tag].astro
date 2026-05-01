@@ -1,0 +1,47 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getAllTaggedEntries, type TaggedEntry } from '../../lib/tags';
+
+export async function getStaticPaths() {
+  const entries = await getAllTaggedEntries();
+  const map = new Map<string, TaggedEntry[]>();
+  for (const e of entries) {
+    for (const t of e.tags) {
+      if (!map.has(t)) map.set(t, []);
+      map.get(t)!.push(e);
+    }
+  }
+  return [...map.entries()].map(([tag, list]) => ({
+    params: { tag },
+    props: { tag, entries: list.sort((a, b) => b.date.getTime() - a.date.getTime()) },
+  }));
+}
+
+const { tag, entries } = Astro.props;
+const kindLabel: Record<string, string> = {
+  garden: 'Garden',
+  essays: 'Essay',
+  projects: 'Project',
+  books: 'Book',
+  papers: 'Paper',
+  now: 'Now',
+};
+const fmt = (d: Date) => d.toISOString().slice(0, 10);
+---
+<BaseLayout title={`#${tag}`} description={`所有标记为 #${tag} 的内容。`}>
+  <p class="text-sm text-muted mb-2"><a href="/tags/" class="no-underline">← All tags</a></p>
+  <h1 class="text-3xl mb-2">#{tag}</h1>
+  <p class="text-muted mb-6">{entries.length} 篇内容</p>
+  <ul class="space-y-4">
+    {entries.map((e) => (
+      <li class="border-l-2 border-border pl-3">
+        <a href={e.href} class="block no-underline hover:text-accent">
+          <span class="text-xs text-muted uppercase tracking-wider mr-2">{kindLabel[e.kind] ?? e.kind}</span>
+          <span class="font-medium">{e.title}</span>
+        </a>
+        {e.description && <p class="mt-1 text-sm text-muted">{e.description}</p>}
+        <p class="mt-1 text-xs text-muted">{fmt(e.date)}</p>
+      </li>
+    ))}
+  </ul>
+</BaseLayout>

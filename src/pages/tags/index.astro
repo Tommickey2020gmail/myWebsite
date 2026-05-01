@@ -1,0 +1,32 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getAllTaggedEntries, tagHref } from '../../lib/tags';
+
+const entries = await getAllTaggedEntries();
+const counts = new Map<string, number>();
+for (const e of entries) {
+  for (const t of e.tags) counts.set(t, (counts.get(t) ?? 0) + 1);
+}
+const tags = [...counts.entries()].sort((a, b) =>
+  b[1] - a[1] || a[0].localeCompare(b[0], 'zh-CN'),
+);
+---
+<BaseLayout title="Tags" description="所有标签 / All tags across the garden.">
+  <h1 class="text-3xl mb-2">Tags</h1>
+  <p class="text-muted mb-6">{tags.length} 个标签 · {entries.length} 篇内容</p>
+  {tags.length === 0 ? (
+    <p class="text-muted">No tags yet.</p>
+  ) : (
+    <ul class="flex flex-wrap gap-2">
+      {tags.map(([tag, count]) => (
+        <li>
+          <a href={tagHref(tag)}
+             class="inline-flex items-baseline gap-1 px-2.5 py-1 rounded-full border border-border text-sm no-underline hover:bg-border">
+            <span>#{tag}</span>
+            <span class="text-xs text-muted">{count}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  )}
+</BaseLayout>
