@@ -1,19 +1,19 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 ---
-<BaseLayout title="Search" description="Search across the entire garden.">
-  <h1 class="text-3xl mb-2">Search</h1>
-  <p class="text-muted mb-6">在所有 garden / essays / projects 内容中搜索。</p>
+<BaseLayout title="搜索 / Search" description="在整个花园中搜索。Search across the entire garden.">
+  <h1 class="text-3xl mb-2">搜索 / Search</h1>
+  <p class="text-muted mb-6">在所有花园 / 随笔 / 项目内容中搜索。 Search across all garden / essays / projects content.</p>
 
   <input
     id="q"
     type="search"
     autofocus
     placeholder="输入关键词 / type to search…"
-    aria-label="Search query"
+    aria-label="搜索查询 / Search query"
     class="w-full px-4 py-3 rounded-md border border-border bg-transparent text-base focus:outline-none focus:border-accent"
   />
-  <p id="status" class="mt-3 text-sm text-muted">Loading index…</p>
+  <p id="status" class="mt-3 text-sm text-muted">加载索引中… / Loading index…</p>
   <ul id="results" class="mt-6 space-y-4"></ul>
 
   <script is:inline>
@@ -27,25 +27,30 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       try {
         const res = await fetch('/search-index.json');
         index = await res.json();
-        $status.textContent = `Indexed ${index.length} entries. 输入关键词开始。`;
+        $status.textContent = `已索引 ${index.length} 条 / Indexed ${index.length} entries.`;
       } catch (err) {
         $status.textContent = '加载索引失败 / Failed to load index.';
         return;
       }
 
-      const kindLabel = { garden: 'Garden', essays: 'Essay', projects: 'Project' };
+      const kindLabel = { garden: '花园 / Garden', essays: '随笔 / Essay', projects: '项目 / Project' };
 
       function score(entry, tokens) {
         // Higher is better. Title hits weigh more than description than body.
+        // Both zh + en titles/descriptions are scored so either language matches.
         let s = 0;
         const t = entry.title.toLowerCase();
+        const tEn = (entry.title_en || '').toLowerCase();
         const d = (entry.description || '').toLowerCase();
+        const dEn = (entry.description_en || '').toLowerCase();
         const b = entry.body.toLowerCase();
         const tags = (entry.tags || []).map(function (x) { return x.toLowerCase(); });
         for (const tok of tokens) {
           if (!tok) continue;
           if (t.includes(tok)) s += 8;
+          if (tEn.includes(tok)) s += 8;
           if (d.includes(tok)) s += 4;
+          if (dEn.includes(tok)) s += 4;
           if (tags.some(function (x) { return x.includes(tok); })) s += 5;
           if (b.includes(tok)) s += 1;
         }
@@ -87,13 +92,13 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       function render(query) {
         const tokens = query.toLowerCase().split(/\s+/).filter(Boolean);
         $results.innerHTML = '';
-        if (!tokens.length) { $status.textContent = `Indexed ${index.length} entries.`; return; }
+        if (!tokens.length) { $status.textContent = `已索引 ${index.length} 条 / Indexed ${index.length} entries.`; return; }
         const ranked = index
           .map(function (e) { return { e: e, s: score(e, tokens) }; })
           .filter(function (x) { return x.s > 0; })
           .sort(function (a, b) { return b.s - a.s; })
           .slice(0, 30);
-        $status.textContent = ranked.length + ' result' + (ranked.length === 1 ? '' : 's');
+        $status.textContent = ranked.length + ' 条结果 / result' + (ranked.length === 1 ? '' : 's');
         for (const { e } of ranked) {
           const li = document.createElement('li');
           li.innerHTML =

@@ -4,7 +4,9 @@ import { glob } from 'astro/loaders';
 
 const baseFields = {
   title: z.string(),
+  title_en: z.string().optional(),
   description: z.string().optional(),
+  description_en: z.string().optional(),
   lang: z.enum(['zh', 'en']).default('zh'),
   tags: z.array(z.string()).default([]),
   created: z.coerce.date(),

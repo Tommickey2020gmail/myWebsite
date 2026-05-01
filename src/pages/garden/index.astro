@@ -7,19 +7,25 @@ import { slugHref } from '../../lib/url';
 const notes = (await getCollection('garden', ({ data }) => !data.draft))
   .sort((a, b) => (b.data.updated ?? b.data.created).getTime() - (a.data.updated ?? a.data.created).getTime());
 ---
-<BaseLayout title="Garden" description="Tommy 的数字花园：碎片想法、读书笔记、概念地图。">
-  <h1 class="text-3xl mb-2">Digital Garden</h1>
-  <p class="text-muted mb-8">A growing collection of seeds, sprouts, and evergreens.</p>
+<BaseLayout title="花园 / Garden" description="Tommy 的数字花园：碎片想法、读书笔记、概念地图。Tommy's digital garden — fragmentary thoughts, reading notes, concept maps.">
+  <h1 class="text-3xl mb-2">数字花园 / Digital Garden</h1>
+  <p class="text-muted mb-8">一片不断生长的种子、嫩芽与常青植物。 / A growing collection of seeds, sprouts, and evergreens.</p>
   {notes.length === 0 ? (
-    <p>No notes planted yet.</p>
+    <p>还没有种下任何笔记。 / No notes planted yet.</p>
   ) : (
     <ul class="space-y-6">
       {notes.map((n) => (
         <li>
           <a href={`/garden/${slugHref(n.id)}/`} class="block no-underline hover:text-accent">
             <h2 class="text-xl">{n.data.title}</h2>
+            {n.data.title_en && n.data.title_en !== n.data.title && (
+              <p class="text-sm text-muted" lang="en">{n.data.title_en}</p>
+            )}
           </a>
           {n.data.description && <p class="text-sm text-muted mt-1">{n.data.description}</p>}
+          {n.data.description_en && n.data.description_en !== n.data.description && (
+            <p class="text-xs text-muted mt-1" lang="en">{n.data.description_en}</p>
+          )}
           <div class="mt-2"><PostMeta created={n.data.created} updated={n.data.updated} status={n.data.status} kind="note" /></div>
         </li>
       ))}

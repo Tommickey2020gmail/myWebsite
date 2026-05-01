@@ -2,16 +2,18 @@
 // src/components/Header.astro
 import ThemeToggle from "./ThemeToggle.astro";
 
+// Each link carries a Chinese label and an English label.
+// Convention site-wide: Chinese first, English after, separated by ` / `.
 const links = [
-  { href: '/', label: 'Home' },
-  { href: '/garden/', label: 'Garden' },
-  { href: '/essays/', label: 'Essays' },
-  { href: '/projects/', label: 'Projects' },
-  { href: '/library/', label: 'Library' },
-  { href: '/now/', label: 'Now' },
-  { href: '/tags/', label: 'Tags' },
-  { href: '/search/', label: 'Search' },
-  { href: '/about/', label: 'About' },
+  { href: '/', zh: '首页', en: 'Home' },
+  { href: '/garden/', zh: '花园', en: 'Garden' },
+  { href: '/essays/', zh: '随笔', en: 'Essays' },
+  { href: '/projects/', zh: '项目', en: 'Projects' },
+  { href: '/library/', zh: '书房', en: 'Library' },
+  { href: '/now/', zh: '近况', en: 'Now' },
+  { href: '/tags/', zh: '标签', en: 'Tags' },
+  { href: '/search/', zh: '搜索', en: 'Search' },
+  { href: '/about/', zh: '关于', en: 'About' },
 ];
 
 const current = Astro.url.pathname;
@@ -21,10 +23,11 @@ const current = Astro.url.pathname;
     <a href="/" class="font-serif text-lg tracking-tight no-underline hover:opacity-80">
       Tommy
     </a>
-    <nav class="flex items-center gap-4 overflow-x-auto">
-      {links.map(({ href, label }) => (
+    <nav class="flex items-center gap-4 overflow-x-auto" aria-label="Main navigation">
+      {links.map(({ href, zh, en }) => (
         <a
           href={href}
+          aria-label={`${zh} / ${en}`}
           class:list={[
             'text-sm whitespace-nowrap no-underline hover:text-accent',
             current === href || (href !== '/' && current.startsWith(href))
@@ -32,7 +35,9 @@ const current = Astro.url.pathname;
               : 'text-fg',
           ]}
         >
-          {label}
+          <span lang="zh">{zh}</span>
+          <span class="text-muted mx-1" aria-hidden="true">/</span>
+          <span lang="en">{en}</span>
         </a>
       ))}
     </nav>

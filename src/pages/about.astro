@@ -1,15 +1,40 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 ---
-<BaseLayout title="About" description="About Tommy — interests, work, and how to reach me.">
+<BaseLayout title="关于 / About" description="关于 Tommy — 兴趣、工作和联系方式。About Tommy — interests, work, and how to reach me.">
   <article class="prose prose-lg max-w-none">
-    <h1>About</h1>
-    <p>
+    <h1>关于 / About</h1>
+
+    <h2 lang="zh">关于我</h2>
+    <p lang="zh">
+      我是 Tommy。我的兴趣在哲学、计算机软硬件、机器人、AI、脑电生物反馈专注力训练、心理学、
+      老年痴呆预防、科幻小说交汇之处。这个网站是我公开的思考笔记。
+    </p>
+    <h3 lang="zh">我感兴趣的</h3>
+    <ul lang="zh">
+      <li><strong>哲学</strong> — 心智、意识、技术伦理</li>
+      <li><strong>软硬件</strong> — 全栈、嵌入式、机器人</li>
+      <li><strong>AI</strong> — 应用 LLM、智能体、对齐</li>
+      <li><strong>脑电生物反馈</strong> — 专注力训练、认知增强</li>
+      <li><strong>心理学</strong> — 认知科学、行为改变</li>
+      <li><strong>老年痴呆预防</strong> — 生活方式、神经保护研究</li>
+      <li><strong>科幻</strong> — 刘慈欣、Greg Egan、Ted Chiang</li>
+    </ul>
+    <h3 lang="zh">联系</h3>
+    <ul lang="zh">
+      <li>邮件：<a href="mailto:hello@tommickey.cn">hello@tommickey.cn</a></li>
+      <li>GitHub：<a href="https://github.com/Tommickey2020gmail" target="_blank" rel="noopener noreferrer" aria-label="GitHub 主页 (在新标签页打开)">@Tommickey2020gmail <span aria-hidden="true">↗</span></a></li>
+    </ul>
+
+    <hr />
+
+    <h2 lang="en">English</h2>
+    <p lang="en">
       I'm Tommy. I think and build at the intersection of philosophy, AI, robotics, EEG biofeedback,
       psychology, dementia prevention, and science fiction. This site is my open notebook.
     </p>
-    <h2>What I'm into</h2>
-    <ul>
+    <h3 lang="en">What I'm into</h3>
+    <ul lang="en">
       <li><strong>Philosophy</strong> — mind, consciousness, ethics of technology</li>
       <li><strong>Software & hardware</strong> — full-stack, embedded, robotics</li>
       <li><strong>AI</strong> — applied LLMs, agents, alignment</li>
@@ -18,16 +43,10 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       <li><strong>Dementia prevention</strong> — lifestyle, neuroprotection research</li>
       <li><strong>Science fiction</strong> — Liu Cixin, Greg Egan, Ted Chiang</li>
     </ul>
-    <h2>Contact</h2>
-    <ul>
+    <h3 lang="en">Contact</h3>
+    <ul lang="en">
       <li>Email: <a href="mailto:hello@tommickey.cn">hello@tommickey.cn</a></li>
       <li>GitHub: <a href="https://github.com/Tommickey2020gmail" target="_blank" rel="noopener noreferrer" aria-label="GitHub profile (opens in new tab)">@Tommickey2020gmail <span aria-hidden="true">↗</span></a></li>
     </ul>
-    <hr />
-    <h2 lang="zh">关于我</h2>
-    <p lang="zh">
-      我是 Tommy。我的兴趣在哲学、计算机软硬件、机器人、AI、脑电生物反馈专注力训练、心理学、
-      老年痴呆预防、科幻小说交汇之处。这个网站是我公开的思考笔记。
-    </p>
   </article>
 </BaseLayout>

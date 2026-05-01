@@ -12,7 +12,7 @@ const known = [
   ...entries.map((e) => ({ href: e.href, label: e.title })),
 ];
 ---
-<BaseLayout title="Lost in the garden" description="404 — this page does not exist (yet).">
+<BaseLayout title="迷路了 / Lost in the garden" description="404 — 这个页面（暂时）不存在。404 — this page does not exist (yet).">
   <section class="py-16 text-center">
     <p class="text-sm uppercase tracking-widest text-muted mb-4">404</p>
     <h1 class="text-4xl sm:text-5xl font-serif leading-tight mb-4">
@@ -24,16 +24,16 @@ const known = [
     </p>
 
     <div id="fuzzy-suggest" class="hidden max-w-md mx-auto mb-8 text-left">
-      <p class="text-sm text-muted mb-2">您可能想找：/ Did you mean:</p>
+      <p class="text-sm text-muted mb-2">您可能想找： / Did you mean:</p>
       <ul id="fuzzy-list" class="space-y-1"></ul>
     </div>
 
     <div class="flex flex-wrap justify-center gap-3 text-sm">
       <a href="/" class="px-4 py-2 rounded-md border border-border hover:bg-border no-underline">
-        ← Home
+        ← 首页 / Home
       </a>
       <a href="/garden/" class="px-4 py-2 rounded-md border border-border hover:bg-border no-underline">
-        Browse the garden
+        逛逛花园 / Browse the garden
       </a>
     </div>
   </section>

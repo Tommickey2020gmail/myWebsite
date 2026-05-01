@@ -48,6 +48,9 @@ const jsonLd = {
   <article class="prose prose-lg max-w-none">
     <header class="not-prose mb-6">
       <h1 class="text-3xl sm:text-4xl">{entry.data.title}</h1>
+      {entry.data.title_en && entry.data.title_en !== entry.data.title && (
+        <p class="mt-1 text-lg text-muted" lang="en">{entry.data.title_en}</p>
+      )}
       <div class="mt-3"><PostMeta created={entry.data.created} updated={entry.data.updated} status={entry.data.status} kind="note" reading={reading} /></div>
       {entry.data.tags.length > 0 && (
         <div class="mt-3 flex flex-wrap gap-2">

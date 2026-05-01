@@ -9,18 +9,24 @@ const all = (await getCollection('essays', ({ data }) => !data.draft))
 const zh = all.filter((e) => e.data.lang === 'zh');
 const en = all.filter((e) => e.data.lang === 'en');
 ---
-<BaseLayout title="Essays" description="Long-form writing on philosophy, AI, robotics, EEG, psychology.">
-  <h1 class="text-3xl mb-2">Essays</h1>
-  <p class="text-muted mb-8">Longer thoughts, when seedlings grow into trees.</p>
+<BaseLayout title="随笔 / Essays" description="关于哲学、AI、机器人、脑电、心理学的长文。Long-form writing on philosophy, AI, robotics, EEG, psychology.">
+  <h1 class="text-3xl mb-2">随笔 / Essays</h1>
+  <p class="text-muted mb-8">当种子长成大树时的更长思考。 / Longer thoughts, when seedlings grow into trees.</p>
 
   {zh.length > 0 && (
     <section class="mb-10">
-      <h2 class="text-xl mb-4">中文</h2>
+      <h2 class="text-xl mb-4">中文 / Chinese</h2>
       <ul class="space-y-4">
         {zh.map((e) => (
           <li>
             <a href={`/essays/${slugHref(e.id)}/`} class="font-medium no-underline">{e.data.title}</a>
+            {e.data.title_en && e.data.title_en !== e.data.title && (
+              <span class="text-sm text-muted" lang="en"> · {e.data.title_en}</span>
+            )}
             {e.data.description && <p class="text-sm text-muted">{e.data.description}</p>}
+            {e.data.description_en && e.data.description_en !== e.data.description && (
+              <p class="text-xs text-muted" lang="en">{e.data.description_en}</p>
+            )}
             <div class="mt-1"><PostMeta created={e.data.created} updated={e.data.updated} kind="essay" /></div>
           </li>
         ))}
@@ -30,12 +36,18 @@ const en = all.filter((e) => e.data.lang === 'en');
 
   {en.length > 0 && (
     <section>
-      <h2 class="text-xl mb-4">English</h2>
+      <h2 class="text-xl mb-4">英文 / English</h2>
       <ul class="space-y-4">
         {en.map((e) => (
           <li>
             <a href={`/essays/${slugHref(e.id)}/`} class="font-medium no-underline">{e.data.title}</a>
+            {e.data.title_en && e.data.title_en !== e.data.title && (
+              <span class="text-sm text-muted" lang="en"> · {e.data.title_en}</span>
+            )}
             {e.data.description && <p class="text-sm text-muted">{e.data.description}</p>}
+            {e.data.description_en && e.data.description_en !== e.data.description && (
+              <p class="text-xs text-muted" lang="en">{e.data.description_en}</p>
+            )}
             <div class="mt-1"><PostMeta created={e.data.created} updated={e.data.updated} kind="essay" /></div>
           </li>
         ))}
@@ -43,5 +55,5 @@ const en = all.filter((e) => e.data.lang === 'en');
     </section>
   )}
 
-  {all.length === 0 && <p>No essays yet.</p>}
+  {all.length === 0 && <p>暂无随笔。 / No essays yet.</p>}
 </BaseLayout>

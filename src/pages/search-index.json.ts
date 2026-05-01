@@ -13,7 +13,9 @@ interface IndexEntry {
   kind: 'garden' | 'essays' | 'projects';
   href: string;
   title: string;
+  title_en?: string;
   description?: string;
+  description_en?: string;
   tags: string[];
   body: string;
   date: string;
@@ -36,7 +38,9 @@ export async function GET(_ctx: APIContext) {
         kind,
         href: `/${kind}/${slugHref(e.id)}/`,
         title: e.data.title,
+        title_en: e.data.title_en,
         description: e.data.description,
+        description_en: e.data.description_en,
         tags: e.data.tags ?? [],
         body,
         date: ((e.data.updated ?? e.data.created) as Date).toISOString().slice(0, 10),

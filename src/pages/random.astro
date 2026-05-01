@@ -4,11 +4,11 @@
 // redirects there. Pure prerendered HTML + inline JS — no server needed.
 import BaseLayout from '../layouts/BaseLayout.astro';
 ---
-<BaseLayout title="Random" description="A randomly chosen note from the garden.">
-  <h1 class="text-3xl mb-2">Random note</h1>
-  <p id="status" class="text-muted">Picking a seedling at random…</p>
+<BaseLayout title="随机 / Random" description="从花园中随机选取的一篇。A randomly chosen note from the garden.">
+  <h1 class="text-3xl mb-2">随机笔记 / Random note</h1>
+  <p id="status" class="text-muted">随机选一棵幼苗… / Picking a seedling at random…</p>
   <p class="mt-4 text-sm text-muted">
-    若长时间未跳转，<a href="/garden/">浏览全部笔记 →</a>
+    若长时间未跳转， / If you're not redirected: <a href="/garden/">浏览全部笔记 / Browse all notes →</a>
   </p>
 
   <script is:inline>
