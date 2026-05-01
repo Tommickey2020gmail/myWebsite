@@ -6,7 +6,7 @@ import { resolveWikilink } from './registry';
 import { slugHref } from './url';
 
 export interface Backlink {
-  collection: 'garden' | 'essays';
+  collection: 'garden' | 'essays' | 'projects';
   id: string;
   title: string;
   href: string;
@@ -18,7 +18,7 @@ let cache: Map<string, Backlink[]> | null = null;
 
 async function build(): Promise<Map<string, Backlink[]>> {
   const map = new Map<string, Backlink[]>();
-  const collections: Array<'garden' | 'essays'> = ['garden', 'essays'];
+  const collections: Array<'garden' | 'essays' | 'projects'> = ['garden', 'essays', 'projects'];
   for (const collection of collections) {
     const entries = await getCollection(collection, ({ data }) => !data.draft);
     for (const entry of entries) {

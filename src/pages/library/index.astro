@@ -1,5 +1,5 @@
 ---
-import { getCollection } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { paperHref } from '../../lib/url';
 
@@ -7,26 +7,53 @@ const books = (await getCollection('books', ({ data }) => !data.draft))
   .sort((a, b) => (b.data.finished ?? b.data.created).getTime() - (a.data.finished ?? a.data.created).getTime());
 const papers = (await getCollection('papers', ({ data }) => !data.draft))
   .sort((a, b) => b.data.created.getTime() - a.data.created.getTime());
+
+// Pre-render bodies so we can inline them inside <details>.
+const bookBlocks = await Promise.all(
+  books.map(async (b) => ({ entry: b, Content: (await render(b)).Content })),
+);
+const paperBlocks = await Promise.all(
+  papers.map(async (p) => ({ entry: p, Content: (await render(p)).Content })),
+);
+
+const fmt = (d?: Date) => (d ? d.toISOString().slice(0, 10) : '');
 ---
 <BaseLayout title="Library" description="Books and papers I've read and recommend.">
   <h1 class="text-3xl mb-2">Library</h1>
-  <p class="text-muted mb-8">Inputs that shaped my thinking.</p>
+  <p class="text-muted mb-8">Inputs that shaped my thinking. Open any entry for notes.</p>
 
   <section class="mb-12">
     <h2 class="text-xl mb-4">Books</h2>
-    {books.length === 0 ? (
+    {bookBlocks.length === 0 ? (
       <p class="text-muted">No books logged yet.</p>
     ) : (
       <ul class="space-y-3">
-        {books.map((b) => (
-          <li class="flex flex-wrap items-baseline justify-between gap-2">
-            <span><strong>{b.data.title}</strong> <span class="text-muted">— {b.data.author}</span></span>
-            {b.data.rating && (
-              <span class="text-sm text-muted"
-                    aria-label={`Rated ${b.data.rating} out of 5`}>
-                {'★'.repeat(b.data.rating)}
-              </span>
-            )}
+        {bookBlocks.map(({ entry: b, Content }) => (
+          <li id={`book-${b.id}`} class="border-b border-border pb-3 last:border-b-0">
+            <details class="group">
+              <summary class="cursor-pointer list-none flex flex-wrap items-baseline justify-between gap-2">
+                <span>
+                  <strong>{b.data.title}</strong>
+                  <span class="text-muted"> — {b.data.author}</span>
+                  {b.data.finished && (
+                    <span class="text-xs text-muted ml-2">· read {fmt(b.data.finished)}</span>
+                  )}
+                </span>
+                {b.data.rating && (
+                  <span class="text-sm text-muted" aria-label={`Rated ${b.data.rating} out of 5`}>
+                    {'★'.repeat(b.data.rating)}
+                  </span>
+                )}
+              </summary>
+              {b.data.description && (
+                <p class="mt-2 text-sm text-muted">{b.data.description}</p>
+              )}
+              {b.body && b.body.trim().length > 0 && (
+                <div class="prose prose-sm mt-3 max-w-none">
+                  <Content />
+                </div>
+              )}
+            </details>
           </li>
         ))}
       </ul>
@@ -35,21 +62,52 @@ const papers = (await getCollection('papers', ({ data }) => !data.draft))
 
   <section>
     <h2 class="text-xl mb-4">Papers & links</h2>
-    {papers.length === 0 ? (
+    {paperBlocks.length === 0 ? (
       <p class="text-muted">No papers logged yet.</p>
     ) : (
       <ul class="space-y-3">
-        {papers.map((p) => (
-          <li>
-            <a href={paperHref(p.data.link, p.data.doi)} class="font-medium"
-               target="_blank" rel="noopener noreferrer"
-               aria-label={`${p.data.title} (opens in new tab)`}>
-              {p.data.title} <span aria-hidden="true">↗</span>
-            </a>
-            {p.data.venue && <span class="text-sm text-muted"> · {p.data.venue}</span>}
+        {paperBlocks.map(({ entry: p, Content }) => (
+          <li id={`paper-${p.id}`} class="border-b border-border pb-3 last:border-b-0">
+            <details class="group">
+              <summary class="cursor-pointer list-none">
+                <a
+                  href={paperHref(p.data.link, p.data.doi)}
+                  class="font-medium"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`${p.data.title} (opens in new tab)`}
+                  onclick="event.stopPropagation()"
+                >
+                  {p.data.title} <span aria-hidden="true">↗</span>
+                </a>
+                {p.data.venue && <span class="text-sm text-muted"> · {p.data.venue}</span>}
+                {p.data.authors.length > 0 && (
+                  <div class="text-xs text-muted mt-1">{p.data.authors.join(', ')}</div>
+                )}
+              </summary>
+              {p.body && p.body.trim().length > 0 && (
+                <div class="prose prose-sm mt-3 max-w-none">
+                  <Content />
+                </div>
+              )}
+            </details>
           </li>
         ))}
       </ul>
     )}
   </section>
 </BaseLayout>
+
+<style>
+  /* Open-state caret indicator on each <details>. */
+  details > summary::before {
+    content: '▸';
+    display: inline-block;
+    margin-right: 0.5em;
+    color: var(--color-muted);
+    transition: transform 0.15s ease;
+  }
+  details[open] > summary::before {
+    transform: rotate(90deg);
+  }
+</style>

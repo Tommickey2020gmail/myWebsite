@@ -14,7 +14,7 @@ export interface RegistryEntry {
   id: string;       // entry id (== filename without .md, with subdirs)
   title: string;
   href: string;     // resolved URL with trailing slash
-  collection: 'garden' | 'essays';
+  collection: 'garden' | 'essays' | 'projects';
 }
 
 // Resolve from CWD because Astro re-bundles lib files into dist/.prerender/
@@ -49,17 +49,29 @@ function readTitle(file: string): string | null {
   return v;
 }
 
+/** Normalise a wikilink key: lowercase, fold curly quotes and dashes into
+ *  ASCII so that markdown-typography drift doesn't break exact-match lookup. */
+function normaliseKey(s: string): string {
+  return s
+    .trim()
+    .toLowerCase()
+    .replace(/[\u2018\u2019\u02BC]/g, "'")
+    .replace(/[\u201C\u201D]/g, '"')
+    .replace(/[\u2013\u2014]/g, '-')
+    .replace(/\u2026/g, '...');
+}
+
 function buildRegistry(): Map<string, RegistryEntry> {
   const map = new Map<string, RegistryEntry>();
-  for (const collection of ['garden', 'essays'] as const) {
+  for (const collection of ['garden', 'essays', 'projects'] as const) {
     const root = path.join(CONTENT_ROOT, collection);
     for (const file of walk(root)) {
       const id = path.relative(root, file).replace(/\.md$/, '').split(path.sep).join('/');
       const title = readTitle(file);
       const href = `/${collection}/${slugHref(id)}/`;
       const entry: RegistryEntry = { id, title: title ?? id, href, collection };
-      map.set(id.toLowerCase(), entry);
-      if (title) map.set(title.toLowerCase(), entry);
+      map.set(normaliseKey(id), entry);
+      if (title) map.set(normaliseKey(title), entry);
     }
   }
   return map;
@@ -67,9 +79,9 @@ function buildRegistry(): Map<string, RegistryEntry> {
 
 const registry = buildRegistry();
 
-/** Resolve a wikilink target (case-insensitive). Returns null when no match. */
+/** Resolve a wikilink target (case-insensitive, quote-/dash-tolerant). */
 export function resolveWikilink(target: string): RegistryEntry | null {
-  return registry.get(target.trim().toLowerCase()) ?? null;
+  return registry.get(normaliseKey(target)) ?? null;
 }
 
 /** Internal: expose for backlinks. */
