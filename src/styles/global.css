@@ -72,3 +72,20 @@
     background-color: color-mix(in srgb, var(--color-accent) 25%, transparent);
   }
 }
+
+/* Wikilinks rendered by remarkWikilinks (src/lib/wikilinks.ts).
+   Resolved links inherit the regular accent color but with a dotted underline,
+   while broken links render in a muted red so authors notice typos. */
+.prose a.wikilink {
+  text-decoration-style: dotted;
+  text-decoration-color: color-mix(in srgb, var(--color-accent) 50%, transparent);
+}
+.prose .wikilink.broken {
+  color: #c0392b;
+  font-style: italic;
+  cursor: not-allowed;
+  text-decoration: line-through;
+}
+:root.dark .prose .wikilink.broken {
+  color: #f08080;
+}

@@ -73,6 +73,23 @@ Filenames become URL slugs (lowercase, no spaces preferred but CJK and
 spaces are URL-encoded automatically). Subdirectories become route
 segments — `garden/eeg/raw-signal.md` → `/garden/eeg/raw-signal/`.
 
+## Wikilinks & backlinks
+
+Inside any garden or essay markdown you can write Obsidian-style wikilinks:
+
+- `[[Welcome to the garden]]` — resolves by **title** (case-insensitive)
+- `[[welcome-to-the-garden]]` — resolves by **filename slug**
+- `[[Welcome to the garden|hello]]` — custom display text
+
+Resolved links render with a dotted underline. Unresolved targets render
+in red strike-through so typos are visible at a glance.
+
+Each garden / essay detail page automatically lists every other entry that
+links to it, under a "Linked from" section. No manual upkeep needed.
+
+Cross-references show up in Obsidian's graph view too (the syntax is the
+same), so the local editing experience matches the published site.
+
 ## Mobile (optional)
 
 - **iOS:** install **Working Copy** (Git client) + **Obsidian Mobile**;

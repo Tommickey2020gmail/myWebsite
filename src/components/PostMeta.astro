@@ -5,13 +5,15 @@
 // always evolving); essays/projects are "Published/Updated" (versioned,
 // authoritative).
 import Seedling from "./Seedling.astro";
+import type { ReadingStats } from "../lib/reading";
 export interface Props {
   created: Date;
   updated?: Date;
   status?: string;
   kind?: 'note' | 'essay' | 'project';
+  reading?: ReadingStats;
 }
-const { created, updated, status, kind = 'note' } = Astro.props;
+const { created, updated, status, kind = 'note', reading } = Astro.props;
 const fmt = (d: Date) => d.toISOString().slice(0, 10);
 const verbCreated = kind === 'note' ? 'Planted' : 'Published';
 const verbUpdated = kind === 'note' ? 'Tended' : 'Updated';
@@ -26,6 +28,11 @@ const sameDay = updated && fmt(updated) === fmt(created);
     <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-border">
       {status === 'seedling' && <Seedling />}
       {status}
+    </span>
+  )}
+  {reading && reading.total > 0 && (
+    <span title={`${reading.cjkChars} CJK chars · ${reading.latinWords} Latin words`}>
+      · {reading.minutes} min read
     </span>
   )}
 </div>

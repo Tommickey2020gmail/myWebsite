@@ -1,0 +1,24 @@
+---
+// src/components/Backlinks.astro
+import type { Backlink } from "../lib/backlinks";
+export interface Props {
+  links: Backlink[];
+}
+const { links } = Astro.props;
+const kindLabel = { garden: 'Garden', essays: 'Essay' };
+---
+{links.length > 0 && (
+  <aside class="mt-12 pt-6 border-t border-border">
+    <h2 class="text-sm uppercase tracking-widest text-muted mb-3">Linked from</h2>
+    <ul class="space-y-2">
+      {links.map((b) => (
+        <li>
+          <a href={b.href} class="block py-1 no-underline hover:text-accent">
+            <span class="text-xs text-muted uppercase tracking-wider mr-2">{kindLabel[b.collection]}</span>
+            <span class="font-medium">{b.title}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </aside>
+)}

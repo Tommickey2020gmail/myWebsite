@@ -12,4 +12,6 @@ When we train attention via EEG biofeedback, what is the *object* of training?
 A naive reading says: we train the brain to produce more "focused" alpha/beta ratios.
 But attention isn't a brain state — it's a relation between agent and world.
 
-This is a seed I want to grow.
+This is a seed I want to grow. Cross-reference: [[Welcome to the garden]] for
+why I'm planting these in the open at all, plus [[non-existent-note]] to
+demonstrate how broken links surface in red.
