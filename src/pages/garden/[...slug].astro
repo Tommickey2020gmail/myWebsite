@@ -2,6 +2,7 @@
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PostMeta from '../../components/PostMeta.astro';
+import { slugHref } from '../../lib/url';
 
 export async function getStaticPaths() {
   const notes = await getCollection('garden', ({ data }) => !data.draft);
@@ -10,8 +11,23 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props;
 const { Content } = await render(entry);
+
+const url = `https://tommickey.cn/garden/${slugHref(entry.id)}/`;
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: entry.data.title,
+  description: entry.data.description,
+  inLanguage: entry.data.lang === 'en' ? 'en-US' : 'zh-CN',
+  datePublished: entry.data.created.toISOString(),
+  dateModified: (entry.data.updated ?? entry.data.created).toISOString(),
+  author: { '@type': 'Person', name: 'Tommy', url: 'https://tommickey.cn/' },
+  keywords: entry.data.tags.join(', '),
+  mainEntityOfPage: { '@type': 'WebPage', '@id': url },
+  url,
+};
 ---
-<BaseLayout title={entry.data.title} description={entry.data.description} lang={entry.data.lang}>
+<BaseLayout title={entry.data.title} description={entry.data.description} lang={entry.data.lang} jsonLd={jsonLd}>
   <article class="prose prose-lg max-w-none">
     <header class="not-prose mb-6">
       <h1 class="text-3xl sm:text-4xl">{entry.data.title}</h1>

@@ -1,0 +1,15 @@
+---
+// src/components/JsonLd.astro
+// Emits one or more Schema.org JSON-LD blocks. Pass a single object or an array.
+export interface Props {
+  data: Record<string, unknown> | Record<string, unknown>[];
+}
+const { data } = Astro.props;
+const blocks = Array.isArray(data) ? data : [data];
+// Escape `</` so a stray sequence in user content can't close the script tag.
+const serialize = (obj: Record<string, unknown>) =>
+  JSON.stringify(obj).replace(/<\/(script)/gi, '<\\/$1');
+---
+{blocks.map((block) => (
+  <script type="application/ld+json" set:html={serialize(block)} is:inline />
+))}

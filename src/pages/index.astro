@@ -10,8 +10,35 @@ const allGarden = (await getCollection('garden', ({ data }) => !data.draft))
 
 const featuredProjects = (await getCollection('projects', ({ data }) => !data.draft && data.featured))
   .slice(0, 3);
+
+const siteUrl = 'https://tommickey.cn';
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: "Tommy's Digital Garden",
+    url: `${siteUrl}/`,
+    inLanguage: ['zh-CN', 'en-US'],
+    description: 'Tommy 的数字花园 — 哲学、AI、机器人、脑电反馈、心理学、科幻。',
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name: 'Tommy',
+    url: `${siteUrl}/`,
+    sameAs: ['https://github.com/Tommickey2020gmail'],
+    knowsAbout: [
+      'Philosophy',
+      'Artificial Intelligence',
+      'Robotics',
+      'EEG Biofeedback',
+      'Psychology',
+      'Science Fiction',
+    ],
+  },
+];
 ---
-<BaseLayout title="Home" description="Tommy 的数字花园 — 哲学、AI、机器人、脑电反馈、心理学、科幻。">
+<BaseLayout title="Home" description="Tommy 的数字花园 — 哲学、AI、机器人、脑电反馈、心理学、科幻。" jsonLd={jsonLd}>
   <section class="py-10">
     <h1 class="text-4xl sm:text-5xl font-serif leading-tight mb-4">
       Hi, I'm Tommy.
