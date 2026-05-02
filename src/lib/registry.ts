@@ -32,15 +32,15 @@ function* walk(dir: string): Generator<string> {
   }
 }
 
-/** Extract the `title:` field from frontmatter without a YAML parser. */
-function readTitle(file: string): string | null {
+/** Extract a frontmatter scalar without a YAML parser. */
+function readField(file: string, field: string): string | null {
   const text = fs.readFileSync(file, 'utf8');
   if (!text.startsWith('---')) return null;
   const end = text.indexOf('\n---', 3);
   if (end < 0) return null;
   const fm = text.slice(3, end);
-  // Match `title: ...` or `title: "..."`/`title: '...'`. Strip surrounding quotes.
-  const m = fm.match(/^title:\s*(.+?)\s*$/m);
+  const re = new RegExp(`^${field}:\\s*(.+?)\\s*$`, 'm');
+  const m = fm.match(re);
   if (!m) return null;
   let v = m[1].trim();
   if ((v.startsWith('"') && v.endsWith('"')) || (v.startsWith("'") && v.endsWith("'"))) {
@@ -67,11 +67,13 @@ function buildRegistry(): Map<string, RegistryEntry> {
     const root = path.join(CONTENT_ROOT, collection);
     for (const file of walk(root)) {
       const id = path.relative(root, file).replace(/\.md$/, '').split(path.sep).join('/');
-      const title = readTitle(file);
+      const title = readField(file, 'title');
+      const titleEn = readField(file, 'title_en');
       const href = `/${collection}/${slugHref(id)}/`;
       const entry: RegistryEntry = { id, title: title ?? id, href, collection };
       map.set(normaliseKey(id), entry);
       if (title) map.set(normaliseKey(title), entry);
+      if (titleEn) map.set(normaliseKey(titleEn), entry);
     }
   }
   return map;
