@@ -3,6 +3,7 @@ import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
 import remarkWikilinks from './src/lib/wikilinks.ts';
+import rehypeLangSplit from './src/lib/lang-split.ts';
 
 export default defineConfig({
   site: 'https://tommickey.cn',
@@ -12,6 +13,7 @@ export default defineConfig({
   },
   markdown: {
     remarkPlugins: [remarkWikilinks],
+    rehypePlugins: [rehypeLangSplit],
   },
   build: { format: 'directory' },
 });

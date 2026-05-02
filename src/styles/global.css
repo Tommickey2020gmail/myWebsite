@@ -73,6 +73,30 @@
   }
 }
 
+/* Bilingual toggle.
+   `data-lang` is set on <html> by an inline pre-paint script in BaseLayout
+   from localStorage (or navigator.language on first visit). Once it's
+   present, hide whichever language the user isn't currently reading.
+   Rules deliberately do NOT match the html element itself (which has
+   lang="zh-CN" / "en-US", not "zh" / "en"). */
+html[data-lang="zh"] [lang="en"],
+html[data-lang="en"] [lang="zh"] {
+  display: none;
+}
+/* Inline " / " separator between bilingual labels (e.g. "花园 / Garden").
+   Visible only in the brief moment before the toggle script applies. */
+html[data-lang] .biling-sep {
+  display: none;
+}
+/* Toggle button labels — show the OTHER language as the action. */
+.lang-toggle [data-when] {
+  display: none;
+}
+html[data-lang="zh"] .lang-toggle [data-when="zh"],
+html[data-lang="en"] .lang-toggle [data-when="en"] {
+  display: inline;
+}
+
 /* Wikilinks rendered by remarkWikilinks (src/lib/wikilinks.ts).
    Resolved links inherit the regular accent color but with a dotted underline,
    while broken links render in a muted red so authors notice typos. */

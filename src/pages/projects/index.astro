@@ -7,10 +7,10 @@ const projects = (await getCollection('projects', ({ data }) => !data.draft))
   .sort((a, b) => b.data.created.getTime() - a.data.created.getTime());
 ---
 <BaseLayout title="项目 / Projects" description="我做过的东西 — 机器人、脑电反馈、AI 工具、软硬件。Things I've built — robotics, EEG biofeedback, AI tools, software & hardware.">
-  <h1 class="text-3xl mb-2">项目 / Projects</h1>
-  <p class="text-muted mb-8">我真的动手做过的东西。 / Things I've actually built.</p>
+  <h1 class="text-3xl mb-2"><span lang="zh">项目</span><span class="biling-sep" aria-hidden="true"> / </span><span lang="en">Projects</span></h1>
+  <p class="text-muted mb-8"><span lang="zh">我真的动手做过的东西。</span><span class="biling-sep" aria-hidden="true"> / </span><span lang="en">Things I've actually built.</span></p>
   {projects.length === 0 ? (
-    <p>还没有已发布的项目。 / No projects published yet.</p>
+    <p><span lang="zh">还没有已发布的项目。</span><span class="biling-sep" aria-hidden="true"> / </span><span lang="en">No projects published yet.</span></p>
   ) : (
     <ul class="grid gap-4 sm:grid-cols-2">
       {projects.map((p) => (

@@ -8,10 +8,10 @@ const notes = (await getCollection('garden', ({ data }) => !data.draft))
   .sort((a, b) => (b.data.updated ?? b.data.created).getTime() - (a.data.updated ?? a.data.created).getTime());
 ---
 <BaseLayout title="花园 / Garden" description="Tommy 的数字花园：碎片想法、读书笔记、概念地图。Tommy's digital garden — fragmentary thoughts, reading notes, concept maps.">
-  <h1 class="text-3xl mb-2">数字花园 / Digital Garden</h1>
-  <p class="text-muted mb-8">一片不断生长的种子、嫩芽与常青植物。 / A growing collection of seeds, sprouts, and evergreens.</p>
+  <h1 class="text-3xl mb-2"><span lang="zh">数字花园</span><span class="biling-sep" aria-hidden="true"> / </span><span lang="en">Digital Garden</span></h1>
+  <p class="text-muted mb-8"><span lang="zh">一片不断生长的种子、嫩芽与常青植物。</span><span class="biling-sep" aria-hidden="true"> / </span><span lang="en">A growing collection of seeds, sprouts, and evergreens.</span></p>
   {notes.length === 0 ? (
-    <p>还没有种下任何笔记。 / No notes planted yet.</p>
+    <p><span lang="zh">还没有种下任何笔记。</span><span class="biling-sep" aria-hidden="true"> / </span><span lang="en">No notes planted yet.</span></p>
   ) : (
     <ul class="space-y-6">
       {notes.map((n) => (

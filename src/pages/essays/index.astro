@@ -10,12 +10,12 @@ const zh = all.filter((e) => e.data.lang === 'zh');
 const en = all.filter((e) => e.data.lang === 'en');
 ---
 <BaseLayout title="随笔 / Essays" description="关于哲学、AI、机器人、脑电、心理学的长文。Long-form writing on philosophy, AI, robotics, EEG, psychology.">
-  <h1 class="text-3xl mb-2">随笔 / Essays</h1>
-  <p class="text-muted mb-8">当种子长成大树时的更长思考。 / Longer thoughts, when seedlings grow into trees.</p>
+  <h1 class="text-3xl mb-2"><span lang="zh">随笔</span><span class="biling-sep" aria-hidden="true"> / </span><span lang="en">Essays</span></h1>
+  <p class="text-muted mb-8"><span lang="zh">当种子长成大树时的更长思考。</span><span class="biling-sep" aria-hidden="true"> / </span><span lang="en">Longer thoughts, when seedlings grow into trees.</span></p>
 
   {zh.length > 0 && (
     <section class="mb-10">
-      <h2 class="text-xl mb-4">中文 / Chinese</h2>
+      <h2 class="text-xl mb-4"><span lang="zh">中文</span><span class="biling-sep" aria-hidden="true"> / </span><span lang="en">Chinese</span></h2>
       <ul class="space-y-4">
         {zh.map((e) => (
           <li>
@@ -36,7 +36,7 @@ const en = all.filter((e) => e.data.lang === 'en');
 
   {en.length > 0 && (
     <section>
-      <h2 class="text-xl mb-4">英文 / English</h2>
+      <h2 class="text-xl mb-4"><span lang="zh">英文</span><span class="biling-sep" aria-hidden="true"> / </span><span lang="en">English</span></h2>
       <ul class="space-y-4">
         {en.map((e) => (
           <li>
@@ -55,5 +55,5 @@ const en = all.filter((e) => e.data.lang === 'en');
     </section>
   )}
 
-  {all.length === 0 && <p>暂无随笔。 / No essays yet.</p>}
+  {all.length === 0 && <p><span lang="zh">暂无随笔。</span><span class="biling-sep" aria-hidden="true"> / </span><span lang="en">No essays yet.</span></p>}
 </BaseLayout>

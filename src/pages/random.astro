@@ -5,30 +5,39 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 <BaseLayout title="随机 / Random" description="从花园中随机选取的一篇。A randomly chosen note from the garden.">
-  <h1 class="text-3xl mb-2">随机笔记 / Random note</h1>
-  <p id="status" class="text-muted">随机选一棵幼苗… / Picking a seedling at random…</p>
+  <h1 class="text-3xl mb-2"><span lang="zh">随机笔记</span><span class="biling-sep" aria-hidden="true"> / </span><span lang="en">Random note</span></h1>
+  <p id="status" class="text-muted"><span lang="zh">随机选一棵幼苗…</span><span class="biling-sep" aria-hidden="true"> / </span><span lang="en">Picking a seedling at random…</span></p>
   <p class="mt-4 text-sm text-muted">
-    若长时间未跳转， / If you're not redirected: <a href="/garden/">浏览全部笔记 / Browse all notes →</a>
+    <span lang="zh">若长时间未跳转，<a href="/garden/">浏览全部笔记 →</a></span>
+    <span lang="en">If you're not redirected: <a href="/garden/">Browse all notes →</a></span>
   </p>
 
   <script is:inline>
     (async function () {
+      function bi(zh, en) {
+        return '<span lang="zh">' + zh + '</span>' +
+               '<span class="biling-sep" aria-hidden="true"> / </span>' +
+               '<span lang="en">' + en + '</span>';
+      }
       const $status = document.getElementById('status');
       try {
         const res = await fetch('/search-index.json');
         const all = await res.json();
         const garden = all.filter(function (e) { return e.kind === 'garden'; });
         if (!garden.length) {
-          if ($status) $status.textContent = '花园暂时为空 / Garden is empty.';
+          if ($status) $status.innerHTML = bi('花园暂时为空。', 'Garden is empty.');
           return;
         }
         const pick = garden[Math.floor(Math.random() * garden.length)];
         if ($status) {
-          $status.innerHTML = '跳转到 <a href="' + pick.href + '">' + pick.title + '</a>…';
+          $status.innerHTML = bi(
+            '跳转到 <a href="' + pick.href + '">' + pick.title + '</a>…',
+            'Redirecting to <a href="' + pick.href + '">' + pick.title + '</a>…'
+          );
         }
         location.replace(pick.href);
       } catch (err) {
-        if ($status) $status.textContent = '加载索引失败 / Failed to load index.';
+        if ($status) $status.innerHTML = bi('加载索引失败。', 'Failed to load index.');
       }
     })();
   </script>

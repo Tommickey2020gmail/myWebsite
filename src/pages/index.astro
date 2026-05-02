@@ -43,9 +43,9 @@ const jsonLd = [
 <BaseLayout title="首页 / Home" description="Tommy 的数字花园 — 哲学、AI、机器人、脑电反馈、心理学、科幻。Tommy's digital garden — philosophy, AI, robotics, EEG biofeedback, psychology, science fiction." jsonLd={jsonLd}>
   <section class="py-10">
     <h1 class="text-4xl sm:text-5xl font-serif leading-tight mb-4">
-      你好，我是 Tommy。 / Hi, I'm Tommy.
+      <span lang="zh">你好，我是 Tommy。</span><span class="biling-sep" aria-hidden="true"> / </span><span lang="en">Hi, I'm Tommy.</span>
     </h1>
-    <p class="text-lg text-muted max-w-prose mb-4">
+    <p class="text-lg text-muted max-w-prose mb-4" lang="zh">
       我在<em>哲学</em>、<em>AI / 机器人</em>、<em>脑电生物反馈</em>、<em>心理学</em>与<em>科幻</em>的交汇处思考与制造。
       这是我的数字花园 —— 永远在生长，从未完工。
     </p>
@@ -60,11 +60,11 @@ const jsonLd = [
 
   <section class="py-8">
     <div class="flex items-baseline justify-between mb-4">
-      <h2 class="text-2xl font-serif">近期笔记 / Recent notes</h2>
-      <a href="/garden/" class="text-sm">全部 / All →</a>
+      <h2 class="text-2xl font-serif"><span lang="zh">近期笔记</span><span class="biling-sep" aria-hidden="true"> / </span><span lang="en">Recent notes</span></h2>
+      <a href="/garden/" class="text-sm"><span lang="zh">全部</span><span class="biling-sep" aria-hidden="true"> / </span><span lang="en">All</span> →</a>
     </div>
     {allGarden.length === 0 ? (
-      <p class="text-muted">还没有笔记 — 第一批种子正在路上。 / No notes yet — first seedlings coming soon.</p>
+      <p class="text-muted"><span lang="zh">还没有笔记 — 第一批种子正在路上。</span><span class="biling-sep" aria-hidden="true"> / </span><span lang="en">No notes yet — first seedlings coming soon.</span></p>
     ) : (
       <ul class="space-y-3">
         {allGarden.map((note) => (
@@ -87,8 +87,8 @@ const jsonLd = [
   {featuredProjects.length > 0 && (
     <section class="py-8">
       <div class="flex items-baseline justify-between mb-4">
-        <h2 class="text-2xl font-serif">精选项目 / Selected projects</h2>
-        <a href="/projects/" class="text-sm">全部 / All →</a>
+        <h2 class="text-2xl font-serif"><span lang="zh">精选项目</span><span class="biling-sep" aria-hidden="true"> / </span><span lang="en">Selected projects</span></h2>
+        <a href="/projects/" class="text-sm"><span lang="zh">全部</span><span class="biling-sep" aria-hidden="true"> / </span><span lang="en">All</span> →</a>
       </div>
       <ul class="grid gap-4 sm:grid-cols-2">
         {featuredProjects.map((p) => (

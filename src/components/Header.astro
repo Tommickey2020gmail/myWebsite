@@ -36,12 +36,22 @@ const current = Astro.url.pathname;
           ]}
         >
           <span lang="zh">{zh}</span>
-          <span class="text-muted mx-1" aria-hidden="true">/</span>
+          <span class="biling-sep text-muted mx-1" aria-hidden="true">/</span>
           <span lang="en">{en}</span>
         </a>
       ))}
     </nav>
     <div class="flex items-center gap-2">
+      <button
+        id="lang-toggle"
+        type="button"
+        class="lang-toggle text-sm text-fg hover:text-accent border border-border rounded px-2 py-1 leading-none"
+        aria-label="切换中英文 / Toggle language"
+        aria-pressed="false"
+      >
+        <span data-when="zh">EN</span>
+        <span data-when="en">中</span>
+      </button>
       <ThemeToggle />
     </div>
   </div>

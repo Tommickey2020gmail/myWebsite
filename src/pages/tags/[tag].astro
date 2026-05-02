@@ -29,9 +29,9 @@ const kindLabel: Record<string, string> = {
 const fmt = (d: Date) => d.toISOString().slice(0, 10);
 ---
 <BaseLayout title={`#${tag}`} description={`所有标记为 #${tag} 的内容。All entries tagged #${tag}.`}>
-  <p class="text-sm text-muted mb-2"><a href="/tags/" class="no-underline">← 所有标签 / All tags</a></p>
+  <p class="text-sm text-muted mb-2"><a href="/tags/" class="no-underline">← <span lang="zh">所有标签</span><span class="biling-sep" aria-hidden="true"> / </span><span lang="en">All tags</span></a></p>
   <h1 class="text-3xl mb-2">#{tag}</h1>
-  <p class="text-muted mb-6">{entries.length} 篇内容 / entries</p>
+  <p class="text-muted mb-6">{entries.length} <span lang="zh">篇内容</span><span lang="en">entries</span></p>
   <ul class="space-y-4">
     {entries.map((e) => (
       <li class="border-l-2 border-border pl-3">
