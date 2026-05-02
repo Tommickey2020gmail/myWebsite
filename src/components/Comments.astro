@@ -1,0 +1,80 @@
+---
+// src/components/Comments.astro
+// Lazy-loaded Waline comments. Wrapped in <details> so the Waline JS bundle
+// (~50KB gz) only loads when the reader explicitly opens the section.
+//
+// Backend is self-hosted Waline at $PUBLIC_WALINE_SERVER (e.g.
+// https://comment.tommickey.cn). When the env var is not set during build,
+// the whole block is omitted — useful for local dev before the backend
+// exists, and prevents broken UI on first deploys.
+//
+// CSS / JS are pulled from unpkg as ESM at click-time. We preconnect to the
+// CDN and the comment server only when the env is set, so the network
+// warm-up cost is invisible until the user actually opens comments.
+const serverURL = import.meta.env.PUBLIC_WALINE_SERVER;
+---
+{serverURL && (
+  <>
+    <link rel="preconnect" href={serverURL} crossorigin />
+    <link rel="preconnect" href="https://unpkg.com" crossorigin />
+
+    <details class="comments mt-12 not-prose border-t border-border pt-6">
+      <summary class="cursor-pointer text-fg hover:text-accent text-sm select-none list-none">
+        <span class="inline-flex items-center gap-2">
+          <span aria-hidden="true">💬</span>
+          <span>
+            <span lang="zh">展开评论</span>
+            <span class="biling-sep" aria-hidden="true"> / </span>
+            <span lang="en">Show comments</span>
+          </span>
+        </span>
+      </summary>
+      <div id="waline" class="mt-4"></div>
+    </details>
+
+    <script is:inline define:vars={{ serverURL }}>
+      (function () {
+        const details = document.querySelector('details.comments');
+        if (!details) return;
+        let initialized = false;
+        details.addEventListener('toggle', async () => {
+          if (!details.open || initialized) return;
+          initialized = true;
+          // Pull CSS in parallel with the JS bundle.
+          const css = document.createElement('link');
+          css.rel = 'stylesheet';
+          css.href = 'https://unpkg.com/@waline/client@v3/dist/waline.css';
+          document.head.appendChild(css);
+          try {
+            const mod = await import('https://unpkg.com/@waline/client@v3/dist/waline.js');
+            const lang = document.documentElement.getAttribute('data-lang') === 'en'
+              ? 'en'
+              : 'zh-CN';
+            mod.init({
+              el: '#waline',
+              serverURL,
+              path: window.location.pathname,
+              dark: 'html.dark',
+              lang,
+              reaction: false,
+              pageview: false,
+              search: false,
+              copyright: false,
+              imageUploader: false,
+            });
+          } catch (err) {
+            const target = document.getElementById('waline');
+            if (target) {
+              target.innerHTML =
+                '<p class="text-muted text-sm">' +
+                '<span lang="zh">评论加载失败，稍后再试。</span>' +
+                '<span class="biling-sep" aria-hidden="true"> / </span>' +
+                '<span lang="en">Failed to load comments. Try again later.</span>' +
+                '</p>';
+            }
+          }
+        });
+      })();
+    </script>
+  </>
+)}

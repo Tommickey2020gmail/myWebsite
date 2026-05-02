@@ -2,6 +2,7 @@
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PostMeta from '../../components/PostMeta.astro';
+import Comments from '../../components/Comments.astro';
 
 export async function getStaticPaths() {
   const all = await getCollection('projects', ({ data }) => !data.draft);
@@ -35,4 +36,5 @@ const { Content } = await render(entry);
     </header>
     <Content />
   </article>
+  <Comments />
 </BaseLayout>

@@ -3,6 +3,7 @@ import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PostMeta from '../../components/PostMeta.astro';
 import Backlinks from '../../components/Backlinks.astro';
+import Comments from '../../components/Comments.astro';
 import { slugHref } from '../../lib/url';
 import { readingStats } from '../../lib/reading';
 import { getBacklinks } from '../../lib/backlinks';
@@ -54,4 +55,5 @@ const jsonLd = {
     <Content />
   </article>
   <Backlinks links={backlinks} />
+  <Comments />
 </BaseLayout>
