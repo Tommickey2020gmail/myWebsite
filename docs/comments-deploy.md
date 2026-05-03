@@ -9,11 +9,15 @@
          │
          │ 点开「展开评论」时按需加载
          ▼
-       comment.tommickey.cn (Nginx → Docker Waline + SQLite)
+       comment.tommickey.cn
+         │ (Cloudflare Tunnel, dashboard 管 ingress)
+         ▼
+       服务器: cloudflared 容器 ──docker net──▶ waline 容器 (SQLite)
 ```
 
 - 主站：静态站，CF Pages 上保持不变
-- 评论后端：跑在你自己的服务器上 (跟 AppCenter 同台)，绑定子域 `comment.tommickey.cn`
+- 评论后端：跑在你自己的服务器上 (跟 AppCenter 同台)，通过 Cloudflare Tunnel 暴露
+- 不开任何对外端口，不用申请证书，不用配 nginx
 - 数据：单文件 SQLite 落在主机上，方便 rsync 备份
 
 ## 1. 服务器侧 (一次性)
@@ -27,7 +31,30 @@ sudo mkdir -p /srv/waline/data
 sudo chown 1000:1000 /srv/waline/data   # waline 容器以 uid 1000 运行
 ```
 
-### 1.2 创建 docker-compose.yml
+### 1.2 准备 .env
+
+`/srv/waline/.env`（**chmod 600**，别提交进 git）：
+
+```ini
+# Cloudflare Tunnel token（从 Zero Trust → Networks → Tunnels 拿）
+TUNNEL_TOKEN=eyJh......
+
+# Waline JWT secret，先生成：openssl rand -hex 32
+JWT_TOKEN=64位16进制字符串
+
+# 你的管理员邮箱
+AUTHOR_EMAIL=youraddr@example.com
+```
+
+```bash
+sudo install -m 600 /dev/stdin /srv/waline/.env <<'EOF'
+TUNNEL_TOKEN=粘贴你的token
+JWT_TOKEN=粘贴openssl rand -hex 32的输出
+AUTHOR_EMAIL=youraddr@example.com
+EOF
+```
+
+### 1.3 创建 docker-compose.yml
 
 `/srv/waline/docker-compose.yml`：
 
@@ -37,81 +64,66 @@ services:
     container_name: waline
     image: lizheming/waline:latest
     restart: unless-stopped
-    ports:
-      - "127.0.0.1:8360:8360"
+    expose:
+      - "8360"           # 仅暴露给同一 docker network，不映射到主机
     volumes:
       - ./data:/app/data
     environment:
       TZ: "Asia/Shanghai"
       SQLITE_PATH: "/app/data"
-      JWT_TOKEN: "REPLACE_WITH_RANDOM_64_CHAR_STRING"
+      JWT_TOKEN: "${JWT_TOKEN}"
       SITE_NAME: "tommickey.cn"
       SITE_URL: "https://tommickey.cn"
       SECURE_DOMAINS: "tommickey.cn,www.tommickey.cn"
-      AUTHOR_EMAIL: "your-admin-email@example.com"
-      # 可选：开启邮件通知
+      AUTHOR_EMAIL: "${AUTHOR_EMAIL}"
+      # 可选：邮件通知
       # SMTP_SERVICE: "QQ"
       # SMTP_USER: "youraddr@qq.com"
       # SMTP_PASS: "smtp-auth-code"
-      # 可选：webhook（飞书/钉钉/Discord/Telegram 都行）
+      # 可选：webhook（飞书/钉钉/Discord/Telegram）
       # WEBHOOK: "https://..."
+    networks:
+      - waline-net
+
+  cloudflared:
+    container_name: waline-tunnel
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run --token ${TUNNEL_TOKEN}
+    depends_on:
+      - waline
+    networks:
+      - waline-net
+
+networks:
+  waline-net:
+    driver: bridge
 ```
 
-生成一个 64 字符的随机字符串作为 JWT secret：
-
-```bash
-openssl rand -hex 32
-```
-
-替换 `JWT_TOKEN` 后启动：
+启动：
 
 ```bash
 cd /srv/waline
 docker compose up -d
-docker compose logs -f waline   # 看到 "Server is listening on: http://0.0.0.0:8360" 就成
+docker compose logs -f waline       # 等到 "Server is listening on: http://0.0.0.0:8360"
+docker compose logs -f cloudflared  # 等到 "Registered tunnel connection"
 ```
 
-### 1.3 Nginx 反向代理
+### 1.4 Cloudflare 仪表盘配 Public Hostname
 
-`/etc/nginx/conf.d/comment.tommickey.cn.conf`：
+进 https://one.dash.cloudflare.com/ → Networks → Tunnels → 点你的 tunnel → **Public Hostname** → **Add a public hostname**：
 
-```nginx
-server {
-    listen 443 ssl http2;
-    server_name comment.tommickey.cn;
+| 字段 | 值 |
+|------|------|
+| Subdomain | `comment` |
+| Domain | `tommickey.cn` |
+| Path | （留空） |
+| Type | `HTTP` |
+| URL | `waline:8360` |
 
-    # 用同一份证书 (Let's Encrypt 或 Cloudflare Origin Cert)
-    ssl_certificate     /etc/nginx/ssl/tommickey.cn.crt;
-    ssl_certificate_key /etc/nginx/ssl/tommickey.cn.key;
+> 这里写 `waline:8360`（容器名），不是 `localhost:8360` —— cloudflared 容器是通过 `waline-net` 访问 waline 容器的，主机上 8360 根本没开。
 
-    # CORS：只放行主站。注意 Waline 自己也校验 SECURE_DOMAINS。
-    add_header Access-Control-Allow-Origin "https://tommickey.cn" always;
-    add_header Access-Control-Allow-Credentials "true" always;
-
-    location / {
-        proxy_pass http://127.0.0.1:8360;
-        proxy_set_header Host              $host;
-        proxy_set_header X-Real-IP         $remote_addr;
-        proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_read_timeout 60s;
-    }
-}
-
-server {
-    listen 80;
-    server_name comment.tommickey.cn;
-    return 301 https://$host$request_uri;
-}
-```
-
-```bash
-sudo nginx -t && sudo systemctl reload nginx
-```
-
-### 1.4 Cloudflare DNS
-
-加一条 A 记录（或 CNAME 指到主机），代理状态可以开「橙云」走 CF CDN，也可以「灰云」直连。建议先灰云调通再开橙云。
+保存后 CF 自动加 CNAME 到 `<tunnel-id>.cfargotunnel.com`，无需手动改 DNS。如果之前手动加过 `comment.tommickey.cn` 的 A/CNAME，先删掉再保存。
 
 ### 1.5 注册管理员
 
