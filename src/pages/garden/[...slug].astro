@@ -4,6 +4,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import PostMeta from '../../components/PostMeta.astro';
 import Backlinks from '../../components/Backlinks.astro';
 import Comments from '../../components/Comments.astro';
+import Share from '../../components/Share.astro';
 import { slugHref } from '../../lib/url';
 import { tagHref } from '../../lib/tags';
 import { readingStats } from '../../lib/reading';
@@ -63,6 +64,7 @@ const jsonLd = {
     </header>
     <Content />
   </article>
+  <Share title={entry.data.title} description={entry.data.description} path={`/garden/${slugHref(entry.id)}/`} />
   <Backlinks links={backlinks} />
   <Comments />
 </BaseLayout>

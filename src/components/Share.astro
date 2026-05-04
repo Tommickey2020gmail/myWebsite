@@ -1,0 +1,93 @@
+---
+import QRCode from 'qrcode';
+
+interface Props {
+  title: string;
+  description?: string;
+  path: string; // e.g. "/essays/foo/"
+}
+const { title, description = '', path } = Astro.props;
+const fullUrl = `https://tommickey.cn${path}`;
+const qrSvg = await QRCode.toString(fullUrl, {
+  type: 'svg',
+  margin: 1,
+  color: { dark: '#1f1d1a', light: '#ffffff' },
+});
+const shareText = description ? `${title}\n${description}\n${fullUrl}` : `${title}\n${fullUrl}`;
+---
+<aside class="not-prose mt-10 border-t border-border pt-6">
+  <details class="share-block">
+    <summary class="cursor-pointer select-none text-sm text-muted hover:text-accent">
+      <span lang="zh">分享到微信朋友圈</span><span class="biling-sep" aria-hidden="true"> / </span><span lang="en">Share to WeChat Moments</span>
+    </summary>
+    <div class="mt-4 flex flex-col sm:flex-row gap-6 items-start">
+      <div class="shrink-0 share-qr bg-white p-2 rounded" set:html={qrSvg} />
+      <div class="text-sm flex-1 min-w-0">
+        <p class="text-muted mb-3">
+          <span lang="zh">用微信扫码 → 在微信内打开 → 右上角"…" → 分享到朋友圈。</span>
+          <span lang="en">Scan with WeChat → open in WeChat → tap "…" → Share to Moments.</span>
+        </p>
+        <div class="flex flex-wrap gap-2">
+          <button type="button" data-share-copy={shareText} class="share-btn">
+            <span lang="zh">复制摘要+链接</span><span class="biling-sep" aria-hidden="true"> / </span><span lang="en">Copy summary + link</span>
+          </button>
+          <button type="button" data-share-copy={fullUrl} class="share-btn">
+            <span lang="zh">仅复制链接</span><span class="biling-sep" aria-hidden="true"> / </span><span lang="en">Copy link</span>
+          </button>
+          <button type="button" data-share-native data-title={title} data-text={description} data-url={fullUrl} class="share-btn hidden">
+            <span lang="zh">系统分享</span><span class="biling-sep" aria-hidden="true"> / </span><span lang="en">System share</span>
+          </button>
+        </div>
+        <p class="mt-3 text-xs break-all text-muted">{fullUrl}</p>
+      </div>
+    </div>
+  </details>
+</aside>
+
+<style>
+  .share-qr svg { display: block; width: 144px; height: 144px; }
+  .share-btn {
+    padding: 0.375rem 0.75rem;
+    border: 1px solid var(--color-border);
+    border-radius: 0.375rem;
+    font-size: 0.75rem;
+    line-height: 1rem;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .share-btn:hover { border-color: var(--color-accent); color: var(--color-accent); }
+</style>
+
+<script>
+  // Native share (mobile)
+  document.querySelectorAll<HTMLButtonElement>('[data-share-native]').forEach((btn) => {
+    if (typeof navigator !== 'undefined' && 'share' in navigator) {
+      btn.classList.remove('hidden');
+      btn.addEventListener('click', async () => {
+        try {
+          await (navigator as Navigator & { share: (d: ShareData) => Promise<void> }).share({
+            title: btn.dataset.title,
+            text: btn.dataset.text,
+            url: btn.dataset.url,
+          });
+        } catch { /* user cancelled */ }
+      });
+    }
+  });
+
+  // Copy buttons with feedback
+  document.querySelectorAll<HTMLButtonElement>('[data-share-copy]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const text = btn.dataset.shareCopy ?? '';
+      try {
+        await navigator.clipboard.writeText(text);
+        const original = btn.innerHTML;
+        const en = document.documentElement.dataset.lang === 'en';
+        btn.innerHTML = en ? '✓ Copied' : '✓ 已复制';
+        setTimeout(() => { btn.innerHTML = original; }, 1500);
+      } catch { /* clipboard unavailable */ }
+    });
+  });
+</script>
