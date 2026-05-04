@@ -10,6 +10,10 @@ const allGarden = (await getCollection('garden', ({ data }) => !data.draft))
   .sort((a, b) => (b.data.updated ?? b.data.created).getTime() - (a.data.updated ?? a.data.created).getTime())
   .slice(0, 6);
 
+const recentEssays = (await getCollection('essays', ({ data }) => !data.draft))
+  .sort((a, b) => (b.data.updated ?? b.data.created).getTime() - (a.data.updated ?? a.data.created).getTime())
+  .slice(0, 5);
+
 const featuredProjects = (await getCollection('projects', ({ data }) => !data.draft && data.featured))
   .slice(0, 3);
 
@@ -43,25 +47,37 @@ const jsonLd = [
 ---
 <BaseLayout title="首页 / Home" description="Tommy 的数字花园 — 哲学、AI、机器人、脑电反馈、心理学、科幻。Tommy's digital garden — philosophy, AI, robotics, EEG biofeedback, psychology, science fiction." jsonLd={jsonLd}>
   <section class="py-10">
-    <h1 class="text-4xl sm:text-5xl font-serif leading-tight mb-4">
-      <span lang="zh">你好，我是 Tommy。</span><span class="biling-sep" aria-hidden="true"> / </span><span lang="en">Hi, I'm Tommy.</span>
-    </h1>
-    <p class="text-lg text-muted max-w-prose mb-4" lang="zh">
-      我在<em>哲学</em>、<em>AI / 机器人</em>、<em>脑电生物反馈</em>、<em>心理学</em>与<em>科幻</em>的交汇处思考与制造。
-      这是我的数字花园 —— 永远在生长，从未完工。
-    </p>
-    <p class="text-lg text-muted max-w-prose mb-8" lang="en">
-      I think and build at the intersection of <em>philosophy</em>, <em>AI / robotics</em>,
-      <em>EEG biofeedback</em>, <em>psychology</em>, and <em>science fiction</em>.
-      This is my digital garden — perpetually growing, never finished.
-    </p>
-    <HeroGraph />
+    <div class="flex flex-col sm:flex-row sm:items-start sm:gap-8">
+      <img
+        src="/avatar.png"
+        alt="Tommy 的卡通头像 / Tommy's cartoon avatar"
+        width="144"
+        height="144"
+        class="w-28 h-28 sm:w-36 sm:h-36 rounded-full border border-border shadow-sm shrink-0 mb-6 sm:mb-0"
+        loading="eager"
+      />
+      <div>
+        <h1 class="text-4xl sm:text-5xl font-serif leading-tight mb-4">
+          <span lang="zh">你好，我是 Tommy。</span><span class="biling-sep" aria-hidden="true"> / </span><span lang="en">Hi, I'm Tommy.</span>
+        </h1>
+        <p class="text-lg text-muted max-w-prose mb-4" lang="zh">
+          我在<em>哲学</em>、<em>AI / 机器人</em>、<em>脑电生物反馈</em>、<em>心理学</em>与<em>科幻</em>的交汇处思考与制造。
+          这是我的数字花园 —— 永远在生长，从未完工。
+        </p>
+        <p class="text-lg text-muted max-w-prose" lang="en">
+          I think and build at the intersection of <em>philosophy</em>, <em>AI / robotics</em>,
+          <em>EEG biofeedback</em>, <em>psychology</em>, and <em>science fiction</em>.
+          This is my digital garden — perpetually growing, never finished.
+        </p>
+      </div>
+    </div>
+    <div class="mt-8"><HeroGraph /></div>
     <div class="mt-6"><EegBand /></div>
   </section>
 
   <section class="py-8">
     <div class="flex items-baseline justify-between mb-4">
-      <h2 class="text-2xl font-serif"><span lang="zh">近期笔记</span><span class="biling-sep" aria-hidden="true"> / </span><span lang="en">Recent notes</span></h2>
+      <h2 class="text-2xl font-serif"><span lang="zh">近期花园笔记</span><span class="biling-sep" aria-hidden="true"> / </span><span lang="en">Recent garden notes</span></h2>
       <a href="/garden/" class="text-sm"><span lang="zh">全部</span><span class="biling-sep" aria-hidden="true"> / </span><span lang="en">All</span> →</a>
     </div>
     {allGarden.length === 0 ? (
@@ -84,6 +100,30 @@ const jsonLd = [
       </ul>
     )}
   </section>
+
+  {recentEssays.length > 0 && (
+    <section class="py-8">
+      <div class="flex items-baseline justify-between mb-4">
+        <h2 class="text-2xl font-serif"><span lang="zh">近期随笔</span><span class="biling-sep" aria-hidden="true"> / </span><span lang="en">Recent essays</span></h2>
+        <a href="/essays/" class="text-sm"><span lang="zh">全部</span><span class="biling-sep" aria-hidden="true"> / </span><span lang="en">All</span> →</a>
+      </div>
+      <ul class="space-y-3">
+        {recentEssays.map((e) => (
+          <li>
+            <a href={`/essays/${slugHref(e.id)}/`} class="block py-1 no-underline hover:text-accent">
+              <span class="font-medium">{e.data.title}</span>
+              {e.data.title_en && e.data.title_en !== e.data.title && (
+                <span class="text-sm text-muted" lang="en"> · {e.data.title_en}</span>
+              )}
+              {e.data.description && (
+                <span class="block text-sm text-muted">{e.data.description}</span>
+              )}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
 
   {featuredProjects.length > 0 && (
     <section class="py-8">
