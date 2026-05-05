@@ -104,30 +104,85 @@ function sectionPreview(body, h2Index) {
   return preview.slice(0, 220);
 }
 
-const STYLE_POSITIVE = '中国水墨画风格的概念插画，温暖米色背景，赭石与深棕色调，留白构图，富有诗意，digital painting，简洁优雅';
-// IMPORTANT: do NOT pass section titles or quoted text into the prompt — Doubao
-// tends to render them as garbled chinese characters into the image.
-const STYLE_NEGATIVE = '画面中不出现任何文字、汉字、字母、数字、标点、印章、签名、水印、书法、招牌';
+// English-only style. Chinese prompts reflexively trigger calligraphy/chops/
+// seals on Doubao Seedream. Switching to English suppresses Chinese typography
+// almost entirely.
+const STYLE_POSITIVE = 'minimalist conceptual illustration, soft watercolor texture, warm cream background, terracotta and deep brown palette, generous negative space, poetic atmosphere, cinematic mood, elegant and quiet';
 
-// Strip a Chinese essay paragraph down to a concrete visual concept.
-function distillVisual(text) {
-  return text
+// Negative directive in English, repeated at the front and end of the prompt.
+const NO_TEXT = 'STRICT RULE: absolutely no text, no Chinese characters, no letters, no numbers, no punctuation, no seals, no chops, no signatures, no watermarks, no calligraphy, no labels, no captions, no diagrams, no charts, no signs';
+
+// Concepts that almost guarantee labels/typography. Replace with neutral nouns
+// or remove. Applied AFTER translation.
+const FORBIDDEN_CONCEPTS = [
+  /\b(pyramid|hierarchy chart|chart|diagram|infographic|chart of|table of|labeled)\b/gi,
+  /\b(book|letter|sign|signpost|label|certificate|placard|banner|scroll)\b/gi,
+  /\b(name plate|nameplate|tag|tagged)\b/gi,
+];
+
+// Proper nouns and specific names — get rendered as text every time. Strip.
+const PROPER_NOUN_RE = /(马斯洛|德西|瑞安|塞利格曼|契克森米哈伊|弗兰克尔|庄子|马克思|康德|伊姆林|奥斯维辛|集中营|美国|日本|中国|法国大革命|文革|《[^》]+》|Maslow|Deci|Ryan|Seligman|Frankl|Zhuangzi|Marx|Kant|[A-Z][a-zA-Z]{2,})/g;
+
+// Translate a Chinese essay snippet → very loose English visual concept.
+// We don't aim for accuracy; we want a SAFE abstract subject the model can
+// render without typography. Maps common essay concepts → safe visual nouns.
+const ZH_TO_EN_HINTS = [
+  // Hierarchy/structure metaphors → safe replacements
+  [/(金字塔|层级|阶梯|阶层)/g, 'a winding mountain path'],
+  [/(秩序|架构|框架|体系)/g, 'an open meadow at dawn'],
+  // Inner state / emptiness
+  [/(空虚|虚无|失落|崩塌|崩溃)/g, 'a single empty chair in soft light'],
+  [/(孤独|孤立|寂寞)/g, 'a lone figure under a vast sky'],
+  [/(焦虑|不安|恐惧)/g, 'wind through bare branches'],
+  // Work / capability
+  [/(工作|劳动|职业|岗位|胜任)/g, 'a quiet workshop bench'],
+  [/(自主|自由|主动)/g, 'an open window letting in light'],
+  [/(关联|连接|纽带|关系|社群)/g, 'two distant figures on a long bridge'],
+  // Machines / AI
+  [/(机器|算法|人工智能|AI|自动化)/g, 'a still mechanical silhouette in fog'],
+  // Meaning / value
+  [/(意义|价值|目的|信仰)/g, 'a single candle on a long table'],
+  // People / society
+  [/(人心|人性|内心|心灵)/g, 'a cupped pair of hands holding light'],
+  [/(社会|时代|历史)/g, 'a wide horizon with low hills'],
+  // Generic fallback nouns
+  [/(吃饭|食物|餐饭)/g, 'a simple bowl on a wooden table'],
+  [/(学习|思考|阅读)/g, 'an open notebook by a window'],
+];
+
+function distillVisual(text, maxConcepts = 2) {
+  let t = text
     .replace(/[""'']/g, '')
-    .replace(/[，。！？、；：（）—…\-]/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
+    .replace(PROPER_NOUN_RE, '')
+    .replace(/[，。！？、；：（）—…·]/g, ' ');
+  // Translate metaphors to English visual hints. Cap at maxConcepts to avoid
+  // busy compositions (more concepts = more chance of stray typography).
+  const matched = new Set();
+  const hits = [];
+  for (const [from, to] of ZH_TO_EN_HINTS) {
+    if (hits.length >= maxConcepts) break;
+    if (matched.has(to)) continue;
+    if (from.test(t)) {
+      hits.push(to);
+      matched.add(to);
+    }
+  }
+  let visual = hits.join(', ');
+  if (!visual) visual = 'a quiet still life with soft warm light';
+  for (const re of FORBIDDEN_CONCEPTS) visual = visual.replace(re, '');
+  return visual.replace(/\s+/g, ' ').trim();
 }
 
 function coverPrompt(title, description) {
-  // Use the abstract description, not the title (titles are loaded with quotes/colons)
-  const concept = distillVisual(description || title);
-  return `一幅象征 ${concept} 的概念插画。${STYLE_POSITIVE}。${STYLE_NEGATIVE}`;
+  // Cover: cap at 1 concept — busy compositions invite stray text/inscriptions.
+  const concept = distillVisual(description || title, 1);
+  return `${NO_TEXT}. A symbolic conceptual illustration: ${concept}. ${STYLE_POSITIVE}. Reminder: ${NO_TEXT}`;
 }
 
 function inlinePrompt(_sectionTitle, preview) {
-  // Drop the section title — only use the body preview, distilled
-  const concept = distillVisual(preview).slice(0, 120);
-  return `一幅象征以下内容的概念插画：${concept}。${STYLE_POSITIVE}。单一主体或少量象征元素。${STYLE_NEGATIVE}`;
+  // Inline: 1 concept (single-subject scene works best).
+  const concept = distillVisual(preview, 1);
+  return `${NO_TEXT}. A poetic single-subject scene: ${concept}. ${STYLE_POSITIVE}. One clear subject, lots of empty space, purely visual, zero typography of any kind. Reminder: ${NO_TEXT}`;
 }
 
 // ---------- main ----------
