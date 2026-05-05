@@ -9,7 +9,8 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "gen:images": "node --env-file=.env scripts/gen-images.mjs"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.18",

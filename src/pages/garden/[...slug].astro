@@ -40,6 +40,7 @@ const jsonLd = {
   description={entry.data.description}
   lang={entry.data.lang}
   jsonLd={jsonLd}
+  ogImage={entry.data.cover}
   article={{
     publishedTime: entry.data.created,
     modifiedTime: entry.data.updated ?? entry.data.created,
