@@ -2,6 +2,7 @@
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PostMeta from '../../components/PostMeta.astro';
+import Pageview from '../../components/Pageview.astro';
 import Backlinks from '../../components/Backlinks.astro';
 import Comments from '../../components/Comments.astro';
 import Share from '../../components/Share.astro';
@@ -52,7 +53,10 @@ const jsonLd = {
       {entry.data.title_en && entry.data.title_en !== entry.data.title && (
         <p class="mt-1 text-lg text-muted" lang="en">{entry.data.title_en}</p>
       )}
-      <div class="mt-3"><PostMeta created={entry.data.created} updated={entry.data.updated} kind="essay" reading={reading} /></div>
+      <div class="mt-3 flex flex-wrap items-center gap-3">
+        <PostMeta created={entry.data.created} updated={entry.data.updated} kind="essay" reading={reading} />
+        <Pageview path={`/essays/${slugHref(entry.id)}/`} />
+      </div>
     </header>
     <Content />
   </article>

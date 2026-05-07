@@ -1,0 +1,50 @@
+---
+// src/components/Pageview.astro
+// Per-post page view counter, backed by the same self-hosted Waline instance
+// used for comments. Waline's `/api/article` endpoint stores counts in the
+// shared SQLite database (table wl_Counter), so no extra infrastructure.
+//
+// Behaviour:
+// - Build-time gating via PUBLIC_WALINE_SERVER (same env var as Comments).
+//   When unset, the whole block is omitted — keeps local dev clean and
+//   prevents broken UI on first deploys.
+// - Renders an inline placeholder ("···") which the client script replaces
+//   with the actual number once the API call completes.
+// - Pulls @waline/client's pageview helper from unpkg on load. It both
+//   increments the counter for the current path AND fills the placeholder.
+// - Bilingual label: "N 阅读 / N reads" — the digit is shared, only the
+//   suffix is hidden by the html[data-lang] CSS rules.
+//
+// Props:
+// - path: canonical path used as the counter key, e.g. "/garden/foo/".
+//         Must match what other links use so counts aggregate correctly.
+export interface Props { path: string }
+const { path } = Astro.props;
+const serverURL = import.meta.env.PUBLIC_WALINE_SERVER;
+---
+{serverURL && (
+  <span class="pageview text-xs text-muted inline-flex items-center gap-1" data-pageview>
+    <span aria-hidden="true">·</span>
+    <span class="waline-pageview-count" data-path={path}>···</span>
+    <span>
+      <span lang="zh">阅读</span>
+      <span class="biling-sep" aria-hidden="true"> / </span>
+      <span lang="en">reads</span>
+    </span>
+  </span>
+
+  <script is:inline define:vars={{ serverURL }}>
+    (function () {
+      // Run once per page; the helper finds all matching elements itself.
+      if (window.__walinePageviewLoaded) return;
+      window.__walinePageviewLoaded = true;
+      import('https://unpkg.com/@waline/client@v3/dist/pageview.js')
+        .then((mod) => {
+          mod.pageviewCount({ serverURL, path: window.location.pathname });
+        })
+        .catch(() => {
+          // Silently ignore — placeholder stays as "···", no broken UI.
+        });
+    })();
+  </script>
+)}
