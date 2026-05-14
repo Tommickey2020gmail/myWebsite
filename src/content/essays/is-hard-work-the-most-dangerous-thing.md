@@ -6,7 +6,10 @@ description_en: From Michael Saylor's "demonetized labor" line — via a third-g
 lang: zh
 tags: [ai, philosophy, work, meaning, society]
 created: 2026-05-14
+cover: /illustrations/is-hard-work-the-most-dangerous-thing/cover.jpeg
 ---
+![努力工作，是这个世界最危险的事吗？](/illustrations/is-hard-work-the-most-dangerous-thing/cover.jpeg)
+
 
 ## 一、Saylor 究竟说了什么
 
@@ -31,6 +34,9 @@ created: 2026-05-14
 这两者，相差十万八千里。
 
 ## 二、铁匠的故事
+
+![二、铁匠的故事](/illustrations/is-hard-work-the-most-dangerous-thing/inline-1.jpeg)
+
 
 我老家苏北有个亲戚，姓高，叫高老三。
 
@@ -87,6 +93,9 @@ created: 2026-05-14
 我没有答案。我只知道，我那天下车的时候，多给了五块钱小费。我隐约觉得，那五块钱里，有一块是感谢，有四块是亏欠。
 
 ## 四、Saylor 为什么有资格说这话
+
+![四、Saylor 为什么有资格说这话](/illustrations/is-hard-work-the-most-dangerous-thing/inline-2.jpeg)
+
 
 要理解 Saylor 这番话的份量，得先看看他自己是怎么过来的。
 

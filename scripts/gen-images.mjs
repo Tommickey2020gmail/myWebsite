@@ -1,19 +1,32 @@
 #!/usr/bin/env node
-// Generate cover + inline illustrations for an article via Volcano Ark (Doubao Seedream).
+// Generate cover + inline illustrations for an article.
+// Provider auto-selection:
+//   - If CF_ACCOUNT_ID + CF_API_TOKEN are set → Cloudflare Workers AI (flux-1-schnell)
+//   - Else if ARK_API_KEY is set → Volcano Ark (Doubao Seedream)
+// Override with --provider=cf | --provider=ark
 // Usage:
-//   node --env-file=.env scripts/gen-images.mjs <path-to-md> [--cover-only] [--dry] [--force]
+//   node --env-file=.env scripts/gen-images.mjs <path-to-md> [--cover-only] [--dry] [--force] [--provider=cf|ark]
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
+// Use undici's fetch (not node's built-in fetch) so we can route through a
+// proxy via ProxyAgent. Node 22's built-in fetch uses a bundled undici whose
+// global dispatcher is separate from the installed undici package, so calling
+// setGlobalDispatcher on the npm undici has no effect on built-in fetch.
+import { fetch, ProxyAgent, Agent } from 'undici';
+
+const _proxy = process.env.HTTPS_PROXY || process.env.https_proxy
+  || process.env.HTTP_PROXY || process.env.http_proxy;
+const _dispatcher = _proxy ? new ProxyAgent(_proxy) : new Agent();
+if (_proxy) console.log(`🌐 using proxy: ${_proxy}`);
 
 const ARK_API_KEY = process.env.ARK_API_KEY;
 const ARK_BASE_URL = process.env.ARK_BASE_URL ?? 'https://ark.cn-beijing.volces.com/api/v3';
 const ARK_IMAGE_MODEL = process.env.ARK_IMAGE_MODEL ?? 'doubao-seedream-3-0-t2i-250415';
 
-if (!ARK_API_KEY) {
-  console.error('Missing ARK_API_KEY (load with: node --env-file=.env ...)');
-  process.exit(1);
-}
+const CF_ACCOUNT_ID = process.env.CF_ACCOUNT_ID;
+const CF_API_TOKEN = process.env.CF_API_TOKEN;
+const CF_IMAGE_MODEL = process.env.CF_IMAGE_MODEL ?? '@cf/black-forest-labs/flux-1-schnell';
 
 // ---------- args ----------
 const args = process.argv.slice(2);
@@ -21,13 +34,60 @@ const mdPath = args.find((a) => !a.startsWith('--'));
 const dry = args.includes('--dry');
 const coverOnly = args.includes('--cover-only');
 const force = args.includes('--force');
-if (!mdPath) {
-  console.error('Usage: node --env-file=.env scripts/gen-images.mjs <path-to-md> [--cover-only] [--dry] [--force]');
+const providerArg = args.find((a) => a.startsWith('--provider='))?.split('=')[1];
+
+const provider = providerArg
+  ?? (CF_ACCOUNT_ID && CF_API_TOKEN ? 'cf' : (ARK_API_KEY ? 'ark' : null));
+
+if (!provider) {
+  console.error('No provider available. Set CF_ACCOUNT_ID+CF_API_TOKEN or ARK_API_KEY in .env');
+  process.exit(1);
+}
+if (provider === 'cf' && (!CF_ACCOUNT_ID || !CF_API_TOKEN)) {
+  console.error('Missing CF_ACCOUNT_ID / CF_API_TOKEN');
+  process.exit(1);
+}
+if (provider === 'ark' && !ARK_API_KEY) {
+  console.error('Missing ARK_API_KEY');
   process.exit(1);
 }
 
+if (!mdPath) {
+  console.error('Usage: node --env-file=.env scripts/gen-images.mjs <path-to-md> [--cover-only] [--dry] [--force] [--provider=cf|ark]');
+  process.exit(1);
+}
+
+console.log(`🛠  provider: ${provider}`);
+
 // ---------- helpers ----------
-async function generateImage(prompt, size = '1024x1024') {
+// generateImageToFile: provider-agnostic. Writes image directly to dest.
+async function generateImageToFile(prompt, size, dest) {
+  if (provider === 'cf') {
+    // CF Workers AI returns { result: { image: "<base64 jpeg>" }, success: true }
+    // flux-1-schnell supports width/height; size is parsed from "WxH"
+    const [width, height] = size.split('x').map(Number);
+    const resp = await fetch(
+      `https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/ai/run/${CF_IMAGE_MODEL}`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${CF_API_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ prompt, steps: 4, width, height }),
+        dispatcher: _dispatcher,
+      },
+    );
+    const json = await resp.json();
+    if (!resp.ok || !json.success) {
+      throw new Error(`CF ${resp.status}: ${JSON.stringify(json).slice(0, 500)}`);
+    }
+    const b64 = json.result?.image;
+    if (!b64) throw new Error(`CF: no image in response: ${JSON.stringify(json).slice(0, 300)}`);
+    await fs.writeFile(dest, Buffer.from(b64, 'base64'));
+    return;
+  }
+  // ark provider: returns presigned URL
   const resp = await fetch(`${ARK_BASE_URL}/images/generations`, {
     method: 'POST',
     headers: {
@@ -45,14 +105,10 @@ async function generateImage(prompt, size = '1024x1024') {
   });
   const json = await resp.json();
   if (!resp.ok) throw new Error(`ARK ${resp.status}: ${JSON.stringify(json)}`);
-  return json.data[0].url;
-}
-
-async function downloadImage(url, dest) {
+  const url = json.data[0].url;
   const r = await fetch(url);
   if (!r.ok) throw new Error(`download ${r.status}`);
-  const buf = Buffer.from(await r.arrayBuffer());
-  await fs.writeFile(dest, buf);
+  await fs.writeFile(dest, Buffer.from(await r.arrayBuffer()));
 }
 
 function parseFrontmatter(text) {
@@ -215,8 +271,7 @@ if (coverExists && !force) {
   const cprompt = coverPrompt(fm.title, fm.description);
   console.log(`📸 cover: ${cprompt.slice(0, 120)}...`);
   if (!dry) {
-    const url = await generateImage(cprompt, '1280x720');
-    await downloadImage(url, coverPath);
+    await generateImageToFile(cprompt, '1280x720', coverPath);
     console.log(`   → ${coverPath}`);
   }
 }
@@ -234,8 +289,7 @@ for (let i = 0; i < inlinePositions.length; i++) {
   const iprompt = inlinePrompt(pos.title, preview);
   console.log(`📸 inline-${i + 1} (after H2 "${pos.title}"): ${iprompt.slice(0, 120)}...`);
   if (!dry) {
-    const url = await generateImage(iprompt, '1024x1024');
-    await downloadImage(url, dest);
+    await generateImageToFile(iprompt, '1024x1024', dest);
     console.log(`   → ${dest}`);
   }
 }
