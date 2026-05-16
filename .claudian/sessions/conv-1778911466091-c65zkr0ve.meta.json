@@ -4,8 +4,8 @@
   "title": "Publish AI database deletion essay",
   "titleGenerationStatus": "success",
   "createdAt": 1778911466142,
-  "updatedAt": 1778911573917,
-  "lastResponseAt": 1778911573917,
+  "updatedAt": 1778913851625,
+  "lastResponseAt": 1778913851625,
   "sessionId": "f355c36b-c970-433f-8913-24e21f248355",
   "providerState": {
     "providerSessionId": "f355c36b-c970-433f-8913-24e21f248355"
@@ -13,11 +13,11 @@
   "usage": {
     "model": "haiku",
     "inputTokens": 8,
-    "cacheCreationInputTokens": 5728,
-    "cacheReadInputTokens": 41347,
+    "cacheCreationInputTokens": 1048,
+    "cacheReadInputTokens": 63206,
     "contextWindow": 200000,
-    "contextTokens": 47083,
-    "percentage": 24,
+    "contextTokens": 64262,
+    "percentage": 32,
     "contextWindowIsAuthoritative": true
   }
 }
