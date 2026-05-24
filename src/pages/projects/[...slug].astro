@@ -6,6 +6,7 @@ import Pageview from '../../components/Pageview.astro';
 import Comments from '../../components/Comments.astro';
 import Share from '../../components/Share.astro';
 import { slugHref } from '../../lib/url';
+import { AUTHOR, SITE_URL, breadcrumbList } from '../../lib/schema';
 
 export async function getStaticPaths() {
   const all = await getCollection('projects', ({ data }) => !data.draft);
@@ -13,8 +14,43 @@ export async function getStaticPaths() {
 }
 const { entry } = Astro.props;
 const { Content } = await render(entry);
+
+const url = `${SITE_URL}/projects/${slugHref(entry.id)}/`;
+const imageUrl = entry.data.cover
+  ? new URL(entry.data.cover, SITE_URL).toString()
+  : `${SITE_URL}/og-default.svg`;
+
+const isSoftware = Boolean(entry.data.repo) || entry.data.stack.length > 0;
+const creativeWork: Record<string, unknown> = {
+  '@context': 'https://schema.org',
+  '@type': isSoftware ? 'SoftwareApplication' : 'CreativeWork',
+  name: entry.data.title,
+  description: entry.data.description,
+  inLanguage: entry.data.lang === 'en' ? 'en-US' : 'zh-CN',
+  url,
+  image: imageUrl,
+  dateCreated: entry.data.created.toISOString(),
+  dateModified: (entry.data.updated ?? entry.data.created).toISOString(),
+  author: AUTHOR,
+  keywords: [...entry.data.tags, ...entry.data.stack].join(', '),
+  mainEntityOfPage: { '@type': 'WebPage', '@id': url },
+};
+if (entry.data.repo) creativeWork.codeRepository = entry.data.repo;
+if (isSoftware) {
+  creativeWork.applicationCategory = 'DeveloperApplication';
+  if (entry.data.stack.length > 0) {
+    creativeWork.operatingSystem = entry.data.stack.join(', ');
+  }
+}
+
+const breadcrumb = breadcrumbList([
+  { name: 'Home', url: `${SITE_URL}/` },
+  { name: 'Projects', url: `${SITE_URL}/projects/` },
+  { name: entry.data.title, url },
+]);
+const jsonLd = [creativeWork, breadcrumb];
 ---
-<BaseLayout title={entry.data.title} description={entry.data.description} lang={entry.data.lang} ogImage={entry.data.cover}>
+<BaseLayout title={entry.data.title} description={entry.data.description} lang={entry.data.lang} ogImage={entry.data.cover} jsonLd={jsonLd}>
   <article class="prose prose-lg dark:prose-invert max-w-none">
     <header class="not-prose mb-6">
       <h1 class="text-3xl sm:text-4xl">{entry.data.title}</h1>

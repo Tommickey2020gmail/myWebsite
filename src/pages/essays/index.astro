@@ -3,13 +3,46 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PostMeta from '../../components/PostMeta.astro';
 import { slugHref } from '../../lib/url';
+import { SITE_URL } from '../../lib/schema';
 
 const all = (await getCollection('essays', ({ data }) => !data.draft))
   .sort((a, b) => b.data.created.getTime() - a.data.created.getTime());
 const zh = all.filter((e) => e.data.lang === 'zh');
 const en = all.filter((e) => e.data.lang === 'en');
+
+const listUrl = `${SITE_URL}/essays/`;
+const itemList = all.slice(0, 30).map((e, i) => ({
+  '@type': 'ListItem',
+  position: i + 1,
+  url: `${SITE_URL}/essays/${slugHref(e.id)}/`,
+  name: e.data.title,
+  ...(e.data.description ? { description: e.data.description } : {}),
+}));
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: '随笔 / Essays',
+    description: '关于哲学、AI、机器人、脑电、心理学的长文。Long-form writing on philosophy, AI, robotics, EEG, psychology.',
+    url: listUrl,
+    inLanguage: ['zh-CN', 'en-US'],
+    mainEntity: {
+      '@type': 'ItemList',
+      numberOfItems: all.length,
+      itemListElement: itemList,
+    },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE_URL}/` },
+      { '@type': 'ListItem', position: 2, name: 'Essays', item: listUrl },
+    ],
+  },
+];
 ---
-<BaseLayout title="随笔 / Essays" description="关于哲学、AI、机器人、脑电、心理学的长文。Long-form writing on philosophy, AI, robotics, EEG, psychology.">
+<BaseLayout title="随笔 / Essays" description="关于哲学、AI、机器人、脑电、心理学的长文。Long-form writing on philosophy, AI, robotics, EEG, psychology." jsonLd={jsonLd}>
   <h1 class="text-3xl mb-2"><span lang="zh">随笔</span><span class="biling-sep" aria-hidden="true"> / </span><span lang="en">Essays</span></h1>
   <p class="text-muted mb-8"><span lang="zh">当种子长成大树时的更长思考。</span><span class="biling-sep" aria-hidden="true"> / </span><span lang="en">Longer thoughts, when seedlings grow into trees.</span></p>
 

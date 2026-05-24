@@ -5,6 +5,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import HeroGraph from '../components/HeroGraph.astro';
 import EegBand from '../components/EegBand.astro';
 import { slugHref } from '../lib/url';
+import { PUBLISHER } from '../lib/schema';
 
 const allGarden = (await getCollection('garden', ({ data }) => !data.draft))
   .sort((a, b) => (b.data.updated ?? b.data.created).getTime() - (a.data.updated ?? a.data.created).getTime())
@@ -22,16 +23,23 @@ const jsonLd = [
   {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
+    '@id': `${siteUrl}/#website`,
     name: "Tommy's Digital Garden",
     url: `${siteUrl}/`,
     inLanguage: ['zh-CN', 'en-US'],
     description: 'Tommy 的数字花园 — 哲学、AI、机器人、脑电反馈、心理学、科幻。',
+    publisher: { '@id': `${siteUrl}/#publisher` },
   },
   {
     '@context': 'https://schema.org',
     '@type': 'Person',
+    '@id': `${siteUrl}/#person`,
     name: 'Tommy',
     url: `${siteUrl}/`,
+    image: `${siteUrl}/avatar.png`,
+    description:
+      'I think and build at the intersection of philosophy, AI, robotics, EEG biofeedback, psychology, dementia prevention, and science fiction.',
+    jobTitle: 'Software engineer and independent researcher',
     email: 'tommickey2020@gmail.com',
     sameAs: ['https://github.com/Tommickey2020gmail'],
     knowsAbout: [
@@ -40,9 +48,11 @@ const jsonLd = [
       'Robotics',
       'EEG Biofeedback',
       'Psychology',
+      'Dementia Prevention',
       'Science Fiction',
     ],
   },
+  { '@context': 'https://schema.org', ...PUBLISHER },
 ];
 ---
 <BaseLayout title="首页 / Home" description="Tommy 的数字花园 — 哲学、AI、机器人、脑电反馈、心理学、科幻。Tommy's digital garden — philosophy, AI, robotics, EEG biofeedback, psychology, science fiction." jsonLd={jsonLd}>

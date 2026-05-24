@@ -9,6 +9,7 @@ import Share from '../../components/Share.astro';
 import { slugHref } from '../../lib/url';
 import { readingStats } from '../../lib/reading';
 import { getBacklinks } from '../../lib/backlinks';
+import { AUTHOR, PUBLISHER, SITE_URL, breadcrumbList } from '../../lib/schema';
 
 export async function getStaticPaths() {
   const all = await getCollection('essays', ({ data }) => !data.draft);
@@ -19,8 +20,11 @@ const { Content } = await render(entry);
 const reading = readingStats(entry.body ?? '');
 const backlinks = await getBacklinks('essays', entry.id);
 
-const url = `https://tommickey.cn/essays/${slugHref(entry.id)}/`;
-const jsonLd = {
+const url = `${SITE_URL}/essays/${slugHref(entry.id)}/`;
+const imageUrl = entry.data.cover
+  ? new URL(entry.data.cover, SITE_URL).toString()
+  : `${SITE_URL}/og-default.svg`;
+const blogPosting = {
   '@context': 'https://schema.org',
   '@type': 'BlogPosting',
   headline: entry.data.title,
@@ -28,11 +32,25 @@ const jsonLd = {
   inLanguage: entry.data.lang === 'en' ? 'en-US' : 'zh-CN',
   datePublished: entry.data.created.toISOString(),
   dateModified: (entry.data.updated ?? entry.data.created).toISOString(),
-  author: { '@type': 'Person', name: 'Tommy', url: 'https://tommickey.cn/' },
+  author: AUTHOR,
+  publisher: PUBLISHER,
+  image: imageUrl,
+  wordCount: reading.total,
+  articleSection: 'Essays',
   keywords: entry.data.tags.join(', '),
   mainEntityOfPage: { '@type': 'WebPage', '@id': url },
   url,
+  speakable: {
+    '@type': 'SpeakableSpecification',
+    cssSelector: ['h1', '.prose > p:first-of-type'],
+  },
 };
+const breadcrumb = breadcrumbList([
+  { name: 'Home', url: `${SITE_URL}/` },
+  { name: 'Essays', url: `${SITE_URL}/essays/` },
+  { name: entry.data.title, url },
+]);
+const jsonLd = [blogPosting, breadcrumb];
 ---
 <BaseLayout
   title={entry.data.title}

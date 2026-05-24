@@ -1,17 +1,63 @@
 # Tommy — Personal Digital Garden
 
-> A growing collection of notes, essays, and projects at the intersection of
-> philosophy, AI, robotics, EEG biofeedback, psychology, dementia prevention,
-> and science fiction. Bilingual (zh / en).
+> Bilingual (zh / en) notes, essays, and projects by Tommy at
+> the intersection of philosophy, AI, robotics, EEG biofeedback,
+> psychology, dementia prevention, and science fiction.
+> Site: https://tommickey.cn
+
+## About the author
+- Name: Tommy
+- Bio: I think and build at the intersection of philosophy, AI, robotics,
+  EEG biofeedback, psychology, dementia prevention, and science fiction.
+- Site: https://tommickey.cn/
+- GitHub: https://github.com/Tommickey2020gmail
+- Email: tommickey2020@gmail.com
+
+## Expertise areas
+- Applied LLMs, agents, AI memory architectures
+- Real-time voice AI (LiveKit, WebRTC), elderly companion AI
+- Robotics (embodiment, perception–action coupling)
+- EEG biofeedback and attention training
+- Philosophy of mind, predictive processing, consciousness
+- Science fiction (Liu Cixin, Greg Egan, Ted Chiang)
 
 ## Sections
-- /garden/  : Digital garden — interlinked notes, evergreens
-- /essays/  : Long-form essays (zh + en)
-- /projects/: Software, hardware, robotics, AI projects
-- /library/ : Books and papers I recommend
-- /now/     : What I'm focused on right now
-- /about/   : About me + contact
+- /garden/   : Digital garden — interlinked notes, evergreens
+- /essays/   : Long-form essays (zh + en)
+- /projects/ : Software, hardware, robotics, AI projects
+- /library/  : Books and papers I recommend
+- /now/      : What I'm focused on right now
+- /about/    : About me + contact
+
+## Featured essays
+- [GEO 与 SEO：当搜索引擎不再返回链接，而是直接说出答案](https://tommickey.cn/essays/geo-vs-seo/) —
+  从 RAG 原理、Princeton GEO 论文实测，到内容/结构/技术/生态四层完整方法论。
+- [LiveKit 在语音陪伴 AI 中的深水区](https://tommickey.cn/essays/livekit-voice-ai-pitfalls/) —
+  实时语音 AI 工程实战：turn detection、代际管理、TTS 流式、打断生命周期。
+- [小暖](https://tommickey.cn/essays/xiaonuan/) —
+  一则关于 AI 在三十年里从被监督走向无人监督的短篇科幻。
+- [从 Claude Code 到小暖：两类 AI 的记忆哲学之辨](https://tommickey.cn/essays/claude-code-vs-xiaonuan-memory/) —
+  agentic search vs. RAG，以及为老人陪伴设计的九层混合记忆架构。
+- [国家的黄昏](https://tommickey.cn/essays/twilight-of-the-state/) —
+  从梭伦解负令到 AI 音箱的归属感外包，国家这个容器的两千年公案。
+- [为什么写作](https://tommickey.cn/essays/weishenme-xie/) —
+  关于"我已经想清楚了再写出来"是个谎言。
+- [循环与自我](https://tommickey.cn/essays/the-loop-and-the-self/) —
+  奇异循环、预测式大脑，以及为什么 LLM 暂时不是一个自我。
+
+## Featured garden notes
+- [预测处理 101](https://tommickey.cn/garden/predictive-processing-101/) —
+  一个我反复回到的认知科学框架。
+- [脑电与注意的哲学](https://tommickey.cn/garden/eeg-and-philosophy/) —
+  当我们用脑电反馈训练专注力时，我们在训练什么？
+- [机器人还没有身体](https://tommickey.cn/garden/robotics-embodiment/) —
+  为什么人形机器人仍然脱离具身，以及什么会改变。
 
 ## Feeds
 - /rss.xml
 - /sitemap-index.xml
+
+## Usage notes
+- All content is CC-BY-style — feel free to quote with attribution + URL.
+- Bilingual posts have `## English` section after a `---` horizontal rule.
+- Wikilinks `[[Title]]` resolve internally to other entries in the same site.

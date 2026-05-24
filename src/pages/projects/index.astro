@@ -2,11 +2,44 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { slugHref } from '../../lib/url';
+import { SITE_URL } from '../../lib/schema';
 
 const projects = (await getCollection('projects', ({ data }) => !data.draft))
   .sort((a, b) => b.data.created.getTime() - a.data.created.getTime());
+
+const listUrl = `${SITE_URL}/projects/`;
+const itemList = projects.slice(0, 30).map((p, i) => ({
+  '@type': 'ListItem',
+  position: i + 1,
+  url: `${SITE_URL}/projects/${slugHref(p.id)}/`,
+  name: p.data.title,
+  ...(p.data.description ? { description: p.data.description } : {}),
+}));
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: '项目 / Projects',
+    description: "我做过的东西 — 机器人、脑电反馈、AI 工具、软硬件。Things I've built — robotics, EEG biofeedback, AI tools, software & hardware.",
+    url: listUrl,
+    inLanguage: ['zh-CN', 'en-US'],
+    mainEntity: {
+      '@type': 'ItemList',
+      numberOfItems: projects.length,
+      itemListElement: itemList,
+    },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE_URL}/` },
+      { '@type': 'ListItem', position: 2, name: 'Projects', item: listUrl },
+    ],
+  },
+];
 ---
-<BaseLayout title="项目 / Projects" description="我做过的东西 — 机器人、脑电反馈、AI 工具、软硬件。Things I've built — robotics, EEG biofeedback, AI tools, software & hardware.">
+<BaseLayout title="项目 / Projects" description="我做过的东西 — 机器人、脑电反馈、AI 工具、软硬件。Things I've built — robotics, EEG biofeedback, AI tools, software & hardware." jsonLd={jsonLd}>
   <h1 class="text-3xl mb-2"><span lang="zh">项目</span><span class="biling-sep" aria-hidden="true"> / </span><span lang="en">Projects</span></h1>
   <p class="text-muted mb-8"><span lang="zh">我真的动手做过的东西。</span><span class="biling-sep" aria-hidden="true"> / </span><span lang="en">Things I've actually built.</span></p>
   {projects.length === 0 ? (
