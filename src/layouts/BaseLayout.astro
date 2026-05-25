@@ -50,6 +50,19 @@ const ogImageUrl = new URL(ogImage ?? '/og-default.svg', siteUrl).toString();
     {/* Search engine site verification */}
     <meta name="baidu-site-verification" content="codeva-gKdcocgpba" />
 
+    {/* Baidu auto-push — pings 百度 with the current URL on every page
+        view so freshly published / updated pages reach 普通收录 outside
+        the 10-per-day active-push API quota. Async; no UX impact. */}
+    <script is:inline>
+      (function () {
+        var bp = document.createElement('script');
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        bp.async = true;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(bp, s);
+      })();
+    </script>
+
     {/* Open Graph */}
     <meta property="og:type" content={article ? 'article' : 'website'} />
     <meta property="og:title" content={fullTitle} />
