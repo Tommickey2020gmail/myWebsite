@@ -47,6 +47,9 @@ const ogImageUrl = new URL(ogImage ?? '/og-default.svg', siteUrl).toString();
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalUrl} />
 
+    {/* Search engine site verification */}
+    <meta name="baidu-site-verification" content="codeva-gKdcocgpba" />
+
     {/* Open Graph */}
     <meta property="og:type" content={article ? 'article' : 'website'} />
     <meta property="og:title" content={fullTitle} />
