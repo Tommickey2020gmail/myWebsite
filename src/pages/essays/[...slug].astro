@@ -9,7 +9,7 @@ import Share from '../../components/Share.astro';
 import { slugHref } from '../../lib/url';
 import { readingStats } from '../../lib/reading';
 import { getBacklinks } from '../../lib/backlinks';
-import { AUTHOR, PUBLISHER, SITE_URL, breadcrumbList } from '../../lib/schema';
+import { AUTHOR, PUBLISHER, SITE_URL, breadcrumbList, mentionsForTags } from '../../lib/schema';
 
 export async function getStaticPaths() {
   const all = await getCollection('essays', ({ data }) => !data.draft);
@@ -24,7 +24,8 @@ const url = `${SITE_URL}/essays/${slugHref(entry.id)}/`;
 const imageUrl = entry.data.cover
   ? new URL(entry.data.cover, SITE_URL).toString()
   : `${SITE_URL}/og-default.svg`;
-const blogPosting = {
+const mentions = mentionsForTags(entry.data.tags);
+const blogPosting: Record<string, unknown> = {
   '@context': 'https://schema.org',
   '@type': 'BlogPosting',
   headline: entry.data.title,
@@ -45,6 +46,10 @@ const blogPosting = {
     cssSelector: ['h1', '.prose > p:first-of-type'],
   },
 };
+if (mentions) {
+  blogPosting.about = mentions;
+  blogPosting.mentions = mentions;
+}
 const breadcrumb = breadcrumbList([
   { name: 'Home', url: `${SITE_URL}/` },
   { name: 'Essays', url: `${SITE_URL}/essays/` },

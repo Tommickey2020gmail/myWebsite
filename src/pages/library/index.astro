@@ -2,6 +2,7 @@
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { paperHref } from '../../lib/url';
+import { SITE_URL, breadcrumbList } from '../../lib/schema';
 
 const books = (await getCollection('books', ({ data }) => !data.draft))
   .sort((a, b) => (b.data.finished ?? b.data.created).getTime() - (a.data.finished ?? a.data.created).getTime());
@@ -17,8 +18,68 @@ const paperBlocks = await Promise.all(
 );
 
 const fmt = (d?: Date) => (d ? d.toISOString().slice(0, 10) : '');
+
+const listUrl = `${SITE_URL}/library/`;
+const bookItems = books.map((b) => {
+  const item: Record<string, unknown> = {
+    '@type': 'Book',
+    '@id': `${listUrl}#book-${b.id}`,
+    name: b.data.title,
+    author: { '@type': 'Person', name: b.data.author },
+    url: `${listUrl}#book-${b.id}`,
+  };
+  if (b.data.description) item.description = b.data.description;
+  if (b.data.rating) {
+    item.aggregateRating = {
+      '@type': 'AggregateRating',
+      ratingValue: b.data.rating,
+      bestRating: 5,
+      worstRating: 1,
+      ratingCount: 1,
+    };
+  }
+  return item;
+});
+const paperItems = papers.map((p) => {
+  const item: Record<string, unknown> = {
+    '@type': 'ScholarlyArticle',
+    '@id': `${listUrl}#paper-${p.id}`,
+    name: p.data.title,
+    url: paperHref(p.data.link, p.data.doi),
+  };
+  if (p.data.authors.length > 0) {
+    item.author = p.data.authors.map((name) => ({ '@type': 'Person', name }));
+  }
+  if (p.data.venue) item.publisher = { '@type': 'Organization', name: p.data.venue };
+  if (p.data.doi) item.sameAs = `https://doi.org/${p.data.doi.replace(/^doi:/i, '')}`;
+  if (p.data.description) item.description = p.data.description;
+  return item;
+});
+const collectionPage = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: '书房 / Library',
+  description: "Books and papers I've read and recommend.",
+  url: listUrl,
+  inLanguage: ['zh-CN', 'en-US'],
+  hasPart: [...bookItems, ...paperItems],
+  mainEntity: {
+    '@type': 'ItemList',
+    numberOfItems: bookItems.length + paperItems.length,
+    itemListElement: [...bookItems, ...paperItems].map((thing, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      item: thing,
+    })),
+  },
+};
+const breadcrumb = breadcrumbList([
+  { name: 'Home', url: `${SITE_URL}/` },
+  { name: 'Library', url: listUrl },
+]);
+const jsonLd = [collectionPage, breadcrumb];
 ---
-<BaseLayout title="书房 / Library" description="我读过并推荐的书与论文。Books and papers I've read and recommend.">
+<BaseLayout title="书房 / Library" description="我读过并推荐的书与论文。Books and papers I've read and recommend." jsonLd={jsonLd}>
   <h1 class="text-3xl mb-2"><span lang="zh">书房</span><span class="biling-sep" aria-hidden="true"> / </span><span lang="en">Library</span></h1>
   <p class="text-muted mb-8"><span lang="zh">塑造我思考的输入。点开任意条目查看笔记。</span><span class="biling-sep" aria-hidden="true"> / </span><span lang="en">Inputs that shaped my thinking. Open any entry for notes.</span></p>
 
