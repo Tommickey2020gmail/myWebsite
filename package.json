@@ -10,7 +10,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "gen:images": "node --env-file=.env scripts/gen-images.mjs"
+    "gen:images": "node --env-file=.env scripts/gen-images.mjs",
+    "wechat:export": "node scripts/wechat-export.mjs"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.18",
