@@ -1,0 +1,8 @@
+.venv/
+.wx-profile/
+dist/
+build/
+*.spec
+__pycache__/
+bundles/*
+!bundles/.gitkeep
