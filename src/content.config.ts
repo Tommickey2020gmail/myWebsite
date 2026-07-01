@@ -13,6 +13,8 @@ const baseFields = {
   updated: z.coerce.date().optional(),
   draft: z.boolean().default(false),
   cover: z.string().optional(),
+  // Pre-generated read-aloud audio (mp3 on R2). Set by scripts/gen-audio.mjs.
+  audio: z.string().url().optional(),
 };
 
 const garden = defineCollection({

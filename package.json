@@ -11,6 +11,7 @@
     "preview": "astro preview",
     "astro": "astro",
     "gen:images": "node --env-file=.env scripts/gen-images.mjs",
+    "gen:audio": "node --env-file=.env scripts/gen-audio.mjs",
     "wechat:export": "node scripts/wechat-export.mjs"
   },
   "dependencies": {

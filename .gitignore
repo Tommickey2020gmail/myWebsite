@@ -34,3 +34,6 @@ Thumbs.db
 *.log
 baidu-urls.txt
 wechat-export/
+
+# read-aloud mp3 local cache (uploaded to R2)
+audio-out/

@@ -1,12 +1,25 @@
 ---
 // src/components/ReadAloud.astro
-// Read-aloud (TTS) button using the browser-native Web Speech API
-// (SpeechSynthesis). Zero backend — works on the static Cloudflare site.
-// Reads the visible-language blocks of the article, highlighting each block
-// as it is spoken. The button is always shown; in webviews that lack the
-// Speech API (notably WeChat on Android), tapping it shows a hint to open
-// the page in a real browser, where read-aloud works.
+// Read-aloud for article pages, with two modes:
+//  1. If `audioSrc` (a pre-generated mp3, e.g. Doubao TTS on R2) is given,
+//     render a native <audio> player — works everywhere, WeChat included.
+//  2. Otherwise fall back to the browser-native Web Speech API button.
+//     The button is always shown; in webviews that lack the Speech API
+//     (notably WeChat on Android), tapping it hints to open in a real browser.
+export interface Props {
+  audioSrc?: string;
+}
+const { audioSrc } = Astro.props;
 ---
+{audioSrc ? (
+  <span class="read-aloud read-aloud-audio">
+    <span class="ra-audio-label" aria-hidden="true">
+      <svg class="ra-ico" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3a4.5 4.5 0 0 0-2.5-4.03v8.05A4.5 4.5 0 0 0 16.5 12z"/></svg>
+      <span lang="zh">朗读</span><span class="biling-sep"> / </span><span lang="en">Listen</span>
+    </span>
+    <audio class="ra-audio" controls preload="none" src={audioSrc}></audio>
+  </span>
+) : (
 <span class="read-aloud" data-read-aloud>
   <button type="button" class="ra-btn" data-ra-toggle
     title="朗读全文 / Listen to this article"
@@ -31,7 +44,29 @@
     <span lang="zh">当前浏览器不支持朗读，请点右上角「···」在浏览器中打开</span><span lang="en">Read-aloud isn’t supported here — open this page in your browser.</span>
   </span>
 </span>
+)}
 
+<style>
+  .read-aloud-audio {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+  }
+  .ra-audio-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.75rem;
+    color: var(--color-muted);
+  }
+  .ra-audio-label .ra-ico { width: 0.95rem; height: 0.95rem; }
+  .ra-audio {
+    height: 2rem;
+    max-width: min(20rem, 70vw);
+    vertical-align: middle;
+  }
+</style>
 <style>
   .read-aloud {
     display: inline-flex;
