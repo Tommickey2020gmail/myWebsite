@@ -6,6 +6,7 @@ description_en: For two audiences — beginners who just heard the word "Skill",
 lang: zh
 tags: [ai, llm, claude-code, skills, agents, tutorial]
 created: 2026-06-03
+audio: https://audio.tommickey.cn/claude-skills-guide.mp3?v=1d9d8003
 ---
 
 ## 引子：你是不是一直在重复同一段话？

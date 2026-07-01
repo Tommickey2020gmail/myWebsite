@@ -7,6 +7,7 @@ lang: zh
 status: seedling
 created: 2026-05-09
 tags: [family, memory, grief, personal]
+audio: https://audio.tommickey.cn/presence-in-absence.mp3?v=5dcd75c7
 ---
 
 五年了，思念像潮水，每到这样的日子就漫上心头。

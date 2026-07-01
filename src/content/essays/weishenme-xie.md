@@ -6,6 +6,7 @@ description_en: On why "I figured it out, then wrote it down" is a lie.
 lang: zh
 created: 2026-05-02
 tags: [writing, meta, philosophy, psychology]
+audio: https://audio.tommickey.cn/weishenme-xie.mp3?v=afe1cf82
 ---
 
 很多人——尤其是受过完整学术训练的人——以为写作的流程是：

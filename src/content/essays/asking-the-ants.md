@@ -7,6 +7,7 @@ lang: zh
 tags: [philosophy, ai, democracy, ethics, alignment]
 created: 2026-06-07
 cover: /illustrations/asking-the-ants/cover.jpeg
+audio: https://audio.tommickey.cn/asking-the-ants.mp3?v=620644ca
 ---
 ![征求蚂蚁的意见](/illustrations/asking-the-ants/cover.jpeg)
 

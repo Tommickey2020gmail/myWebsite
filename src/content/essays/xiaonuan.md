@@ -7,6 +7,7 @@ lang: zh
 tags: [fiction, ai, alignment, philosophy, longform]
 created: 2026-05-21
 cover: /illustrations/xiaonuan/cover.jpeg
+audio: https://audio.tommickey.cn/xiaonuan.mp3?v=2b95219f
 ---
 
 ## 一

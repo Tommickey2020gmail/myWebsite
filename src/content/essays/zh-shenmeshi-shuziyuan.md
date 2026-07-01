@@ -6,6 +6,7 @@ description_en: A slower, more patient, more error-tolerant kind of writing than
 lang: zh
 created: 2026-04-30
 tags: [meta, writing]
+audio: https://audio.tommickey.cn/zh-shenmeshi-shuziyuan.mp3?v=d8f3a06c
 ---
 
 博客是表演，数字花园是耕作。

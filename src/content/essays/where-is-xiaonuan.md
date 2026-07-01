@@ -6,6 +6,7 @@ description_en: While building Xiaonuan's chassis I froze at one line on the bil
 lang: zh
 tags: [ai, robotics, philosophy, consciousness, longform]
 created: 2026-06-06
+audio: https://audio.tommickey.cn/where-is-xiaonuan.mp3?v=6b239b49
 ---
 
 ## 一

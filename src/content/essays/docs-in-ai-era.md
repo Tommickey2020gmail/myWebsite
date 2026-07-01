@@ -5,6 +5,7 @@ lang: zh
 tags: [ai, engineering, management, documentation, opinion]
 created: 2026-05-08
 cover: /illustrations/docs-in-ai-era/cover.jpeg
+audio: https://audio.tommickey.cn/docs-in-ai-era.mp3?v=bedaab37
 ---
 ![漕运档案与代码注释——AI 时代的软件文档断舍离](/illustrations/docs-in-ai-era/cover.jpeg)
 

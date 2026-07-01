@@ -9,6 +9,7 @@ featured: true
 repo: https://github.com/Tommickey2020gmail/inner-speech-engine
 stack: [Python, litellm, Pydantic v2, Jinja2, SQLite, scikit-learn]
 tags: [ai, cognitive-science, philosophy, consciousness]
+audio: https://audio.tommickey.cn/inner-speech-engine.mp3?v=d581bdd2
 ---
 
 > Inner Speech Engine: Vygotskian Self-Dialogue for AI Intent Deliberation

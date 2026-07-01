@@ -10,6 +10,7 @@ featured: true
 stack: [Astro 6, Tailwind 4, TypeScript, Cloudflare Pages, Cloudflare Tunnel, Obsidian, Waline, SQLite]
 repo: https://github.com/Tommickey2020gmail/myWebsite
 tags: [meta, web, digital-garden]
+audio: https://audio.tommickey.cn/personal-website.mp3?v=1ea39f1c
 ---
 
 你正在阅读的这个网站。源码可见，内容开放。

@@ -4,6 +4,7 @@ description: 在 AI 圈一窝蜂吹 Skill 模块化、Agent 分主从、DAG 编�
 lang: zh
 tags: [ai, engineering, architecture, opinion]
 created: 2026-05-03
+audio: https://audio.tommickey.cn/against-ai-architecture-hype.mp3?v=1ea1499d
 ---
 
 最近圈里特时髦一种文章。Agent 要分主从，Skill 要模块化，协议要标准化，编排得走图——一套一套的，名词儿一个比一个唬人，分层一层比一层精致。看的人热血上头，恨不得连夜把手里跑得好好的系统推了重来。

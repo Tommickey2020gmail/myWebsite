@@ -7,6 +7,7 @@ lang: zh
 status: seedling
 created: 2026-06-13
 tags: [ai, creativity, writing, personal]
+audio: https://audio.tommickey.cn/it-ideates-i-lose-sleep.mp3?v=d3e215ef
 ---
 
 近几年天天与 AI 共事，我对"灵感"的看法变了。

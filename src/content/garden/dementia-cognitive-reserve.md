@@ -7,6 +7,7 @@ lang: zh
 status: seedling
 created: 2026-05-02
 tags: [psychology, neuroscience, dementia, prevention]
+audio: https://audio.tommickey.cn/dementia-cognitive-reserve.mp3?v=6aa1d6a1
 ---
 
 两颗大脑可以有几乎完全相同的阿尔茨海默病理，但活出完全不同的人生——一个直到去世仍功能完好，另一个则严重痴呆十年。

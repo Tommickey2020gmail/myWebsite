@@ -6,6 +6,7 @@ description_en: A content creator must rethink what "being seen" means. From RAG
 lang: zh
 tags: [seo, geo, ai, llm, content, marketing, rag]
 created: 2026-05-24
+audio: https://audio.tommickey.cn/geo-vs-seo.mp3?v=0ccb57c7
 ---
 
 一个内容生产者必须重新理解"被看见"这件事

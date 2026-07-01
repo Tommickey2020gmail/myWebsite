@@ -8,6 +8,7 @@ created: 2026-05-02
 featured: true
 stack: [Python, PyTorch, MNE, Muse 2 / OpenBCI, FastAPI]
 tags: [eeg, biofeedback, attention, robotics]
+audio: https://audio.tommickey.cn/eeg-attention-trainer.mp3?v=9f75ac92
 ---
 
 一个长期的副项目，目前在慢炖模式。

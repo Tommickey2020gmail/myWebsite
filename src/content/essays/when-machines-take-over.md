@@ -5,6 +5,7 @@ lang: zh
 tags: [ai, philosophy, psychology, society]
 created: 2026-05-05
 cover: /illustrations/when-machines-take-over/cover.jpeg
+audio: https://audio.tommickey.cn/when-machines-take-over.mp3?v=82a74472
 ---
 ![当机器开始管事：一个关于人心崩塌的推演](/illustrations/when-machines-take-over/cover.jpeg)
 

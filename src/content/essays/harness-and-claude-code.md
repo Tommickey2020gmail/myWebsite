@@ -6,6 +6,7 @@ description_en: For two audiences — beginners who just heard about AI agents, 
 lang: zh
 tags: [ai, llm, agents, claude-code, harness, engineering]
 created: 2026-05-29
+audio: https://audio.tommickey.cn/harness-and-claude-code.mp3?v=fbc83804
 ---
 
 ## 引子：为什么模型选对了，agent 还是不好用？

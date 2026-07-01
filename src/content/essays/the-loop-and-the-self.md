@@ -6,6 +6,7 @@ description_en: On strange loops, predictive brains, and why an LLM is not (yet)
 lang: zh
 created: 2026-05-02
 tags: [philosophy, ai, consciousness, cognitive-science]
+audio: https://audio.tommickey.cn/the-loop-and-the-self.mp3?v=57364553
 ---
 
 Hofstadter 的《哥德尔、艾舍尔、巴赫》主张了一个大论点和一千个小论点。大论点是：自我是一个**奇异循环**——一个其表征层不断回折到自身的系统，直到该系统在它的某个底质里包含了一个表征"自身正在表征自身"的模型。

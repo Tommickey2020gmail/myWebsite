@@ -7,6 +7,7 @@ lang: zh
 status: seedling
 created: 2026-05-02
 tags: [psychology, philosophy, ai, attention]
+audio: https://audio.tommickey.cn/xinliu-yu-jiqi.mp3?v=428e0d62
 ---
 
 Csíkszentmihályi 把心流描述为 **挑战与技能恰好平衡** 的状态——

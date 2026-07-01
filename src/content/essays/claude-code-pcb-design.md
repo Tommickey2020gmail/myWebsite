@@ -7,6 +7,7 @@ lang: zh
 tags: [ai, claude-code, pcb, hardware, kicad]
 created: 2026-06-09
 cover: /illustrations/claude-code-pcb-design/cover.jpeg
+audio: https://audio.tommickey.cn/claude-code-pcb-design.mp3?v=4b6a698d
 ---
 
 ![用 Claude Code 生成 PCB 电路图：技巧、工具与实战评估](/illustrations/claude-code-pcb-design/cover.jpeg)

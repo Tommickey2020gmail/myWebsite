@@ -6,6 +6,7 @@ description_en: An overview of RAG's evolution, schools, and field-specific depl
 lang: zh
 tags: [ai, rag, llm, engineering, agents]
 created: 2026-05-13
+audio: https://audio.tommickey.cn/rag-landscape-2026.mp3?v=00be2a5c
 ---
 
 ## 摘要

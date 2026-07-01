@@ -7,6 +7,7 @@ lang: zh
 status: seedling
 created: 2026-04-30
 tags: [eeg, philosophy, attention]
+audio: https://audio.tommickey.cn/eeg-and-philosophy.mp3?v=c4f6b692
 ---
 
 当我们用脑电反馈训练注意力时，被训练的*对象*究竟是什么？

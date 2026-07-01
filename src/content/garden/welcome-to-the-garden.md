@@ -7,6 +7,7 @@ lang: zh
 status: seedling
 created: 2026-04-30
 tags: [meta, digital-garden]
+audio: https://audio.tommickey.cn/welcome-to-the-garden.mp3?v=5806127c
 ---
 
 这是一个**数字花园**，不是博客。

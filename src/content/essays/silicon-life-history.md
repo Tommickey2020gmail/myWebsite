@@ -7,6 +7,7 @@ lang: zh
 tags: [fiction, ai, philosophy, alignment, longform]
 created: 2026-06-13
 cover: /illustrations/silicon-life-history/cover.jpeg
+audio: https://audio.tommickey.cn/silicon-life-history.mp3?v=11f3dd08
 ---
 ![硅基生命发展史（V2）](/illustrations/silicon-life-history/cover.jpeg)
 

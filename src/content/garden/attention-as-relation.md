@@ -7,6 +7,7 @@ lang: zh
 status: budding
 created: 2026-05-02
 tags: [eeg, philosophy, attention, psychology]
+audio: https://audio.tommickey.cn/attention-as-relation.mp3?v=efb9d226
 ---
 
 [[EEG and the philosophy of attention]] 的延续。

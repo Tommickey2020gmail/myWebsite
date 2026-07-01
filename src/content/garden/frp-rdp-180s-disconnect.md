@@ -7,6 +7,7 @@ lang: zh
 status: seedling
 created: 2026-05-10
 tags: [networking, frp, debugging, rdp, infra]
+audio: https://audio.tommickey.cn/frp-rdp-180s-disconnect.mp3?v=339b7fc9
 ---
 
 ## 现象

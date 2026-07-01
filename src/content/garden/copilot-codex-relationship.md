@@ -7,6 +7,7 @@ lang: zh
 status: seedling
 created: 2026-06-02
 tags: [ai, coding-agents, copilot, codex, openai, microsoft]
+audio: https://audio.tommickey.cn/copilot-codex-relationship.mp3?v=f8951193
 ---
 
 一句话概括 Copilot 和 Codex 的关系：**它们同源但现在是竞争对手**——Copilot 当年是靠 Codex 起家的，如今却成了分属微软和 OpenAI 两家、相互竞争的产品，而 "Codex" 这个名字本身还被复用过一次，是这个领域几乎所有混淆的根源。

@@ -4,6 +4,7 @@ description: 面向工程验收照片场景，从威胁建模、技术派系、�
 lang: zh
 tags: [ai, engineering, security, forensics, system-design]
 created: 2026-05-07
+audio: https://audio.tommickey.cn/engineering-acceptance-anti-forgery.mp3?v=aed5944a
 ---
 
 > **作者注**：本文面向"工程项目质量检测验收照片"这一具体场景，从技术原理、工程方案、实施路径三个维度系统梳理。文末给出可落地的系统架构与关键代码示意，可作为后续产品立项的技术预研基础。

@@ -7,6 +7,7 @@ lang: zh
 status: seedling
 created: 2026-05-18
 tags: [networking, proxy, shadowsocks, infra]
+audio: https://audio.tommickey.cn/shadowsocks-101.mp3?v=cc155f41
 ---
 
 > 本文从纯技术角度梳理 Shadowsocks 的协议设计、部署方式与局限。作为网络工程笔记备查。

@@ -4,6 +4,7 @@ description: 从九秒删库到供应链蠕虫——AI事故如何逼出产业�
 lang: zh
 created: 2026-05-16
 tags: [ai, 思辨, 安全, 系统设计, 技术伦理, agent, 基础设施]
+audio: https://audio.tommickey.cn/2026-05-16-gengyin-nian-ai-shuku-liechuan.mp3?v=ca4dfbf0
 ---
 
 ## 楔子：九秒钟，一座小城

@@ -7,6 +7,7 @@ lang: zh
 status: seedling
 created: 2026-05-02
 tags: [robotics, ai, embodiment, philosophy]
+audio: https://audio.tommickey.cn/robotics-embodiment.mp3?v=cdd5bc77
 ---
 
 2026 年的人形机器人有作动器、传感器，越来越多还运行着一颗在板载 GPU 上跑的基础模型作为"大脑"。它能走路、能操作物体，能回答关于自己刚才做了什么的问题。

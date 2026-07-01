@@ -7,6 +7,7 @@ lang: zh
 tags: [ai, asr, speech, engineering, deployment]
 created: 2026-05-18
 cover: /illustrations/asr-landscape-2026/cover.jpeg
+audio: https://audio.tommickey.cn/asr-landscape-2026.mp3?v=29a41544
 ---
 
 写在前面：本文不是一份"哪个模型最好"的榜单文章。ASR 选型本质上是一个多目标约束问题——准确率、延迟、并发成本、方言覆盖、私有化要求、热词定制能力等都在博弈。所以本文会先把架构、训练、方言这些底层技术讲清楚，再把它们和三类典型业务场景（小暖陪伴对话、企业语音客服、语音素材转换）做匹配，给出可执行的选型建议。

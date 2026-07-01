@@ -6,6 +6,7 @@ description_en: You thought you were wiring a WebRTC pipe — you're actually sc
 lang: zh
 tags: [ai, voice, livekit, webrtc, engineering, xiaonuan]
 created: 2026-05-22
+audio: https://audio.tommickey.cn/livekit-voice-ai-pitfalls.mp3?v=ce45eca3
 ---
 
 副标题：当你以为只是搭个 WebRTC 管道，实际上是在做实时分布式系统调度

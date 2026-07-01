@@ -7,6 +7,7 @@ lang: zh
 status: seedling
 created: 2026-07-01
 tags: [family, time, grief, personal]
+audio: https://audio.tommickey.cn/no-one-waits-in-place.mp3?v=c7b51ec4
 ---
 
 父亲这些日子很忙。每天写东西，记些什么，把日子过得满满当当，像是怕被人看出空。我打电话回去，他三言两语就把话头岔开，说自己正写到兴头上，不耽误。我信了大半——他是真的把自己活得很有兴致。可我也知道，这份兴致里，藏着一句他不肯说出口的话：你什么时候回来。

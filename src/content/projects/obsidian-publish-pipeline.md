@@ -8,6 +8,7 @@ created: 2026-05-02
 stack: [Obsidian, Git, Astro, GitHub, Cloudflare Pages]
 repo: https://github.com/Tommickey2020gmail/myWebsite
 tags: [meta, web, writing, tools]
+audio: https://audio.tommickey.cn/obsidian-publish-pipeline.mp3?v=008a690b
 ---
 
 这与其说是一个独立项目，不如说是 [[tommickey.cn (this site)|tommickey.cn（本站）]] 的**内容工作流**。把它作为项目记录是因为这套工作流本身可被复用。

@@ -7,6 +7,7 @@ lang: zh
 tags: [ai, philosophy, work, meaning, society]
 created: 2026-05-14
 cover: /illustrations/is-hard-work-the-most-dangerous-thing/cover.jpeg
+audio: https://audio.tommickey.cn/is-hard-work-the-most-dangerous-thing.mp3?v=03a41c06
 ---
 ![努力工作，是这个世界最危险的事吗？](/illustrations/is-hard-work-the-most-dangerous-thing/cover.jpeg)
 

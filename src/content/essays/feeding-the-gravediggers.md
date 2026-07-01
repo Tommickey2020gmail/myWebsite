@@ -7,6 +7,7 @@ lang: zh
 tags: [ai, technology, labor, philosophy, longform]
 created: 2026-06-19
 cover: /illustrations/feeding-the-gravediggers/cover.jpeg
+audio: https://audio.tommickey.cn/feeding-the-gravediggers.mp3?v=327b15ce
 ---
 ![速朽：喂养掘墓人的人](/illustrations/feeding-the-gravediggers/cover.jpeg)
 

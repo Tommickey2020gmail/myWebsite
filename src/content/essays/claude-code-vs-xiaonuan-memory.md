@@ -7,6 +7,7 @@ lang: zh
 tags: [ai, llm, memory, rag, claude-code, agent, xiaonuan, engineering]
 created: 2026-05-20
 cover: /illustrations/claude-code-vs-xiaonuan-memory/cover.jpeg
+audio: https://audio.tommickey.cn/claude-code-vs-xiaonuan-memory.mp3?v=8dadf347
 ---
 
 > *关于"为什么 Claude Code 不用 RAG"，以及陪伴型 AI 该怎么"记住"一个人*

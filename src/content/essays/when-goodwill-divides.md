@@ -4,6 +4,7 @@ description: 同一个孩子摔倒，奶奶和爸爸做出截然相反的选择�
 lang: zh
 tags: [psychology, philosophy, parenting, management, relationships, opinion]
 created: 2026-05-08
+audio: https://audio.tommickey.cn/when-goodwill-divides.mp3?v=8cacd08c
 ---
 
 ## 一

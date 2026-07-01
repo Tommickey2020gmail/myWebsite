@@ -4,6 +4,7 @@ description: 读吴公《编码智能体加速何处最甚》札记之后——�
 lang: zh
 tags: [ai, engineering, agents, opinion]
 created: 2026-05-10
+audio: https://audio.tommickey.cn/agent-acceleration-rebuttal.mp3?v=d01edfd2
 ---
 
 近日读吴公一札，题曰《编码智能体加速何处最甚》，列其所见，谓前端最捷，后端次之，基础设施再次之，而研究垫底。读罢掩卷，我倚案沉吟良久，心中却生出一桩疑窦——**吴公此论**，俨然是站在山门外，听里头钟声响了几下，便据声推算殿堂之大小。声是真声，殿也确有其殿，只是他似乎不曾推门进去坐过。

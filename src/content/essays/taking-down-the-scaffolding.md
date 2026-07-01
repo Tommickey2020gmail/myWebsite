@@ -6,6 +6,7 @@ description_en: How writing a paper about inner speech taught me back — more s
 lang: zh
 created: 2026-04-30
 tags: [philosophy, ai, cognitive-science, writing, meta]
+audio: https://audio.tommickey.cn/taking-down-the-scaffolding.mp3?v=2d455525
 ---
 
 我开始写 [[inner-speech-engine|内语引擎]] 这篇论文时，相信一个直觉：**让 AI 想得更清楚的办法，是让它把思考分得更细。**

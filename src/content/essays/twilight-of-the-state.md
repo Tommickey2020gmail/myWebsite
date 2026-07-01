@@ -7,6 +7,7 @@ lang: zh
 tags: [philosophy, political-economy, future, ai, society]
 created: 2026-05-18
 cover: /illustrations/twilight-of-the-state/cover.jpeg
+audio: https://audio.tommickey.cn/twilight-of-the-state.mp3?v=6d9c3671
 ---
 
 副标题：一桩跨越两千年的经济公案

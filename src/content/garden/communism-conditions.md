@@ -7,6 +7,7 @@ lang: zh
 status: seedling
 created: 2026-05-06
 tags: [philosophy, politics, marx, utopia]
+audio: https://audio.tommickey.cn/communism-conditions.mp3?v=cf89217b
 ---
 
 ## 先把原话抄一遍

@@ -7,6 +7,7 @@ lang: zh
 status: seedling
 created: 2026-05-02
 tags: [neuroscience, philosophy, ai, free-energy]
+audio: https://audio.tommickey.cn/predictive-processing-101.mp3?v=cd13ec65
 ---
 
 大脑不是一台刺激-反应机器。它是一台**预测机器**——持续向感觉输入发出自上而下的假设，仅当预测误差熬过几层抑制后才修改这些假设。
