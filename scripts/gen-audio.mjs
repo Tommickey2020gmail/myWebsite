@@ -242,7 +242,10 @@ if (noUpload) {
 }
 const key = `${slug}.mp3`;
 await putR2(key, mp3, 'audio/mpeg');
-audioUrl = `${AUDIO_BASE_URL}/${key}`;
+// Cache-bust: CF edge caches by full URL incl. query string, so a content
+// hash forces a fresh fetch whenever the audio changes (e.g. voice swap).
+const ver = sha256hex(mp3).slice(0, 8);
+audioUrl = `${AUDIO_BASE_URL}/${key}?v=${ver}`;
 console.log(`   uploaded → ${audioUrl}`);
 
 // 4) Write audio: into frontmatter (add or replace).
