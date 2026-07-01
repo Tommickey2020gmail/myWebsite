@@ -3,9 +3,11 @@
 // Read-aloud (TTS) button using the browser-native Web Speech API
 // (SpeechSynthesis). Zero backend — works on the static Cloudflare site.
 // Reads the visible-language blocks of the article, highlighting each block
-// as it is spoken. Auto-hides when the browser lacks speechSynthesis.
+// as it is spoken. The button is always shown; in webviews that lack the
+// Speech API (notably WeChat on Android), tapping it shows a hint to open
+// the page in a real browser, where read-aloud works.
 ---
-<span class="read-aloud" data-read-aloud hidden>
+<span class="read-aloud" data-read-aloud>
   <button type="button" class="ra-btn" data-ra-toggle
     title="朗读全文 / Listen to this article"
     aria-label="朗读全文 / Listen to this article">
@@ -25,6 +27,9 @@
       <path d="M6 6h12v12H6z"/>
     </svg>
   </button>
+  <span class="ra-hint" data-ra-hint hidden role="status">
+    <span lang="zh">当前浏览器不支持朗读，请点右上角「···」在浏览器中打开</span><span lang="en">Read-aloud isn’t supported here — open this page in your browser.</span>
+  </span>
 </span>
 
 <style>
@@ -54,6 +59,17 @@
   .ra-stop { padding: 0.15rem 0.4rem; }
   .ra-stop .ra-ico { width: 0.8rem; height: 0.8rem; }
 
+  .ra-hint {
+    display: inline-block;
+    max-width: 16rem;
+    font-size: 0.7rem;
+    line-height: 1.3;
+    color: var(--color-muted);
+    background: var(--color-border);
+    padding: 0.2rem 0.5rem;
+    border-radius: 0.375rem;
+  }
+
   /* Toggle which glyph shows */
   .ra-ico-pause { display: none; }
   .read-aloud.is-playing .ra-ico-play { display: none; }
@@ -72,12 +88,23 @@
 
   const synth = typeof window !== 'undefined' ? window.speechSynthesis : undefined;
 
-  document.querySelectorAll<HTMLElement>('[data-read-aloud]').forEach((root) => {
-    if (!synth || typeof SpeechSynthesisUtterance === 'undefined') return; // unsupported → stay hidden
-    root.hidden = false;
+  const supported = !!synth && typeof SpeechSynthesisUtterance !== 'undefined';
 
+  document.querySelectorAll<HTMLElement>('[data-read-aloud]').forEach((root) => {
     const toggle = root.querySelector<HTMLButtonElement>('[data-ra-toggle]')!;
     const stopBtn = root.querySelector<HTMLButtonElement>('[data-ra-stop]')!;
+    const hint = root.querySelector<HTMLElement>('[data-ra-hint]')!;
+
+    // WeChat / other webviews often lack the Speech API: keep the button
+    // visible but explain why it can't read here on tap.
+    if (!supported) {
+      toggle.addEventListener('click', () => {
+        hint.hidden = false;
+        setTimeout(() => { hint.hidden = true; }, 5000);
+      });
+      return;
+    }
+
     const zhLabel = root.querySelector<HTMLElement>('[data-ra-zh-play]')!;
     const enLabel = root.querySelector<HTMLElement>('[data-ra-en-play]')!;
     const article = document.querySelector<HTMLElement>('article.prose');
