@@ -7,6 +7,7 @@ lang: zh
 tags: [ai, technology, tools, philosophy]
 created: 2026-06-30
 cover: /illustrations/the-black-window/cover.jpeg
+audio: https://audio.tommickey.cn/the-black-window.mp3
 ---
 ![那个黑框框](/illustrations/the-black-window/cover.jpeg)
 
