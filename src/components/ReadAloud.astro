@@ -1,0 +1,197 @@
+---
+// src/components/ReadAloud.astro
+// Read-aloud (TTS) button using the browser-native Web Speech API
+// (SpeechSynthesis). Zero backend — works on the static Cloudflare site.
+// Reads the visible-language blocks of the article, highlighting each block
+// as it is spoken. Auto-hides when the browser lacks speechSynthesis.
+---
+<span class="read-aloud" data-read-aloud hidden>
+  <button type="button" class="ra-btn" data-ra-toggle
+    title="朗读全文 / Listen to this article"
+    aria-label="朗读全文 / Listen to this article">
+    <svg class="ra-ico ra-ico-play" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M8 5v14l11-7z"/>
+    </svg>
+    <svg class="ra-ico ra-ico-pause" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M6 5h4v14H6zM14 5h4v14h-4z"/>
+    </svg>
+    <span class="ra-label">
+      <span lang="zh" data-ra-zh-play="朗读" data-ra-zh-pause="暂停" data-ra-zh-resume="继续">朗读</span><span class="biling-sep" aria-hidden="true"> / </span><span lang="en" data-ra-en-play="Listen" data-ra-en-pause="Pause" data-ra-en-resume="Resume">Listen</span>
+    </span>
+  </button>
+  <button type="button" class="ra-btn ra-stop" data-ra-stop hidden
+    title="停止 / Stop" aria-label="停止 / Stop">
+    <svg class="ra-ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M6 6h12v12H6z"/>
+    </svg>
+  </button>
+</span>
+
+<style>
+  .read-aloud {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+  .ra-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.15rem 0.6rem 0.15rem 0.45rem;
+    font-size: 0.75rem;
+    color: var(--color-muted);
+    background: transparent;
+    border: 1px solid var(--color-border);
+    border-radius: 9999px;
+    cursor: pointer;
+    transition: color 0.15s, background 0.15s, border-color 0.15s;
+  }
+  .ra-btn:hover {
+    color: var(--color-accent);
+    border-color: var(--color-accent);
+  }
+  .ra-ico { width: 0.95rem; height: 0.95rem; }
+  .ra-stop { padding: 0.15rem 0.4rem; }
+  .ra-stop .ra-ico { width: 0.8rem; height: 0.8rem; }
+
+  /* Toggle which glyph shows */
+  .ra-ico-pause { display: none; }
+  .read-aloud.is-playing .ra-ico-play { display: none; }
+  .read-aloud.is-playing .ra-ico-pause { display: inline; }
+
+  /* Highlight the block currently being read */
+  :global(.read-aloud-active) {
+    background: color-mix(in srgb, var(--color-accent) 12%, transparent);
+    box-shadow: 0 0 0 0.35rem color-mix(in srgb, var(--color-accent) 12%, transparent);
+    border-radius: 0.25rem;
+  }
+</style>
+
+<script>
+  interface Block { el: HTMLElement; text: string }
+
+  const synth = typeof window !== 'undefined' ? window.speechSynthesis : undefined;
+
+  document.querySelectorAll<HTMLElement>('[data-read-aloud]').forEach((root) => {
+    if (!synth || typeof SpeechSynthesisUtterance === 'undefined') return; // unsupported → stay hidden
+    root.hidden = false;
+
+    const toggle = root.querySelector<HTMLButtonElement>('[data-ra-toggle]')!;
+    const stopBtn = root.querySelector<HTMLButtonElement>('[data-ra-stop]')!;
+    const zhLabel = root.querySelector<HTMLElement>('[data-ra-zh-play]')!;
+    const enLabel = root.querySelector<HTMLElement>('[data-ra-en-play]')!;
+    const article = document.querySelector<HTMLElement>('article.prose');
+    if (!article) return;
+
+    let state: 'idle' | 'playing' | 'paused' = 'idle';
+    let queue: Block[] = [];
+    let idx = 0;
+    let current: HTMLElement | null = null;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function currentLang(): 'zh' | 'en' {
+      return document.documentElement.dataset.lang === 'en' ? 'en' : 'zh';
+    }
+
+    function pickVoice(lang: 'zh' | 'en'): SpeechSynthesisVoice | null {
+      const voices = synth!.getVoices();
+      const prefix = lang === 'en' ? 'en' : 'zh';
+      return voices.find((v) => v.lang.toLowerCase().startsWith(prefix)) ?? null;
+    }
+
+    function setLabel(kind: 'play' | 'pause' | 'resume') {
+      const cap = kind[0].toUpperCase() + kind.slice(1);
+      zhLabel.textContent = zhLabel.dataset['raZh' + cap] ?? '';
+      enLabel.textContent = enLabel.dataset['raEn' + cap] ?? '';
+    }
+
+    function collect(): Block[] {
+      const sel = 'p, li, h2, h3, h4, h5, blockquote';
+      const out: Block[] = [];
+      article!.querySelectorAll<HTMLElement>(sel).forEach((el) => {
+        if (el.closest('.not-prose')) return; // skip title/meta header
+        // A blockquote's own paragraphs are captured as <p>; skip the wrapper
+        if (el.tagName === 'BLOCKQUOTE') return;
+        if (el.offsetParent === null) return; // hidden (e.g. other-language section)
+        const text = (el.textContent ?? '').trim();
+        if (text.length === 0) return;
+        out.push({ el, text });
+      });
+      return out;
+    }
+
+    function clearHighlight() {
+      if (current) { current.classList.remove('read-aloud-active'); current = null; }
+    }
+
+    function highlight(el: HTMLElement) {
+      clearHighlight();
+      current = el;
+      el.classList.add('read-aloud-active');
+      el.scrollIntoView({ block: 'center', behavior: reduceMotion ? 'auto' : 'smooth' });
+    }
+
+    function speakFrom(i: number) {
+      if (i >= queue.length) { stop(); return; }
+      idx = i;
+      const { el, text } = queue[i];
+      highlight(el);
+      const lang = currentLang();
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = lang === 'en' ? 'en-US' : 'zh-CN';
+      const v = pickVoice(lang);
+      if (v) u.voice = v;
+      u.rate = 1;
+      u.onend = () => { if (state === 'playing') speakFrom(i + 1); };
+      synth!.speak(u);
+    }
+
+    function start() {
+      queue = collect();
+      if (queue.length === 0) return;
+      synth!.cancel();
+      state = 'playing';
+      root.classList.add('is-playing');
+      stopBtn.hidden = false;
+      setLabel('pause');
+      speakFrom(0);
+    }
+
+    function stop() {
+      synth!.cancel();
+      state = 'idle';
+      idx = 0;
+      root.classList.remove('is-playing');
+      stopBtn.hidden = true;
+      setLabel('play');
+      clearHighlight();
+    }
+
+    toggle.addEventListener('click', () => {
+      if (state === 'idle') {
+        start();
+      } else if (state === 'playing') {
+        synth!.pause();
+        state = 'paused';
+        root.classList.remove('is-playing');
+        setLabel('resume');
+      } else {
+        synth!.resume();
+        state = 'playing';
+        root.classList.add('is-playing');
+        setLabel('pause');
+      }
+    });
+
+    stopBtn.addEventListener('click', stop);
+
+    // Chrome cuts synthesis at ~15s; nudge it to keep going on long paragraphs.
+    setInterval(() => {
+      if (state === 'playing' && synth!.speaking) { synth!.pause(); synth!.resume(); }
+    }, 10000);
+
+    // Cancel on navigation so audio doesn't linger.
+    window.addEventListener('pagehide', () => synth!.cancel());
+    window.addEventListener('beforeunload', () => synth!.cancel());
+  });
+</script>

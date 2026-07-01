@@ -3,6 +3,7 @@ import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PostMeta from '../../components/PostMeta.astro';
 import Pageview from '../../components/Pageview.astro';
+import ReadAloud from '../../components/ReadAloud.astro';
 import Backlinks from '../../components/Backlinks.astro';
 import Comments from '../../components/Comments.astro';
 import Share from '../../components/Share.astro';
@@ -81,6 +82,7 @@ const jsonLd = [blogPosting, breadcrumb];
       <div class="mt-3 flex flex-wrap items-center gap-3">
         <PostMeta created={entry.data.created} updated={entry.data.updated} status={entry.data.status} kind="note" reading={reading} />
         <Pageview path={`/garden/${slugHref(entry.id)}/`} />
+        <ReadAloud />
       </div>
       {entry.data.tags.length > 0 && (
         <div class="mt-3 flex flex-wrap gap-2">
