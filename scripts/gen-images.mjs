@@ -23,6 +23,9 @@ if (_proxy) console.log(`🌐 using proxy: ${_proxy}`);
 const ARK_API_KEY = process.env.ARK_API_KEY;
 const ARK_BASE_URL = process.env.ARK_BASE_URL ?? 'https://ark.cn-beijing.volces.com/api/v3';
 const ARK_IMAGE_MODEL = process.env.ARK_IMAGE_MODEL ?? 'doubao-seedream-3-0-t2i-250415';
+// Text model used as an "art director": reads the article and writes a vivid,
+// article-specific image prompt (subject + mood-appropriate palette + medium).
+const ARK_TEXT_MODEL = process.env.ARK_TEXT_MODEL ?? 'doubao-1-5-pro-32k-250115';
 
 const CF_ACCOUNT_ID = process.env.CF_ACCOUNT_ID;
 const CF_API_TOKEN = process.env.CF_API_TOKEN;
@@ -241,6 +244,89 @@ function inlinePrompt(_sectionTitle, preview) {
   return `${NO_TEXT}. A poetic single-subject scene: ${concept}. ${STYLE_POSITIVE}. One clear subject, lots of empty space, purely visual, zero typography of any kind. Reminder: ${NO_TEXT}`;
 }
 
+// ---------- LLM art director (primary path) ----------
+// A short, firm no-text guard appended to whatever the art director writes.
+// Seedream 4.0 handles text well but still slips captions into artful covers.
+const NO_TEXT_SHORT = 'Important: the illustration must contain absolutely no text, letters, words, numbers, captions, labels, signage, logos, book covers with visible titles, seals, or watermarks of any kind.';
+
+function wrapPrompt(core) {
+  return `${core.trim()} ${NO_TEXT_SHORT}`;
+}
+
+async function arkChat(messages) {
+  const resp = await fetch(`${ARK_BASE_URL}/chat/completions`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${ARK_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: ARK_TEXT_MODEL,
+      messages,
+      temperature: 0.9,
+      max_tokens: 900,
+    }),
+  });
+  const j = await resp.json();
+  if (!resp.ok) throw new Error(`ARK chat ${resp.status}: ${JSON.stringify(j).slice(0, 300)}`);
+  return j.choices?.[0]?.message?.content ?? '';
+}
+
+const ART_SYSTEM = `You are the art director for a warm, literary personal blog (essays on philosophy, psychology, AI, and life). For a given essay you invent illustration prompts for a text-to-image model (Doubao Seedream 4.0).
+
+Rules for every prompt:
+- Write in English only.
+- Translate the essay's THEME and MOOD into ONE strong, specific, symbolic image — not a literal restatement. Be concrete and visual (a scene, an object, a gesture, a landscape), evocative and unique to THIS essay.
+- Choose a color palette that FITS this essay's emotional tone, and VARY it between essays — it may be warm, cool, muted, moody, twilight, monochrome, or vivid as the mood demands. Name 2 to 4 specific colors.
+- Choose a medium/style that fits (e.g. soft watercolor, gouache, cinematic light, ink wash, oil-pastel, textured risograph, dreamy film photograph) and vary it across essays. Editorial-illustration quality, poetic and quiet.
+- Compose for the given aspect ratio, with intentional negative space.
+- The scene must contain NO text of any kind: no letters, words, numbers, signage, labeled diagrams, charts, books with visible titles, seals, or watermarks. Avoid subjects that beg for writing (open books with legible pages, street signs, screens full of text, posters).
+- Never mention real proper nouns, brand names, real person names, or book titles.
+
+Return STRICT JSON only, no prose, no markdown fences:
+{"cover":"<one prompt, wide 16:9>","inline":["<one prompt, square 1:1>", ...]}
+The "inline" array length MUST exactly match the number of sections given (0 → []).`;
+
+async function artDirect({ title, description, excerpt, inlines }) {
+  const parts = [];
+  parts.push(`Essay title: ${title || '(untitled)'}`);
+  if (description) parts.push(`One-line summary: ${description}`);
+  if (excerpt) parts.push(`Opening excerpt: ${excerpt}`);
+  parts.push('');
+  parts.push('Cover: one wide 16:9 illustration capturing the whole essay.');
+  if (inlines.length) {
+    parts.push(`Inline: ${inlines.length} square 1:1 illustration(s), one per section below, each capturing that section's specific idea (and visually varied from the cover and from each other):`);
+    inlines.forEach((s, i) => parts.push(`  Section ${i + 1} — "${s.title}": ${s.preview || '(no preview)'}`));
+  } else {
+    parts.push('Inline: none needed → "inline": [].');
+  }
+  const content = await arkChat([
+    { role: 'system', content: ART_SYSTEM },
+    { role: 'user', content: parts.join('\n') },
+  ]);
+  const m = content.match(/\{[\s\S]*\}/);
+  if (!m) throw new Error(`no JSON in art-direction response: ${content.slice(0, 200)}`);
+  const parsed = JSON.parse(m[0]);
+  const cover = typeof parsed.cover === 'string' && parsed.cover.trim() ? parsed.cover.trim() : null;
+  const inline = Array.isArray(parsed.inline)
+    ? parsed.inline.slice(0, inlines.length).map((s) => (typeof s === 'string' ? s.trim() : ''))
+    : [];
+  return { cover, inline };
+}
+
+function bodyExcerpt(body, max = 500) {
+  return body
+    .split('\n')
+    .filter((l) => !/^\s*!\[.*\]\(.*\)\s*$/.test(l))
+    .join(' ')
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, '')
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
+    .replace(/[#>*_`]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, max);
+}
+
 // ---------- main ----------
 const text = await fs.readFile(mdPath, 'utf8');
 const { fm, body, raw } = parseFrontmatter(text);
@@ -262,14 +348,36 @@ console.log(`   H2 sections: ${h2s.length}`);
 console.log(`   plan: 1 cover + ${inlinePositions.length} inline`);
 console.log('');
 
+// 0) Art direction — let a text model read the article and write vivid,
+// article-specific prompts (subject + mood palette + medium). Falls back to
+// the keyword heuristic if the call fails.
+const inlineCtx = inlinePositions.map((pos) => ({
+  title: pos.title,
+  preview: sectionPreview(body, pos.index),
+}));
+let art = null;
+try {
+  process.stdout.write('🎨 art-directing via LLM… ');
+  art = await artDirect({
+    title: fm.title,
+    description: fm.description,
+    excerpt: bodyExcerpt(body),
+    inlines: inlineCtx,
+  });
+  console.log(`ok (${ARK_TEXT_MODEL})`);
+} catch (e) {
+  console.log(`failed → falling back to heuristic\n   ${e.message}`);
+}
+console.log('');
+
 // 1) Cover
 const coverPath = path.join(outDir, 'cover.jpeg');
 const coverExists = await fs.access(coverPath).then(() => true).catch(() => false);
 if (coverExists && !force) {
   console.log(`✓ cover exists → ${coverPath} (use --force to regen)`);
 } else {
-  const cprompt = coverPrompt(fm.title, fm.description);
-  console.log(`📸 cover: ${cprompt.slice(0, 120)}...`);
+  const cprompt = art?.cover ? wrapPrompt(art.cover) : coverPrompt(fm.title, fm.description);
+  console.log(`📸 cover: ${dry ? cprompt : cprompt.slice(0, 120) + '...'}`);
   if (!dry) {
     await generateImageToFile(cprompt, '1280x720', coverPath);
     console.log(`   → ${coverPath}`);
@@ -286,8 +394,10 @@ for (let i = 0; i < inlinePositions.length; i++) {
     continue;
   }
   const preview = sectionPreview(body, pos.index);
-  const iprompt = inlinePrompt(pos.title, preview);
-  console.log(`📸 inline-${i + 1} (after H2 "${pos.title}"): ${iprompt.slice(0, 120)}...`);
+  const iprompt = art?.inline?.[i]
+    ? wrapPrompt(art.inline[i])
+    : inlinePrompt(pos.title, preview);
+  console.log(`📸 inline-${i + 1} (after H2 "${pos.title}"): ${dry ? iprompt : iprompt.slice(0, 120) + '...'}`);
   if (!dry) {
     await generateImageToFile(iprompt, '1024x1024', dest);
     console.log(`   → ${dest}`);
