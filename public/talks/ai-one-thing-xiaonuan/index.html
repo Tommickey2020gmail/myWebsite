@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>用 AI 做成一件事：以「小暖」为线索</title>
+<style>
+  :root {
+    --paper: #f7f2ea;
+    --paper-deep: #efe7da;
+    --ink: #2b2118;
+    --muted: #7d6f5f;
+    --accent: #b5532a;
+    --accent-soft: rgba(181, 83, 42, 0.09);
+    --border: rgba(43, 33, 24, 0.14);
+    --serif: "Noto Serif SC", "Source Han Serif SC", "Songti SC", "STSong", "SimSun", serif;
+    --sans: system-ui, "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    font-family: var(--sans);
+    background: var(--paper);
+    color: var(--ink);
+    overflow: hidden;
+    line-height: 1.7;
+  }
+
+  /* ---------- deck ---------- */
+  .deck { position: relative; height: 100dvh; }
+  .slide {
+    position: absolute; inset: 0;
+    display: none;
+    overflow-y: auto;
+    padding: clamp(1.5rem, 4vw, 4rem) clamp(1.25rem, 6vw, 6rem);
+  }
+  .slide.active { display: flex; flex-direction: column; justify-content: center; }
+  @media (prefers-reduced-motion: no-preference) {
+    .slide.active { animation: slide-in 0.35s cubic-bezier(0.16, 1, 0.3, 1); }
+    @keyframes slide-in {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: none; }
+    }
+  }
+  .slide-inner { width: 100%; max-width: 62rem; margin: 0 auto; }
+
+  /* ---------- type ---------- */
+  h1, h2 { font-family: var(--serif); font-weight: 700; letter-spacing: 0.01em; }
+  h1 { font-size: clamp(2rem, 5.5vw, 4rem); line-height: 1.25; }
+  h2 { font-size: clamp(1.5rem, 3.4vw, 2.4rem); line-height: 1.35; margin-bottom: 0.75em; }
+  .lede { font-size: clamp(1.05rem, 1.9vw, 1.3rem); color: var(--muted); max-width: 40em; }
+  .stage {
+    display: inline-block;
+    font-size: 0.85rem; color: var(--accent);
+    border: 1px solid var(--accent); border-radius: 999px;
+    padding: 0.1em 0.9em; margin-bottom: 1rem;
+  }
+  .accent { color: var(--accent); }
+  .quote {
+    border-left: 3px solid var(--accent);
+    padding: 0.35em 0 0.35em 1em;
+    margin-top: 1.5rem;
+    font-family: var(--serif);
+    font-size: clamp(1rem, 1.8vw, 1.2rem);
+  }
+  .quote cite { display: block; font-size: 0.85rem; color: var(--muted); font-style: normal; margin-top: 0.4em; }
+
+  /* ---------- cards ---------- */
+  .cards { display: grid; gap: 0.9rem; margin-top: 1.5rem; }
+  .cards.c2 { grid-template-columns: repeat(2, 1fr); }
+  .cards.c3 { grid-template-columns: repeat(3, 1fr); }
+  @media (max-width: 768px) { .cards.c2, .cards.c3 { grid-template-columns: 1fr; } }
+  .card {
+    background: rgba(255, 255, 255, 0.55);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem 1.15rem;
+  }
+  .card b { display: block; font-size: 1.02rem; margin-bottom: 0.2em; }
+  .card p { font-size: 0.9rem; color: var(--muted); }
+  .card .eg { display: block; font-size: 0.85rem; margin-top: 0.45em; color: var(--ink); }
+  .card .eg::before { content: "我的实例："; color: var(--accent); }
+  .card.dim { opacity: 0.62; }
+  .card.dim b s { text-decoration-color: var(--accent); }
+
+  /* ---------- flow diagram ---------- */
+  .flow { display: flex; align-items: stretch; gap: 0.6rem; margin: 2rem 0 1rem; flex-wrap: wrap; }
+  .flow .node {
+    flex: 1; min-width: 8.5rem;
+    background: rgba(255, 255, 255, 0.55);
+    border: 1px solid var(--border); border-radius: 12px;
+    padding: 1rem; text-align: center;
+  }
+  .flow .node.hot { background: var(--accent-soft); border-color: var(--accent); }
+  .flow .node b { font-family: var(--serif); font-size: 1.25rem; display: block; }
+  .flow .node span { font-size: 0.82rem; color: var(--muted); }
+  .flow .arr { align-self: center; color: var(--accent); font-size: 1.4rem; }
+  .flow-back { text-align: center; color: var(--muted); font-size: 0.9rem; margin-top: 0.4rem; }
+
+  /* ---------- details ---------- */
+  details {
+    margin-top: 1.4rem;
+    border: 1px dashed var(--border);
+    border-radius: 12px;
+    padding: 0.7rem 1.1rem;
+    background: rgba(255, 255, 255, 0.35);
+  }
+  details summary {
+    cursor: pointer; color: var(--accent);
+    font-size: 0.95rem; user-select: none;
+  }
+  details[open] summary { margin-bottom: 0.6rem; }
+  details li { margin-left: 1.2em; font-size: 0.92rem; margin-top: 0.3em; }
+  details li b { color: var(--ink); }
+
+  /* ---------- lists ---------- */
+  .steps { counter-reset: step; display: grid; gap: 0.7rem; margin-top: 1.5rem; }
+  .steps li {
+    list-style: none; counter-increment: step;
+    display: flex; gap: 0.9rem; align-items: baseline;
+    background: rgba(255, 255, 255, 0.55);
+    border: 1px solid var(--border); border-radius: 12px;
+    padding: 0.75rem 1.1rem;
+  }
+  .steps li::before {
+    content: counter(step);
+    font-family: var(--serif); font-size: 1.3rem; font-weight: 700;
+    color: var(--accent); min-width: 1.2em; text-align: center;
+  }
+  .steps li b { margin-right: 0.5em; }
+  .steps li span { color: var(--muted); font-size: 0.92rem; }
+
+  /* ---------- cover ---------- */
+  .cover { text-align: left; }
+  .cover .kicker { color: var(--muted); font-size: 1rem; margin-bottom: 1.2rem; }
+  .cover h1 span { color: var(--accent); }
+  .cover .sub { font-family: var(--serif); font-size: clamp(1.2rem, 2.6vw, 1.7rem); margin-top: 0.8rem; }
+  .cover .last-this {
+    margin-top: 2.5rem; display: inline-flex; gap: 1.2rem; align-items: center;
+    font-size: clamp(1rem, 2vw, 1.25rem);
+  }
+  .cover .last-this .old { color: var(--muted); }
+  .cover .last-this .arrow { color: var(--accent); font-size: 1.5em; }
+
+  /* ---------- nav ---------- */
+  .navbar {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0.6rem clamp(1rem, 4vw, 3rem);
+    background: linear-gradient(to top, var(--paper) 55%, transparent);
+    pointer-events: none;
+  }
+  .navbar > * { pointer-events: auto; }
+  .counter { font-size: 0.85rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .navbtns { display: flex; gap: 0.5rem; }
+  .navbtns button {
+    font-family: var(--sans); font-size: 1rem;
+    background: rgba(255, 255, 255, 0.7);
+    color: var(--ink);
+    border: 1px solid var(--border); border-radius: 999px;
+    width: 2.6rem; height: 2.6rem; cursor: pointer;
+  }
+  .navbtns button:hover { border-color: var(--accent); color: var(--accent); }
+  .navbtns button:active { transform: scale(0.96); }
+  .progress {
+    position: fixed; top: 0; left: 0; height: 3px;
+    background: var(--accent); transition: width 0.3s;
+  }
+  @media (prefers-reduced-motion: reduce) { .progress { transition: none; } }
+
+  /* ---------- print: all slides in sequence ---------- */
+  @media print {
+    body { overflow: visible; }
+    .deck { height: auto; }
+    .slide { position: static; display: block !important; page-break-after: always; padding: 2rem; }
+    .navbar, .progress { display: none; }
+    details { break-inside: avoid; }
+    details[open] summary { margin-bottom: 0.6rem; }
+  }
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<main class="deck" id="deck">
+
+  <!-- 1 封面 -->
+  <section class="slide">
+    <div class="slide-inner cover">
+      <p class="kicker">青年社群 AI 交流</p>
+      <h1>用 AI 做成<span>一件事</span></h1>
+      <p class="sub">以「小暖」的开发过程为线索，认识那些让你随时能开工的个人基础服务</p>
+      <div class="last-this">
+        <span class="old">上次：我的一天</span>
+        <span class="arrow">→</span>
+        <span><b>这次：一件事</b></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2 主线 -->
+  <section class="slide">
+    <div class="slide-inner">
+      <h2>一件事的完整闭环</h2>
+      <p class="lede">不从「学技术」开始，从解决自己的一个真实问题开始。</p>
+      <div class="flow">
+        <div class="node hot"><b>需求</b><span>解决个人问题</span></div>
+        <div class="arr">→</div>
+        <div class="node"><b>用</b><span>先给自己用起来</span></div>
+        <div class="arr">→</div>
+        <div class="node"><b>价值</b><span>它真的有用吗</span></div>
+        <div class="arr">→</div>
+        <div class="node hot"><b>分享</b><span>解决更多人的问题</span></div>
+      </div>
+      <p class="flow-back">分享带来反馈，反馈变成新的需求，循环继续。</p>
+      <p style="margin-top:1.5rem;">工具怎么选：<b>Claude Code / Codex</b> 这类编程 Agent 是「施工队」，而今天要讲的<b class="accent">个人基础服务</b>是施工队随时可取用的「水电网」。</p>
+    </div>
+  </section>
+
+  <!-- 3 这件事是什么 -->
+  <section class="slide">
+    <div class="slide-inner">
+      <h2>这件事：小暖</h2>
+      <p class="lede">一个面向老人的 AI 语音陪伴系统。持续对话、记得住人、能提醒、能预警，目标是「有人格的陪伴」，而不是冷冰冰的问答机。</p>
+      <div class="cards c3">
+        <div class="card"><b>为什么做</b><p>身边老人的孤独与照护缺口，是一个真实的、我自己的问题。</p></div>
+        <div class="card"><b>做成什么样</b><p>打电话一样地聊天：听得懂慢语速，说得出中文韵律，记得住上次说过的话。</p></div>
+        <div class="card"><b>走了多远</b><p>从一篇小说里的想法，到语音管道、记忆系统、内部言语架构，历时数月。</p></div>
+      </div>
+      <blockquote class="quote">
+        “好的照顾，是让被照顾者更少地需要照顾。”
+        <cite>《让机器照顾一个人》</cite>
+      </blockquote>
+    </div>
+  </section>
+
+  <!-- 4 阶段一 想法落地成文字 -->
+  <section class="slide">
+    <div class="slide-inner">
+      <span class="stage">第 1 步</span>
+      <h2>想法先落地成文字</h2>
+      <p class="lede">小暖最早不是代码，是一篇小说和几篇文章。写作就是最便宜的原型：想法写不清楚，代码一定写不清楚。</p>
+      <div class="cards c3">
+        <div class="card"><b>域名 + DNS</b><p>你在互联网上的门牌号，所有服务都挂在它下面。</p><span class="eg">tommickey.cn（Cloudflare 管理）</span></div>
+        <div class="card"><b>静态网站托管</b><p>免费、免运维，把文章发布到全世界。</p><span class="eg">Cloudflare Pages，一次 git push 自动上线</span></div>
+        <div class="card"><b>ICP 备案</b><p>国内可访问的前提，趁早办，一次管很久。</p><span class="eg">域名已备案，微信里也能直接打开</span></div>
+      </div>
+      <details>
+        <summary>展开：为什么第一步是「写」而不是「做」</summary>
+        <ul>
+          <li>公开写出来，就有了<b>第一批读者和反馈</b>，需求是否成立立刻见分晓。</li>
+          <li>文章沉淀成项目的「设计文档」，后面每一步都在回答前一篇留下的问题。</li>
+          <li>个人网站本身就是第一个练手项目：域名、托管、发布流程一次跑通。</li>
+        </ul>
+      </details>
+    </div>
+  </section>
+
+  <!-- 5 阶段二 让它说话 -->
+  <section class="slide">
+    <div class="slide-inner">
+      <span class="stage">第 2 步</span>
+      <h2>让它说话</h2>
+      <p class="lede">语音链路三件事：听（ASR）、想（LLM）、说（TTS）。端到端要压进 1.5 秒，老人才不会觉得「它没在听」。</p>
+      <div class="cards c2">
+        <div class="card"><b>LiveKit（WebRTC）</b><p>实时音视频通道，把手机麦克风和服务器连成一个「房间」。</p><span class="eg">小暖的通话底座，延迟约 100ms</span></div>
+        <div class="card"><b>ASR 语音识别</b><p>把话变成文字，中文方言与慢语速是关键。</p><span class="eg">FunASR / SenseVoice</span></div>
+        <div class="card"><b>TTS 语音合成</b><p>把文字变成自然的中文语音，要能流式边生成边播。</p><span class="eg">CosyVoice 2；网站文章朗读用阿里云 Qwen-TTS</span></div>
+        <div class="card"><b>LLM + 网关</b><p>大模型是「脑子」；LiteLLM 把各家模型统一成一个接口，随时换。</p><span class="eg">Qwen3 对话；LiteLLM 统一出入口</span></div>
+      </div>
+      <details>
+        <summary>展开：语音踩过的坑</summary>
+        <ul>
+          <li><b>打断判定：</b>老人句中停顿长，静音阈值要放宽到 800~1200ms，否则一句「呃……」就被打断。</li>
+          <li><b>多音字：</b>「长、为、还」TTS 常读错，靠高频词表替换兜底。</li>
+          <li><b>回声循环：</b>设备回声消除差时，AI 听到自己的声音把自己打断，要在客户端和语义层双重过滤。</li>
+        </ul>
+      </details>
+    </div>
+  </section>
+
+  <!-- 6 阶段三 让它记住 -->
+  <section class="slide">
+    <div class="slide-inner">
+      <span class="stage">第 3 步</span>
+      <h2>让它记住</h2>
+      <p class="lede">没有记忆就没有关系。数据要有家：结构化的进数据库，文件进对象存储，语义检索交给向量库。</p>
+      <div class="cards c3">
+        <div class="card"><b>PostgreSQL（自建 RDS）</b><p>一次搭好，所有项目共用一个数据库服务，不必每个项目重搭。</p><span class="eg">板书右侧那个「自建 RDS」</span></div>
+        <div class="card"><b>对象存储</b><p>音频、图片、备份文件的仓库，给个链接就能访问。</p><span class="eg">MinIO（自建）+ Cloudflare R2（云端）</span></div>
+        <div class="card"><b>向量检索 / RAG</b><p>按「意思」找资料，不是按关键词。是记忆的检索层，不是记忆本身。</p><span class="eg">小暖的事实知识库</span></div>
+      </div>
+      <details>
+        <summary>展开：小暖的分层记忆设计</summary>
+        <ul>
+          <li><b>用户宪法层：</b>基本信息、健康、偏好，家属可维护，一份 Markdown。</li>
+          <li><b>自动记忆层：</b>模型自己从对话里提炼，硬上限 200~300 行，低价值条目自然淘汰。</li>
+          <li><b>时序事件流：</b>对话按时间排列，带情绪标签，供每晚「反刍」。</li>
+          <li><b>遗忘是特性：</b>一个月后强制删除原始记录，事件被压缩成「倾向」。</li>
+        </ul>
+      </details>
+      <blockquote class="quote">
+        “RAG 是外挂硬盘，不是肌肉记忆……人格正是遗忘的产物。”
+        <cite>《让机器照顾一个人》</cite>
+      </blockquote>
+    </div>
+  </section>
+
+  <!-- 7 阶段四 让它触达人 -->
+  <section class="slide">
+    <div class="slide-inner">
+      <span class="stage">第 4 步</span>
+      <h2>让它触达人</h2>
+      <p class="lede">做出来的东西要能「够到」用户。触达通道是最值得提前备好的一类基础服务：搭一次，所有项目都能用。</p>
+      <div class="cards c2">
+        <div class="card"><b>微信接口</b><p>让程序给你（或家属）发微信：提醒、告警、日报，一次 HTTP 调用。</p><span class="eg">自建 wechat 发送 API，脚本跑完自动通知我</span></div>
+        <div class="card"><b>邮件接口</b><p>长报告、阶段总结自动进邮箱，不占聊天窗口。</p><span class="eg">163 SMTP 一行命令发信 + 自建邮件 API</span></div>
+        <div class="card"><b>公众号 / 小程序</b><p>普通人最没有门槛的入口，老人和家属都会用。</p><span class="eg">公众号文章一键排版导出工具链</span></div>
+        <div class="card"><b>自建应用分发</b><p>自己的 App 商店，APK 一条命令发布，用户扫码安装、自动更新。</p><span class="eg">AppCenter：解析包名版本、新应用自动创建</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8 阶段五 让它跑起来 -->
+  <section class="slide">
+    <div class="slide-inner">
+      <span class="stage">第 5 步</span>
+      <h2>让它跑起来</h2>
+      <p class="lede">部署不神秘：一台常开的机器 + 一条通向公网的路。家用电脑就能当生产服务器。</p>
+      <div class="cards c3">
+        <div class="card"><b>家用电脑当服务器</b><p>磁盘大、有 GPU、零月租，跑十几个服务毫无压力。</p><span class="eg">我的开发机同时是多个线上服务的生产机</span></div>
+        <div class="card"><b>公网服务器</b><p>要稳定 IP、要备案接入时的选择，小规格就够。</p><span class="eg">网站、接口类服务的落脚点</span></div>
+        <div class="card"><b>内网穿透</b><p>没有公网 IP 也能把家里的服务暴露出去。</p><span class="eg">Cloudflare Tunnel（免证书免端口）+ frp</span></div>
+        <div class="card"><b>Docker</b><p>每个服务一个容器，搬家等于复制一个 compose 文件。</p><span class="eg">评论系统、数据库、隧道全部容器化</span></div>
+        <div class="card"><b>消息队列 MQ</b><p>服务之间解耦：先记下要做的事，慢慢做，不怕高峰。</p><span class="eg">异步任务的缓冲带</span></div>
+        <div class="card dim"><b><s>Dify</s>（已弃用）</b><p>可视化编排试过，最终换回「代码 + LiteLLM」：更可控、延迟更低。</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9 阶段六 让它会思考 -->
+  <section class="slide">
+    <div class="slide-inner">
+      <span class="stage">第 6 步</span>
+      <h2>让它会思考，也让自己更快</h2>
+      <p class="lede">两层「思考」：小暖自己的内部言语，和我这个开发者手里的编程 Agent。</p>
+      <div class="cards c2">
+        <div class="card"><b>Claude Code / Codex</b><p>整个项目的施工队：读代码、写代码、跑验证、修问题，人负责方向和验收。</p><span class="eg">本材料也是它做的</span></div>
+        <div class="card"><b>Skill / Agent</b><p>把重复流程沉淀成一条命令，越用越顺手。</p><span class="eg">「/publish」一条命令：配图、配音、构建、发布、推搜索引擎</span></div>
+      </div>
+      <details>
+        <summary>展开：小暖的内部言语（把「想」从「答」里分出来）</summary>
+        <ul>
+          <li><b>L0 反射层：</b>摔倒、呼救等，规则直接响应，0 次模型调用。</li>
+          <li><b>L1 应答层：</b>300~800ms 回话，回话时不许深想。</li>
+          <li><b>L2 内语层：</b>异步慢想，由「惊讶」触发，不用定时器。</li>
+          <li><b>L3 反刍层：</b>每晚一次复盘，只调整倾向，不改写判断。</li>
+        </ul>
+      </details>
+      <blockquote class="quote">
+        “一个人愿意打断你，是因为他还在意你说得对不对。真正该报警的，是他不再打断。”
+        <cite>《继续构思小暖的内部言语》</cite>
+      </blockquote>
+    </div>
+  </section>
+
+  <!-- 10 全景图 -->
+  <section class="slide">
+    <div class="slide-inner">
+      <h2>个人基础环境全景</h2>
+      <p class="lede">六类服务，搭一次、处处用。做任何「一件事」，都是从这张地图上取件组装。</p>
+      <div class="cards c3">
+        <div class="card"><b>网络与入口</b><p>域名 / DNS、ICP 备案、内网穿透（Cloudflare Tunnel、frp）</p></div>
+        <div class="card"><b>算力与部署</b><p>家用电脑、公网服务器、Docker、静态托管（Pages）</p></div>
+        <div class="card"><b>存储与数据</b><p>PostgreSQL（自建 RDS）、对象存储（MinIO / R2）、定期备份</p></div>
+        <div class="card"><b>AI 能力</b><p>LLM 网关（LiteLLM）、ASR、TTS、文生图、向量检索</p></div>
+        <div class="card"><b>触达通道</b><p>微信接口、邮件接口、公众号 / 小程序、应用分发（AppCenter）</p></div>
+        <div class="card"><b>开发工具</b><p>Claude Code / Codex、Skill / Agent、Git + GitHub、消息队列</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 11 顺手就能用 -->
+  <section class="slide">
+    <div class="slide-inner">
+      <h2>小暖没用到，但天天在用的</h2>
+      <p class="lede">这些「小」服务单独看不起眼，组合起来是效率的来源。都是一次搭好、一行命令调用。</p>
+      <div class="cards c3">
+        <div class="card"><b>一行命令发邮件</b><p>脚本跑完，报告自动进邮箱。</p></div>
+        <div class="card"><b>一行命令发微信</b><p>长任务结束、服务出错，微信立刻知道。</p></div>
+        <div class="card"><b>文件分享链接</b><p>本地文件传到 MinIO，返回公网下载链接，发群即用。</p></div>
+        <div class="card"><b>文章自动配音</b><p>TTS 批量生成朗读音频，全站几十篇文章都有「听」的版本。</p></div>
+        <div class="card"><b>AI 自动配图</b><p>让文本模型当「美术指导」读文章，再让文生图模型画封面和插图。</p></div>
+        <div class="card"><b>自托管评论</b><p>Waline + Docker + 隧道，静态网站秒变可留言的社区。</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 12 推荐再补 -->
+  <section class="slide">
+    <div class="slide-inner">
+      <h2>建议你也备上的</h2>
+      <p class="lede">按性价比排序：每一个都不难搭，但都会在某个时刻救你一次。</p>
+      <div class="cards c2">
+        <div class="card"><b>密码管理器</b><p>账号是基础环境的地基。Bitwarden 可自托管，全家共享保险箱。</p></div>
+        <div class="card"><b>自动备份</b><p>数据比服务贵。restic / 定时同步，数据库和文档每天一份异地副本。</p></div>
+        <div class="card"><b>存活监控与告警</b><p>Uptime Kuma 盯着你的服务，挂了发微信告诉你，别等用户来报。</p></div>
+        <div class="card"><b>定时任务 / 自动化</b><p>cron 或 n8n，把「每天要做的小事」交给机器：巡检、推送、汇总。</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 13 方法论 -->
+  <section class="slide">
+    <div class="slide-inner">
+      <h2>下次你要做一件事</h2>
+      <ol class="steps">
+        <li><b>把需求写下来</b><span>解决「自己的」一个真问题，写清楚给谁用、解决什么</span></li>
+        <li><b>注册一个域名</b><span>几十块一年，你所有服务的门牌，顺手做备案</span></li>
+        <li><b>找一台常开的机器</b><span>家用电脑 + 内网穿透，或一台小云服务器</span></li>
+        <li><b>用编程 Agent 开工</b><span>Claude Code / Codex 从想法直达能跑的原型</span></li>
+        <li><b>复用基础服务</b><span>数据库、存储、发信、发微信，别重造轮子</span></li>
+        <li><b>先给自己用起来</b><span>每天用，它才会长大；不用，就趁早放弃</span></li>
+        <li><b>分享出去</b><span>写文章、发朋友圈、开源，让它解决更多人的问题</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- 14 结尾 -->
+  <section class="slide">
+    <div class="slide-inner">
+      <h2>回到那个循环</h2>
+      <div class="flow">
+        <div class="node"><b>需求</b><span>你的真问题</span></div>
+        <div class="arr">→</div>
+        <div class="node"><b>用</b><span>自己先受益</span></div>
+        <div class="arr">→</div>
+        <div class="node"><b>价值</b><span>被验证</span></div>
+        <div class="arr">→</div>
+        <div class="node hot"><b>分享</b><span>就是今天这场活动</span></div>
+      </div>
+      <p class="lede" style="margin-top:2rem;">所以，留给大家的问题：</p>
+      <p style="font-family:var(--serif); font-size:clamp(1.4rem,3vw,2rem); margin-top:0.5rem;">你想做成的<span class="accent">一件事</span>，是什么？</p>
+      <p style="margin-top:2.5rem; color:var(--muted); font-size:0.95rem;">文章与项目记录：<b style="color:var(--ink);">tommickey.cn</b>（小暖系列、踩坑笔记、本材料源文件）</p>
+    </div>
+  </section>
+
+</main>
+
+<div class="navbar">
+  <span class="counter" id="counter"></span>
+  <div class="navbtns">
+    <button id="prev" aria-label="上一页">←</button>
+    <button id="next" aria-label="下一页">→</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var counter = document.getElementById('counter');
+  var progress = document.getElementById('progress');
+  var idx = 0;
+
+  var fromHash = parseInt(location.hash.replace('#', ''), 10);
+  if (fromHash >= 1 && fromHash <= slides.length) idx = fromHash - 1;
+
+  function show(i) {
+    idx = Math.max(0, Math.min(slides.length - 1, i));
+    slides.forEach(function (s, j) { s.classList.toggle('active', j === idx); });
+    counter.textContent = (idx + 1) + ' / ' + slides.length;
+    progress.style.width = ((idx + 1) / slides.length * 100) + '%';
+    history.replaceState(null, '', '#' + (idx + 1));
+    slides[idx].scrollTop = 0;
+  }
+
+  document.getElementById('prev').addEventListener('click', function () { show(idx - 1); });
+  document.getElementById('next').addEventListener('click', function () { show(idx + 1); });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); show(idx + 1); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); show(idx - 1); }
+    else if (e.key === 'Home') { e.preventDefault(); show(0); }
+    else if (e.key === 'End') { e.preventDefault(); show(slides.length - 1); }
+  });
+
+  var touchX = null, touchY = null;
+  document.addEventListener('touchstart', function (e) {
+    touchX = e.touches[0].clientX; touchY = e.touches[0].clientY;
+  }, { passive: true });
+  document.addEventListener('touchend', function (e) {
+    if (touchX === null) return;
+    var dx = e.changedTouches[0].clientX - touchX;
+    var dy = e.changedTouches[0].clientY - touchY;
+    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) show(idx + (dx < 0 ? 1 : -1));
+    touchX = touchY = null;
+  }, { passive: true });
+
+  show(idx);
+})();
+</script>
+</body>
+</html>
