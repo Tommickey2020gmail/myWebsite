@@ -94,6 +94,15 @@
   .metaphors .m b { font-family: var(--serif); font-size: 1.15rem; color: var(--accent); white-space: nowrap; }
   .metaphors .m span { font-size: 0.95rem; color: var(--muted); }
 
+  .phone {
+    display: block;
+    margin: 2rem auto 0;
+    max-height: 68vh; max-width: min(85vw, 20rem);
+    border-radius: 22px;
+    border: 1px solid var(--border);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+  }
+
   .chat { max-width: 34rem; margin: 2.5rem auto 0; display: grid; gap: 1rem; text-align: left; }
   .chat .line { display: flex; }
   .chat .line.ai { justify-content: flex-end; }
@@ -194,7 +203,16 @@
     </div>
   </section>
 
-  <!-- 4 三件事 -->
+  <!-- 4 真机截图 -->
+  <section class="slide">
+    <div class="slide-inner">
+      <p class="big">她不是概念图。<br>她已经跑在手机上了。</p>
+      <img class="phone" src="chat.jpg" alt="小暖 App 真实对话截图：语音通话中的聊天界面，底栏有首页、联系人、紧急呼救、提醒">
+      <p class="sub">真实测试画面。底栏就是她的日常：<br>联系人、紧急呼救、提醒。</p>
+    </div>
+  </section>
+
+  <!-- 5 三件事 -->
   <section class="slide">
     <div class="slide-inner">
       <p class="big">她会做三件事。</p>
@@ -209,7 +227,7 @@
   <!-- 5 对话 -->
   <section class="slide">
     <div class="slide-inner">
-      <p class="mid muted">一段真实设想中的对话。</p>
+      <p class="mid muted">而这，是她正在成为的样子。</p>
       <div class="chat">
         <div class="line"><div><div class="who">奶奶</div><div class="bubble">我那个……呃……孙子啊，下个月就要中考了。</div></div></div>
         <div class="line ai"><div><div class="who">小暖</div><div class="bubble">是明明吧？上次您说他数学进步了。这次考试，他自己紧张吗？</div></div></div>
