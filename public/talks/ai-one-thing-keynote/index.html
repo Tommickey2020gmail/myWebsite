@@ -115,6 +115,22 @@
   .phones3 figcaption b { font-family: var(--serif); font-size: 1.2rem; color: var(--accent); }
   .phones3 figcaption span { display: block; font-size: 0.9rem; color: var(--muted); margin-top: 0.2rem; }
 
+  .stacks { display: grid; gap: 0.9rem; margin-top: 2rem; grid-template-columns: repeat(2, 1fr); text-align: left; }
+  @media (max-width: 768px) { .stacks { grid-template-columns: 1fr; } }
+  .stacks .c {
+    border: 1px solid var(--border); border-radius: 14px;
+    padding: 1rem 1.2rem;
+    background: rgba(245, 239, 230, 0.04);
+  }
+  .stacks .c h3 {
+    font-family: var(--serif); font-size: 1.1rem; font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+  .stacks .c h3 small { font-family: var(--sans); font-weight: 400; font-size: 0.78rem; color: var(--muted); margin-left: 0.5em; }
+  .stacks .c ul { list-style: none; }
+  .stacks .c li { font-size: 0.85rem; color: var(--muted); line-height: 1.55; padding: 0.15rem 0; }
+  .stacks .c li b { color: var(--accent); font-weight: 600; }
+
   .steps3 { display: grid; gap: 1rem; margin-top: 2.5rem; grid-template-columns: repeat(3, 1fr); counter-reset: s; }
   @media (max-width: 768px) { .steps3 { grid-template-columns: 1fr; } }
   .steps3 .s {
@@ -334,6 +350,64 @@
         <div class="m"><b>仓库</b><span>一个存数据、存文件的地方，所有项目共用。</span></div>
         <div class="m"><b>信使</b><span>会自动发微信、发邮件的小服务，有事它来告诉你。</span></div>
         <div class="m"><b>施工队</b><span>AI 编程助手，从想法直接盖到能用的房子。</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 基建展开：技术栈分类 -->
+  <section class="slide">
+    <div class="slide-inner">
+      <p class="big">展开看，一共六类。</p>
+      <div class="stacks">
+        <div class="c">
+          <h3>网络与入口<small>门牌号 · 道路</small></h3>
+          <ul>
+            <li><b>域名 + DNS</b>：几十元一年，互联网上从此有你的地址。</li>
+            <li><b>Cloudflare Pages</b>：免费静态托管，代码一推自动上线。</li>
+            <li><b>内网穿透（Tunnel / frp）</b>：把家里的电脑安全连向公网。</li>
+            <li><b>ICP 备案</b>：备了案，微信里链接才畅通。</li>
+          </ul>
+        </div>
+        <div class="c">
+          <h3>算力与部署<small>房子</small></h3>
+          <ul>
+            <li><b>家用电脑（带 GPU）</b>：零月租的服务器，同时跑十几个服务。</li>
+            <li><b>Docker</b>：每个服务装进一个集装箱，搬家只需复制一份配置。</li>
+          </ul>
+        </div>
+        <div class="c">
+          <h3>存储与数据<small>仓库</small></h3>
+          <ul>
+            <li><b>PostgreSQL</b>：一套自建数据库，所有项目的结构化数据共用。</li>
+            <li><b>对象存储（MinIO / R2）</b>：音频、图片、文件都放这里。</li>
+            <li><b>自动备份</b>：服务挂了能重搭，数据丢了不可逆。</li>
+          </ul>
+        </div>
+        <div class="c">
+          <h3>AI 能力</h3>
+          <ul>
+            <li><b>LiteLLM 网关</b>：把各家大模型统一成一个接口，随时切换。</li>
+            <li><b>语音识别 / 合成</b>：让小暖听得见，也说得出。</li>
+            <li><b>文生图</b>：给每篇文章自动配插画。</li>
+            <li><b>向量检索</b>：让 AI 在一堆记忆里找得到那一条。</li>
+          </ul>
+        </div>
+        <div class="c">
+          <h3>触达通道<small>信使</small></h3>
+          <ul>
+            <li><b>微信 / 邮件接口</b>：一行命令发提醒、告警和日报。</li>
+            <li><b>公众号 / 小程序</b>：对老人和家属门槛最低的入口。</li>
+            <li><b>AppCenter</b>：自建应用分发，扫码装 App、自动更新。</li>
+          </ul>
+        </div>
+        <div class="c">
+          <h3>开发工具<small>施工队</small></h3>
+          <ul>
+            <li><b>Claude Code</b>：AI 编程助手，读代码、写代码、跑验证。</li>
+            <li><b>Skill</b>：把重复流程沉淀成一条命令，比如一键发布。</li>
+            <li><b>Git + 消息队列</b>：代码有版本，服务之间不打架。</li>
+          </ul>
+        </div>
       </div>
     </div>
   </section>
