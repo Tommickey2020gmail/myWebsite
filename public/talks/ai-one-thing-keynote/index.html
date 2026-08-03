@@ -103,6 +103,18 @@
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
   }
 
+  .phones3 { display: grid; gap: 1.4rem; margin-top: 2.2rem; grid-template-columns: repeat(3, 1fr); align-items: start; }
+  @media (max-width: 768px) { .phones3 { grid-template-columns: 1fr; } }
+  .phones3 img {
+    display: block; width: 100%; max-width: 15rem; margin: 0 auto;
+    border-radius: 18px;
+    border: 1px solid var(--border);
+    box-shadow: 0 16px 44px rgba(0, 0, 0, 0.4);
+  }
+  .phones3 figcaption { margin-top: 0.9rem; }
+  .phones3 figcaption b { font-family: var(--serif); font-size: 1.2rem; color: var(--accent); }
+  .phones3 figcaption span { display: block; font-size: 0.9rem; color: var(--muted); margin-top: 0.2rem; }
+
   .chat { max-width: 34rem; margin: 2.5rem auto 0; display: grid; gap: 1rem; text-align: left; }
   .chat .line { display: flex; }
   .chat .line.ai { justify-content: flex-end; }
@@ -207,8 +219,8 @@
   <section class="slide">
     <div class="slide-inner">
       <p class="big">她不是概念图。<br>她已经跑在手机上了。</p>
-      <img class="phone" src="chat.jpg" alt="小暖 App 真实对话截图：语音通话中的聊天界面，底栏有首页、联系人、紧急呼救、提醒">
-      <p class="sub">真实测试画面。底栏就是她的日常：<br>联系人、紧急呼救、提醒。</p>
+      <img class="phone" src="home.jpg" alt="小暖 App 首页真实截图：中午好孙先生，今日安排、紧急呼叫、用药管理、健康测评、健康饮食、健康锻炼、回忆录、病历管理">
+      <p class="sub">真实测试画面。今日安排、紧急呼叫、用药管理、回忆录，<br>都已经在孙先生的手机里了。</p>
     </div>
   </section>
 
@@ -220,6 +232,27 @@
         <div class="item"><b>听得懂</b><p>慢慢说的话、带口音的话、说到一半停下来想一想的话。</p></div>
         <div class="item"><b>记得住</b><p>上次聊过什么、孙子叫什么、您不爱吃什么。</p></div>
         <div class="item"><b>会关心</b><p>不只是回答问题，还会主动问一句「后来怎么样了」。</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 三件事·真机 -->
+  <section class="slide">
+    <div class="slide-inner">
+      <p class="big">这三件事，长这样。</p>
+      <div class="phones3">
+        <figure>
+          <img src="listen.jpg" alt="小暖数字人形象，屏幕显示正在听您说">
+          <figcaption><b>听得懂</b><span>她看着您，慢慢听您说完。</span></figcaption>
+        </figure>
+        <figure>
+          <img src="memoir.jpg" alt="回忆录界面：童年时光、家庭亲情、奋斗年华等话题，AI 生成回忆录成册">
+          <figcaption><b>记得住</b><span>聊过的往事，替您攒成一本回忆录。</span></figcaption>
+        </figure>
+        <figure>
+          <img src="care.jpg" alt="对话截图：雷雨天的用餐提醒，叮嘱细嚼慢咽、建议吃冬瓜或绿豆汤">
+          <figcaption><b>会关心</b><span>雷雨天，她提醒吃点清淡的。</span></figcaption>
+        </figure>
       </div>
     </div>
   </section>
