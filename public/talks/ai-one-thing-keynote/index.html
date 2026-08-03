@@ -115,23 +115,6 @@
   .phones3 figcaption b { font-family: var(--serif); font-size: 1.2rem; color: var(--accent); }
   .phones3 figcaption span { display: block; font-size: 0.9rem; color: var(--muted); margin-top: 0.2rem; }
 
-  .chat { max-width: 34rem; margin: 2.5rem auto 0; display: grid; gap: 1rem; text-align: left; }
-  .chat .line { display: flex; }
-  .chat .line.ai { justify-content: flex-end; }
-  .chat .bubble {
-    max-width: 85%;
-    padding: 0.8rem 1.15rem;
-    border-radius: 16px;
-    font-size: clamp(1rem, 2vw, 1.15rem);
-    border: 1px solid var(--border);
-    background: rgba(245, 239, 230, 0.06);
-  }
-  .chat .ai .bubble {
-    background: rgba(224, 138, 82, 0.14);
-    border-color: rgba(224, 138, 82, 0.4);
-  }
-  .chat .who { font-size: 0.8rem; color: var(--muted); margin-bottom: 0.2rem; }
-
   .steps3 { display: grid; gap: 1rem; margin-top: 2.5rem; grid-template-columns: repeat(3, 1fr); counter-reset: s; }
   @media (max-width: 768px) { .steps3 { grid-template-columns: 1fr; } }
   .steps3 .s {
@@ -254,20 +237,6 @@
           <figcaption><b>会关心</b><span>雷雨天，她提醒吃点清淡的。</span></figcaption>
         </figure>
       </div>
-    </div>
-  </section>
-
-  <!-- 5 对话 -->
-  <section class="slide">
-    <div class="slide-inner">
-      <p class="mid muted">而这，是她正在成为的样子。</p>
-      <div class="chat">
-        <div class="line"><div><div class="who">奶奶</div><div class="bubble">我那个……呃……孙子啊，下个月就要中考了。</div></div></div>
-        <div class="line ai"><div><div class="who">小暖</div><div class="bubble">是明明吧？上次您说他数学进步了。这次考试，他自己紧张吗？</div></div></div>
-        <div class="line"><div><div class="who">奶奶</div><div class="bubble">他倒不紧张，我紧张。</div></div></div>
-        <div class="line ai"><div><div class="who">小暖</div><div class="bubble">您呀，比他还上心。等出了成绩，记得告诉我。</div></div></div>
-      </div>
-      <p class="sub">她等得起那声「呃……」，也记得住那个名字。</p>
     </div>
   </section>
 
