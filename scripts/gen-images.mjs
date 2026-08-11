@@ -3,12 +3,17 @@
 // Provider auto-selection:
 //   - If CF_ACCOUNT_ID + CF_API_TOKEN are set → Cloudflare Workers AI (flux-1-schnell)
 //   - Else if ARK_API_KEY is set → Volcano Ark (Doubao Seedream)
-// Override with --provider=cf | --provider=ark
+//   - Else if ZHIPU_API_KEY is set → Zhipu CogView-3-Flash (free tier)
+// Override with --provider=cf | --provider=ark | --provider=zhipu
 // Usage:
-//   node --env-file=.env scripts/gen-images.mjs <path-to-md> [--cover-only] [--dry] [--force] [--provider=cf|ark]
+//   node --env-file=.env scripts/gen-images.mjs <path-to-md> [--cover-only] [--dry] [--force] [--provider=cf|ark|zhipu]
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { execFile as _execFile } from 'node:child_process';
+import { promisify } from 'node:util';
+
+const execFile = promisify(_execFile);
 // Use undici's fetch (not node's built-in fetch) so we can route through a
 // proxy via ProxyAgent. Node 22's built-in fetch uses a bundled undici whose
 // global dispatcher is separate from the installed undici package, so calling
@@ -31,6 +36,18 @@ const CF_ACCOUNT_ID = process.env.CF_ACCOUNT_ID;
 const CF_API_TOKEN = process.env.CF_API_TOKEN;
 const CF_IMAGE_MODEL = process.env.CF_IMAGE_MODEL ?? '@cf/black-forest-labs/flux-1-schnell';
 
+const ZHIPU_API_KEY = process.env.ZHIPU_API_KEY;
+const ZHIPU_BASE_URL = process.env.ZHIPU_BASE_URL ?? 'https://open.bigmodel.cn/api/paas/v4';
+const ZHIPU_IMAGE_MODEL = process.env.ZHIPU_IMAGE_MODEL ?? 'cogview-3-flash';
+const ZHIPU_TEXT_MODEL = process.env.ZHIPU_TEXT_MODEL ?? 'glm-4-flash';
+// CogView only accepts a fixed set of resolutions, and the free tier always
+// burns an "AI生成" badge into the bottom-right corner. Generate slightly
+// taller than needed, then crop the badge off and scale back to the target.
+const ZHIPU_SIZES = { '1280x720': '1344x768', '1024x1024': '1024x1024' };
+// The badge scales with the image, so crop a fraction of the height, not a
+// fixed pixel count (62px cleared 1344x768 but left a sliver on 1024x1024).
+const ZHIPU_WATERMARK_RATIO = 0.095;
+
 // ---------- args ----------
 const args = process.argv.slice(2);
 const mdPath = args.find((a) => !a.startsWith('--'));
@@ -40,10 +57,10 @@ const force = args.includes('--force');
 const providerArg = args.find((a) => a.startsWith('--provider='))?.split('=')[1];
 
 const provider = providerArg
-  ?? (CF_ACCOUNT_ID && CF_API_TOKEN ? 'cf' : (ARK_API_KEY ? 'ark' : null));
+  ?? (CF_ACCOUNT_ID && CF_API_TOKEN ? 'cf' : (ARK_API_KEY ? 'ark' : (ZHIPU_API_KEY ? 'zhipu' : null)));
 
 if (!provider) {
-  console.error('No provider available. Set CF_ACCOUNT_ID+CF_API_TOKEN or ARK_API_KEY in .env');
+  console.error('No provider available. Set CF_ACCOUNT_ID+CF_API_TOKEN, ARK_API_KEY or ZHIPU_API_KEY in .env');
   process.exit(1);
 }
 if (provider === 'cf' && (!CF_ACCOUNT_ID || !CF_API_TOKEN)) {
@@ -54,9 +71,13 @@ if (provider === 'ark' && !ARK_API_KEY) {
   console.error('Missing ARK_API_KEY');
   process.exit(1);
 }
+if (provider === 'zhipu' && !ZHIPU_API_KEY) {
+  console.error('Missing ZHIPU_API_KEY');
+  process.exit(1);
+}
 
 if (!mdPath) {
-  console.error('Usage: node --env-file=.env scripts/gen-images.mjs <path-to-md> [--cover-only] [--dry] [--force] [--provider=cf|ark]');
+  console.error('Usage: node --env-file=.env scripts/gen-images.mjs <path-to-md> [--cover-only] [--dry] [--force] [--provider=cf|ark|zhipu]');
   process.exit(1);
 }
 
@@ -88,6 +109,36 @@ async function generateImageToFile(prompt, size, dest) {
     const b64 = json.result?.image;
     if (!b64) throw new Error(`CF: no image in response: ${JSON.stringify(json).slice(0, 300)}`);
     await fs.writeFile(dest, Buffer.from(b64, 'base64'));
+    return;
+  }
+  if (provider === 'zhipu') {
+    const genSize = ZHIPU_SIZES[size] ?? size;
+    const resp = await fetch(`${ZHIPU_BASE_URL}/images/generations`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${ZHIPU_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ model: ZHIPU_IMAGE_MODEL, prompt, size: genSize }),
+    });
+    const json = await resp.json();
+    if (!resp.ok) throw new Error(`Zhipu ${resp.status}: ${JSON.stringify(json).slice(0, 400)}`);
+    const url = json.data?.[0]?.url;
+    if (!url) throw new Error(`Zhipu: no image url: ${JSON.stringify(json).slice(0, 300)}`);
+    const r = await fetch(url);
+    if (!r.ok) throw new Error(`download ${r.status}`);
+    const tmp = `${dest}.raw`;
+    await fs.writeFile(tmp, Buffer.from(await r.arrayBuffer()));
+    // Crop the "AI生成" badge off the bottom, then scale back to the target size.
+    const [genW, genH] = genSize.split('x').map(Number);
+    const [outW, outH] = size.split('x').map(Number);
+    const keepH = Math.round(genH * (1 - ZHIPU_WATERMARK_RATIO));
+    await execFile('ffmpeg', [
+      '-y', '-loglevel', 'error', '-i', tmp,
+      '-vf', `crop=${genW}:${keepH}:0:0,scale=${outW}:${outH}:flags=lanczos`,
+      '-q:v', '3', dest,
+    ]);
+    await fs.unlink(tmp);
     return;
   }
   // ark provider: returns presigned URL
@@ -249,30 +300,42 @@ function inlinePrompt(_sectionTitle, preview) {
 // Seedream 4.0 handles text well but still slips captions into artful covers.
 const NO_TEXT_SHORT = 'Important: the illustration must contain absolutely no text, letters, words, numbers, captions, labels, signage, logos, book covers with visible titles, seals, or watermarks of any kind.';
 
+// glm-4-flash follows the style rules in ART_SYSTEM much more loosely than
+// Doubao does — it keeps returning photoreal 3D renders. Re-assert the medium
+// (palette is still the art director's call) when running on that model.
+const STYLE_ANCHOR = 'Rendered as a hand-painted editorial illustration — soft watercolour and gouache washes on textured paper, flat and slightly abstract, with generous negative space and a calm, quiet mood. Not a photograph, not a 3D render, no neon circuitry, no glossy sci-fi surfaces.';
+
 function wrapPrompt(core) {
-  return `${core.trim()} ${NO_TEXT_SHORT}`;
+  const style = provider === 'zhipu' ? ` ${STYLE_ANCHOR}` : '';
+  return `${core.trim()}${style} ${NO_TEXT_SHORT}`;
 }
 
-async function arkChat(messages) {
-  const resp = await fetch(`${ARK_BASE_URL}/chat/completions`, {
+// Art direction runs on whichever text model matches the image provider.
+const textModel = provider === 'zhipu' ? ZHIPU_TEXT_MODEL : ARK_TEXT_MODEL;
+
+async function chat(messages) {
+  const [base, key] = provider === 'zhipu'
+    ? [ZHIPU_BASE_URL, ZHIPU_API_KEY]
+    : [ARK_BASE_URL, ARK_API_KEY];
+  const resp = await fetch(`${base}/chat/completions`, {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${ARK_API_KEY}`,
+      Authorization: `Bearer ${key}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model: ARK_TEXT_MODEL,
+      model: textModel,
       messages,
       temperature: 0.9,
       max_tokens: 900,
     }),
   });
   const j = await resp.json();
-  if (!resp.ok) throw new Error(`ARK chat ${resp.status}: ${JSON.stringify(j).slice(0, 300)}`);
+  if (!resp.ok) throw new Error(`chat ${resp.status}: ${JSON.stringify(j).slice(0, 300)}`);
   return j.choices?.[0]?.message?.content ?? '';
 }
 
-const ART_SYSTEM = `You are the art director for a warm, literary personal blog (essays on philosophy, psychology, AI, and life). For a given essay you invent illustration prompts for a text-to-image model (Doubao Seedream 4.0).
+const ART_SYSTEM = `You are the art director for a warm, literary personal blog (essays on philosophy, psychology, AI, and life). For a given essay you invent illustration prompts for a text-to-image model.
 
 Rules for every prompt:
 - Write in English only.
@@ -300,7 +363,7 @@ async function artDirect({ title, description, excerpt, inlines }) {
   } else {
     parts.push('Inline: none needed → "inline": [].');
   }
-  const content = await arkChat([
+  const content = await chat([
     { role: 'system', content: ART_SYSTEM },
     { role: 'user', content: parts.join('\n') },
   ]);
@@ -364,7 +427,7 @@ try {
     excerpt: bodyExcerpt(body),
     inlines: inlineCtx,
   });
-  console.log(`ok (${ARK_TEXT_MODEL})`);
+  console.log(`ok (${textModel})`);
 } catch (e) {
   console.log(`failed → falling back to heuristic\n   ${e.message}`);
 }

@@ -8,7 +8,10 @@ tags: [robotics, ros2, navigation, embedded, learning-notes]
 status: budding
 created: 2026-08-10
 audio: https://audio.tommickey.cn/ros2-study-notes.mp3?v=714f945b
+cover: /illustrations/ros2-study-notes/cover.jpeg
 ---
+![ROS 2 学习整理](/illustrations/ros2-study-notes/cover.jpeg)
+
 
 > 整理日期：2026-08-10
 > 面向目标：养老机器人体系（小暖大脑 / 小车移动 / 机械臂操作）的技术底座学习
@@ -24,6 +27,9 @@ ROS 2 是对 ROS 1 的彻底重写，关键变化：
 - **ROS 1 已于 2025 年 5 月停止支持**（Noetic EOL），新项目没有悬念，直接 ROS 2
 
 ## 二、版本选择（2026 年 8 月现状）
+
+![二、版本选择（2026 年 8 月现状）](/illustrations/ros2-study-notes/inline-1.jpeg)
+
 
 ROS 2 每年 5 月 23 日发一版；偶数年为 LTS（支持 5 年），奇数年为普通版（支持 1.5 年）。每个版本只对应一个 Ubuntu LTS。
 
@@ -61,6 +67,9 @@ ROS 2 每年 5 月 23 日发一版；偶数年为 LTS（支持 5 年），奇数
 - **URDF/Xacro**：机器人的连杆-关节描述文件，仿真、RViz 可视化、MoveIt 规划的输入
 
 ## 四、工具链
+
+![四、工具链](/illustrations/ros2-study-notes/inline-2.jpeg)
+
 
 - `ros2` CLI：`ros2 run / launch / topic echo / node list / bag record` —— 日常调试主力
 - **colcon**：工作空间构建工具（对应 ROS 1 的 catkin）
