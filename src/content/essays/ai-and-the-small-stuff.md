@@ -7,7 +7,7 @@ lang: zh
 tags: [ai, society, technology, everyday, observation]
 created: 2026-08-23
 cover: /illustrations/ai-and-the-small-stuff/cover.jpeg
-audio: https://audio.tommickey.cn/ai-and-the-small-stuff.mp3?v=7a5c1b2b
+audio: https://audio.tommickey.cn/ai-and-the-small-stuff.mp3?v=1b875218
 ---
 ![AI与鸡毛蒜皮](/illustrations/ai-and-the-small-stuff/cover.jpeg)
 
