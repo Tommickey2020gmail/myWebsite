@@ -7,7 +7,7 @@ lang: zh
 tags: [ai, voice, cognitive-science, philosophy, architecture, xiaonuan]
 created: 2026-07-29
 cover: /illustrations/xiaonuan-inner-speech/cover.jpeg
-audio: https://audio.tommickey.cn/xiaonuan-inner-speech.mp3?v=d358c884
+audio: https://audio.tommickey.cn/xiaonuan-inner-speech.mp3?v=ca74b1f7
 ---
 ![继续构思小暖的内部言语](/illustrations/xiaonuan-inner-speech/cover.jpeg)
 

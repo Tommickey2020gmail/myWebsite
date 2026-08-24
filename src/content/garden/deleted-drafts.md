@@ -8,7 +8,7 @@ status: seedling
 created: 2026-08-21
 tags: [writing, communication, everyday, self-knowledge]
 cover: /illustrations/deleted-drafts/cover.jpeg
-audio: https://audio.tommickey.cn/deleted-drafts.mp3?v=81a2eeb7
+audio: https://audio.tommickey.cn/deleted-drafts.mp3?v=f23e5521
 ---
 ![输入中](/illustrations/deleted-drafts/cover.jpeg)
 

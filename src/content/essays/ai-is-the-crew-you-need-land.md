@@ -7,7 +7,7 @@ lang: zh
 tags: [ai, infrastructure, indie, methodology, xiaonuan]
 created: 2026-08-03
 cover: /illustrations/ai-is-the-crew-you-need-land/cover.jpeg
-audio: https://audio.tommickey.cn/ai-is-the-crew-you-need-land.mp3?v=8799aa7e
+audio: https://audio.tommickey.cn/ai-is-the-crew-you-need-land.mp3?v=0458a473
 ---
 ![AI 是施工队，你得先有一块地](/illustrations/ai-is-the-crew-you-need-land/cover.jpeg)
 

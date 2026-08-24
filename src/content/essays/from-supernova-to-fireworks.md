@@ -6,7 +6,7 @@ lang: zh
 tags: [ai, startup, philosophy, agent]
 created: 2026-07-27
 cover: /illustrations/from-supernova-to-fireworks/cover.jpeg
-audio: https://audio.tommickey.cn/from-supernova-to-fireworks.mp3?v=72256ee4
+audio: https://audio.tommickey.cn/from-supernova-to-fireworks.mp3?v=e66d48fc
 ---
 ![从新星到烟花](/illustrations/from-supernova-to-fireworks/cover.jpeg)
 

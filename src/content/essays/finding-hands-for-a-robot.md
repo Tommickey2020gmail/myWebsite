@@ -7,7 +7,7 @@ lang: zh
 tags: [robotics, ai, eldercare, so-101, imitation-learning]
 created: 2026-08-09
 cover: /illustrations/finding-hands-for-a-robot/cover.jpeg
-audio: https://audio.tommickey.cn/finding-hands-for-a-robot.mp3?v=a4b20346
+audio: https://audio.tommickey.cn/finding-hands-for-a-robot.mp3?v=6fac1cef
 ---
 ![给机器人找一双手](/illustrations/finding-hands-for-a-robot/cover.jpeg)
 

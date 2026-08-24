@@ -6,7 +6,7 @@ lang: zh
 tags: [ai, philosophy, ethics, care]
 created: 2026-07-25
 cover: /illustrations/machine-caring-for-a-person/cover.jpeg
-audio: https://audio.tommickey.cn/machine-caring-for-a-person.mp3?v=d9f5df51
+audio: https://audio.tommickey.cn/machine-caring-for-a-person.mp3?v=6db49e77
 ---
 ![让机器照顾一个人](/illustrations/machine-caring-for-a-person/cover.jpeg)
 

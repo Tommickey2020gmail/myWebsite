@@ -7,7 +7,7 @@ lang: zh
 tags: [robotics, ros2, navigation, embedded, learning-notes]
 status: budding
 created: 2026-08-10
-audio: https://audio.tommickey.cn/ros2-study-notes.mp3?v=714f945b
+audio: https://audio.tommickey.cn/ros2-study-notes.mp3?v=f62f3ce9
 cover: /illustrations/ros2-study-notes/cover.jpeg
 ---
 ![ROS 2 学习整理](/illustrations/ros2-study-notes/cover.jpeg)

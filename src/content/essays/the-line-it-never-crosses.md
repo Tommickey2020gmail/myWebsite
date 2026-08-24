@@ -7,7 +7,7 @@ lang: zh
 tags: [ai, philosophy, ethics, epistemology, governance]
 created: 2026-08-21
 cover: /illustrations/the-line-it-never-crosses/cover.jpeg
-audio: https://audio.tommickey.cn/the-line-it-never-crosses.mp3?v=1f7af0bd
+audio: https://audio.tommickey.cn/the-line-it-never-crosses.mp3?v=5fe4cba6
 ---
 ![它从不跨过那条线](/illustrations/the-line-it-never-crosses/cover.jpeg)
 

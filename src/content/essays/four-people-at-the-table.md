@@ -7,7 +7,7 @@ lang: zh
 tags: [philosophy, psychology, family, conflict, self-knowledge]
 created: 2026-08-22
 cover: /illustrations/four-people-at-the-table/cover.jpeg
-audio: https://audio.tommickey.cn/four-people-at-the-table.mp3?v=26945ac1
+audio: https://audio.tommickey.cn/four-people-at-the-table.mp3?v=ca457066
 ---
 ![桌上坐着四个人](/illustrations/four-people-at-the-table/cover.jpeg)
 

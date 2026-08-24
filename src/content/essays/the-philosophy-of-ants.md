@@ -7,7 +7,7 @@ lang: zh
 tags: [philosophy, ai, epistemology, ethics]
 created: 2026-08-04
 cover: /illustrations/the-philosophy-of-ants/cover.jpeg
-audio: https://audio.tommickey.cn/the-philosophy-of-ants.mp3?v=245d3248
+audio: https://audio.tommickey.cn/the-philosophy-of-ants.mp3?v=e7512a5d
 ---
 ![蚂蚁的哲学](/illustrations/the-philosophy-of-ants/cover.jpeg)
 
