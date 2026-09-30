@@ -14,8 +14,10 @@ pnpm-debug.log*
 
 
 # environment variables
+# 🔴 通配，不要只写 .env —— 仓库是 PUBLIC 的，一份 .env.bak 就够泄一次密钥
 .env
-.env.production
+.env.*
+*.env
 
 # Obsidian (vault state, not content)
 .obsidian/
