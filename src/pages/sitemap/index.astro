@@ -1,0 +1,163 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { slugHref } from '../../lib/url';
+import { SITE_URL, breadcrumbList } from '../../lib/schema';
+
+const byCreatedDesc = (a: { data: { created: Date } }, b: { data: { created: Date } }) =>
+  b.data.created.getTime() - a.data.created.getTime();
+
+const essays = (await getCollection('essays', ({ data }) => !data.draft)).sort(byCreatedDesc);
+const garden = (await getCollection('garden', ({ data }) => !data.draft)).sort(byCreatedDesc);
+const projects = (await getCollection('projects', ({ data }) => !data.draft)).sort(byCreatedDesc);
+const books = (await getCollection('books', ({ data }) => !data.draft))
+  .sort((a, b) => (b.data.finished ?? b.data.created).getTime() - (a.data.finished ?? a.data.created).getTime());
+const papers = (await getCollection('papers', ({ data }) => !data.draft)).sort(byCreatedDesc);
+const now = (await getCollection('now', ({ data }) => !data.draft)).sort(byCreatedDesc);
+
+// Same list as Header.astro's nav, plus the footer-level /random/ shortcut.
+const pages = [
+  { href: '/', zh: '首页', en: 'Home' },
+  { href: '/garden/', zh: '花园', en: 'Garden' },
+  { href: '/essays/', zh: '随笔', en: 'Essays' },
+  { href: '/projects/', zh: '项目', en: 'Projects' },
+  { href: '/library/', zh: '书房', en: 'Library' },
+  { href: '/now/', zh: '近况', en: 'Now' },
+  { href: '/tags/', zh: '标签', en: 'Tags' },
+  { href: '/search/', zh: '搜索', en: 'Search' },
+  { href: '/about/', zh: '关于', en: 'About' },
+  { href: '/random/', zh: '随机一篇', en: 'Random' },
+];
+
+const talks = [
+  { href: '/talks/ai-one-thing-xiaonuan/', zh: 'AI 只做一件事 · 小暖', en: 'AI, One Thing · Xiaonuan' },
+  { href: '/talks/ai-one-thing-keynote/', zh: 'AI 只做一件事 · 主题演讲', en: 'AI, One Thing · Keynote' },
+];
+
+const fmt = (d: Date) => d.toISOString().slice(0, 10);
+const total =
+  essays.length + garden.length + projects.length + books.length + papers.length + now.length + talks.length;
+
+const jsonLd = breadcrumbList([
+  { name: 'Home', url: `${SITE_URL}/` },
+  { name: 'Sitemap', url: `${SITE_URL}/sitemap/` },
+]);
+---
+<BaseLayout
+  title="站点地图 / Sitemap"
+  description="本站所有板块与文章的完整索引。A complete human-readable index of every section and post on this site."
+  jsonLd={jsonLd}
+>
+  <h1 class="text-3xl mb-2"><span lang="zh">站点地图</span><span class="biling-sep" aria-hidden="true"> / </span><span lang="en">Sitemap</span></h1>
+  <p class="text-muted mb-10">
+    <span lang="zh">全站 {total} 条内容的完整索引。</span>
+    <span class="biling-sep" aria-hidden="true"> / </span>
+    <span lang="en">A complete index of all {total} entries on this site.</span>
+  </p>
+
+  <section class="mb-10">
+    <h2 class="text-xl mb-4"><span lang="zh">主要页面</span><span class="biling-sep" aria-hidden="true"> / </span><span lang="en">Pages</span> <span class="text-muted text-base">· {pages.length}</span></h2>
+    <ul class="space-y-1.5">
+      {pages.map((p) => (
+        <li>
+          <a href={p.href} class="no-underline">
+            <span lang="zh">{p.zh}</span><span class="biling-sep" aria-hidden="true"> / </span><span lang="en">{p.en}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="mb-10">
+    <h2 class="text-xl mb-4"><span lang="zh">随笔</span><span class="biling-sep" aria-hidden="true"> / </span><span lang="en">Essays</span> <span class="text-muted text-base">· {essays.length}</span></h2>
+    <ul class="space-y-1.5">
+      {essays.map((e) => (
+        <li class="flex flex-wrap items-baseline gap-x-2">
+          <a href={`/essays/${slugHref(e.id)}/`} class="no-underline">{e.data.title}</a>
+          <span class="text-xs text-muted">{fmt(e.data.created)}</span>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="mb-10">
+    <h2 class="text-xl mb-4"><span lang="zh">花园</span><span class="biling-sep" aria-hidden="true"> / </span><span lang="en">Garden</span> <span class="text-muted text-base">· {garden.length}</span></h2>
+    <ul class="space-y-1.5">
+      {garden.map((e) => (
+        <li class="flex flex-wrap items-baseline gap-x-2">
+          <a href={`/garden/${slugHref(e.id)}/`} class="no-underline">{e.data.title}</a>
+          <span class="text-xs text-muted">{fmt(e.data.created)}</span>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="mb-10">
+    <h2 class="text-xl mb-4"><span lang="zh">项目</span><span class="biling-sep" aria-hidden="true"> / </span><span lang="en">Projects</span> <span class="text-muted text-base">· {projects.length}</span></h2>
+    <ul class="space-y-1.5">
+      {projects.map((e) => (
+        <li class="flex flex-wrap items-baseline gap-x-2">
+          <a href={`/projects/${slugHref(e.id)}/`} class="no-underline">{e.data.title}</a>
+          <span class="text-xs text-muted">{fmt(e.data.created)}</span>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="mb-10">
+    <h2 class="text-xl mb-4"><span lang="zh">书房</span><span class="biling-sep" aria-hidden="true"> / </span><span lang="en">Library</span> <span class="text-muted text-base">· {books.length + papers.length}</span></h2>
+    <ul class="space-y-1.5">
+      {books.map((b) => (
+        <li class="flex flex-wrap items-baseline gap-x-2">
+          <a href={`/library/#book-${b.id}`} class="no-underline">{b.data.title}</a>
+          <span class="text-xs text-muted">{b.data.author}</span>
+        </li>
+      ))}
+      {papers.map((p) => (
+        <li class="flex flex-wrap items-baseline gap-x-2">
+          <a href={`/library/#paper-${p.id}`} class="no-underline">{p.data.title}</a>
+          <span class="text-xs text-muted">{fmt(p.data.created)}</span>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="mb-10">
+    <h2 class="text-xl mb-4"><span lang="zh">近况</span><span class="biling-sep" aria-hidden="true"> / </span><span lang="en">Now</span> <span class="text-muted text-base">· {now.length}</span></h2>
+    <ul class="space-y-1.5">
+      {now.map((n) => (
+        <li class="flex flex-wrap items-baseline gap-x-2">
+          <a href="/now/" class="no-underline">{n.data.title}</a>
+          <span class="text-xs text-muted">{fmt(n.data.created)}</span>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="mb-10">
+    <h2 class="text-xl mb-4"><span lang="zh">演讲</span><span class="biling-sep" aria-hidden="true"> / </span><span lang="en">Talks</span> <span class="text-muted text-base">· {talks.length}</span></h2>
+    <ul class="space-y-1.5">
+      {talks.map((t) => (
+        <li>
+          <a href={t.href} class="no-underline">
+            <span lang="zh">{t.zh}</span><span class="biling-sep" aria-hidden="true"> / </span><span lang="en">{t.en}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="border-t border-border pt-6">
+    <h2 class="text-xl mb-2"><span lang="zh">订阅与机器可读</span><span class="biling-sep" aria-hidden="true"> / </span><span lang="en">Feeds & machine-readable</span></h2>
+    <p class="text-sm text-muted mb-3">
+      <span lang="zh">下面是给阅读器和爬虫用的格式。</span>
+      <span class="biling-sep" aria-hidden="true"> / </span>
+      <span lang="en">These formats are meant for feed readers and crawlers.</span>
+    </p>
+    <ul class="space-y-1.5 text-sm">
+      <li><a href="/rss.xml" class="no-underline">RSS</a></li>
+      <li><a href="/sitemap-index.xml" class="no-underline">sitemap-index.xml</a></li>
+      <li><a href="/llms.txt" class="no-underline">llms.txt</a></li>
+    </ul>
+  </section>
+</BaseLayout>
