@@ -27,10 +27,13 @@ if (_proxy) console.log(`🌐 using proxy: ${_proxy}`);
 
 const ARK_API_KEY = process.env.ARK_API_KEY;
 const ARK_BASE_URL = process.env.ARK_BASE_URL ?? 'https://ark.cn-beijing.volces.com/api/v3';
-const ARK_IMAGE_MODEL = process.env.ARK_IMAGE_MODEL ?? 'doubao-seedream-3-0-t2i-250415';
+const ARK_IMAGE_MODEL = process.env.ARK_IMAGE_MODEL ?? 'doubao-seedream-4-0-250828';
 // Text model used as an "art director": reads the article and writes a vivid,
 // article-specific image prompt (subject + mood-appropriate palette + medium).
-const ARK_TEXT_MODEL = process.env.ARK_TEXT_MODEL ?? 'doubao-1-5-pro-32k-250115';
+// 2026-09-30: doubao-1-5-pro/lite-32k 双双变成 InvalidEndpoint.ClosedEndpoint。
+// 兜底值必须是当前真能调通的模型 —— 这里失败不会报错，只会静默退回旧启发式
+// distillVisual()，画出来的图和文章无关，而且很难发现。
+const ARK_TEXT_MODEL = process.env.ARK_TEXT_MODEL ?? 'doubao-seed-2-1-turbo-260628';
 
 const CF_ACCOUNT_ID = process.env.CF_ACCOUNT_ID;
 const CF_API_TOKEN = process.env.CF_API_TOKEN;
