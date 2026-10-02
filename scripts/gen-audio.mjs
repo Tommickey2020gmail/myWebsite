@@ -4,7 +4,8 @@
 // back into the article's frontmatter as `audio:`.
 //
 // Usage:
-//   node --env-file=.env scripts/gen-audio.mjs <path-to-md> [--provider=volc|ali] [--dry] [--force] [--no-upload]
+//   node --env-file=.env scripts/gen-audio.mjs <path-to-md> [--provider=ali|volc] [--dry] [--force] [--no-upload]
+//   默认 ali（火山自 2026-07-27 账号级失权，见下方 provider 处注释）
 //
 // Required env (.env):
 //   TTS (火山语音技术控制台 → 语音合成):
@@ -53,7 +54,7 @@ const MAX_CHARS = Number(process.env.VOLC_TTS_MAX_CHARS ?? '280'); // per-reques
 const ALI_HOST = 'https://dashscope.aliyuncs.com/api/v1/services/aigc/multimodal-generation/generation';
 const ALI_KEY = process.env.DASHSCOPE_API_KEY;
 const ALI_MODEL = process.env.ALI_TTS_MODEL ?? 'qwen3-tts-flash';
-const ALI_VOICE = process.env.ALI_TTS_VOICE ?? 'Ryan';
+const ALI_VOICE = process.env.ALI_TTS_VOICE ?? 'Ethan';  // 与 .env 实际在用的音色一致，免得漏设 env 时悄悄换人
 const ALI_RATE = 24000;
 
 // ---------- args ----------
@@ -62,7 +63,13 @@ const mdPath = args.find((a) => !a.startsWith('--'));
 const dry = args.includes('--dry');
 const force = args.includes('--force');
 const noUpload = args.includes('--no-upload');
-const provider = (args.find((a) => a.startsWith('--provider='))?.split('=')[1] ?? 'volc').toLowerCase();
+// 🔴 默认是 ali，不是 volc。火山 openspeech 自 2026-07-27 起**账号级失权**，
+//    任何音色都返回 `TTS 3001: requested resource not granted`，不是临时故障、充值也不解决。
+//    默认值指向一个已死的 provider，结果是每次发布都先失败一次再手动加 --provider=ali
+//    （2026-10-02 又踩了一遍才改）。volc 保留着，哪天权限恢复了显式 --provider=volc 即可。
+// ⚠️ 同类坑：gen-images.mjs 的 ARK_TEXT_MODEL 兜底值曾指向已下线的模型，
+//    区别是那个**不报错**、静默退化；这个至少会响。
+const provider = (args.find((a) => a.startsWith('--provider='))?.split('=')[1] ?? 'ali').toLowerCase();
 
 if (!mdPath) {
   console.error('Usage: node --env-file=.env scripts/gen-audio.mjs <path-to-md> [--provider=volc|ali] [--dry] [--force] [--no-upload]');
