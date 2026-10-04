@@ -4,7 +4,8 @@
 // back into the article's frontmatter as `audio:`.
 //
 // Usage:
-//   node --env-file=.env scripts/gen-audio.mjs <path-to-md> [--provider=ali|volc] [--dry] [--force] [--no-upload]
+//   node --env-file=.env scripts/gen-audio.mjs <path-to-md> [--provider=ali|ali-clone|volc] [--dry] [--force] [--no-upload]
+//   ali-clone = 用户本人声纹（需 ALI_CLONE_VOICE），走 scripts/tts_clone.py
 //   默认 ali（火山自 2026-07-27 账号级失权，见下方 provider 处注释）
 //
 // Required env (.env):
@@ -55,6 +56,9 @@ const ALI_HOST = 'https://dashscope.aliyuncs.com/api/v1/services/aigc/multimodal
 const ALI_KEY = process.env.DASHSCOPE_API_KEY;
 const ALI_MODEL = process.env.ALI_TTS_MODEL ?? 'qwen3-tts-flash';
 const ALI_VOICE = process.env.ALI_TTS_VOICE ?? 'Ethan';  // 与 .env 实际在用的音色一致，免得漏设 env 时悄悄换人
+// 自定义声纹（用户本人）。只在 --provider=ali-clone 时用；走 cosyvoice-v2 的 WebSocket，
+// Node 侧没有协议实现，转交 scripts/tts_clone.py（见该文件顶部注释）。
+const ALI_CLONE_VOICE = process.env.ALI_CLONE_VOICE;
 const ALI_RATE = 24000;
 
 // ---------- args ----------
@@ -75,8 +79,8 @@ if (!mdPath) {
   console.error('Usage: node --env-file=.env scripts/gen-audio.mjs <path-to-md> [--provider=volc|ali] [--dry] [--force] [--no-upload]');
   process.exit(1);
 }
-if (!['volc', 'ali'].includes(provider)) {
-  console.error(`Unknown --provider=${provider} (expected volc | ali)`);
+if (!['volc', 'ali', 'ali-clone'].includes(provider)) {
+  console.error(`Unknown --provider=${provider} (expected ali | ali-clone | volc)`);
   process.exit(1);
 }
 
@@ -192,6 +196,29 @@ async function synthChunkAli(text) {
   return wavToPcm(Buffer.from(await audio.arrayBuffer()));
 }
 
+// 自定义声纹：转交 Python SDK（cosyvoice-v2 是 WebSocket，不是 REST）。
+// 输出同样是 24kHz 单声道裸 PCM，与 synthChunkAli 对齐，可以共用后面的拼接与编码。
+function synthChunkAliClone(text) {
+  return new Promise((resolve, reject) => {
+    const py = spawn('python3', [new URL('tts_clone.py', import.meta.url).pathname], {
+      env: { ...process.env, ALI_CLONE_VOICE },
+      stdio: ['pipe', 'pipe', 'pipe'],
+    });
+    const out = [], err = [];
+    py.stdout.on('data', (d) => out.push(d));
+    py.stderr.on('data', (d) => err.push(d));
+    py.on('error', reject);
+    py.on('close', (code) => {
+      if (code !== 0) return reject(new Error(`tts_clone rc=${code}: ${Buffer.concat(err).toString().trim().slice(0, 200)}`));
+      const buf = Buffer.concat(out);
+      // 0 字节会一路静默拼接到最后才暴露成整段无声，这里当场拦住。
+      if (!buf.length) return reject(new Error('tts_clone 返回 0 字节'));
+      resolve(buf);
+    });
+    py.stdin.end(text, 'utf8');
+  });
+}
+
 // One bad chunk out of 47 would otherwise waste the whole run.
 async function withRetry(fn, label, tries = 3) {
   for (let n = 1; ; n++) {
@@ -289,7 +316,8 @@ if (existingAudio && !force) {
 }
 
 // Validate credentials only now (so --dry works without them).
-const missTts = (provider === 'ali' ? ['DASHSCOPE_API_KEY'] : ['VOLC_TTS_APPID', 'VOLC_TTS_TOKEN'])
+const missTts = (provider === 'ali-clone' ? ['DASHSCOPE_API_KEY', 'ALI_CLONE_VOICE']
+  : provider === 'ali' ? ['DASHSCOPE_API_KEY'] : ['VOLC_TTS_APPID', 'VOLC_TTS_TOKEN'])
   .filter((k) => !process.env[k]);
 if (missTts.length) { console.error(`\n✗ Missing TTS env: ${missTts.join(', ')}`); process.exit(1); }
 if (!noUpload) {
@@ -300,17 +328,18 @@ if (!noUpload) {
 
 // 1) Synthesize each chunk. volc returns mp3 frames (concatenable as-is);
 //    ali returns raw PCM that has to be encoded once at the end.
-console.log(`\n🔊 synthesizing… (provider: ${provider}, voice: ${provider === 'ali' ? ALI_VOICE : VOICE})`);
+console.log(`\n🔊 synthesizing… (provider: ${provider}, voice: ${provider === 'ali-clone' ? ALI_CLONE_VOICE : provider === 'ali' ? ALI_VOICE : VOICE})`);
 const parts = [];
 for (let i = 0; i < chunks.length; i++) {
   process.stdout.write(`   chunk ${i + 1}/${chunks.length}\r`);
   parts.push(await withRetry(
-    () => (provider === 'ali' ? synthChunkAli(chunks[i]) : synthChunk(chunks[i])),
+    () => (provider === 'ali-clone' ? synthChunkAliClone(chunks[i])
+         : provider === 'ali' ? synthChunkAli(chunks[i]) : synthChunk(chunks[i])),
     `chunk ${i + 1}`,
   ));
 }
 const merged = Buffer.concat(parts);
-const mp3 = provider === 'ali' ? await pcmToMp3(merged) : merged;
+const mp3 = provider.startsWith('ali') ? await pcmToMp3(merged) : merged;   // 两条 ali 路径都产 PCM
 console.log(`\n   mp3 size: ${(mp3.length / 1024 / 1024).toFixed(2)} MB`);
 
 // 2) Always keep a local copy (gitignored) for re-upload / inspection.
