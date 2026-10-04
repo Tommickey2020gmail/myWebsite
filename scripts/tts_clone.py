@@ -18,6 +18,7 @@
 """
 import os
 import sys
+import time
 
 import dashscope
 from dashscope.audio.tts_v2 import AudioFormat, SpeechSynthesizer
@@ -36,17 +37,32 @@ def main() -> int:
         print('tts_clone: stdin 为空', file=sys.stderr); return 2
 
     dashscope.api_key = key
-    syn = SpeechSynthesizer(model=os.environ.get('ALI_CLONE_MODEL', 'cosyvoice-v2'),
-                            voice=voice,
-                            format=AudioFormat.PCM_24000HZ_MONO_16BIT)
-    audio = syn.call(text)
-    if not audio:
-        # SDK 失败时返回 None 而不抛异常 —— 不显式检查就会写出 0 字节、
-        # 一路拼接到最后才发现整段静音。
-        print(f'tts_clone: 返回空音频（requestId={syn.get_last_request_id()}）', file=sys.stderr)
-        return 1
-    sys.stdout.buffer.write(audio)
-    return 0
+    model = os.environ.get('ALI_CLONE_MODEL', 'cosyvoice-v2')
+
+    # 🔴 SDK 的 WebSocket 连接超时写死 5 秒，网络抖一下就
+    #    `TimeoutError: websocket connection could not established within 5s`。
+    #    2026-10-05 实测一篇 17 块里倒在第 5 块。调用方不一定有重试
+    #    （gen-audio.mjs 有 withRetry，但直接 shell 调本脚本的没有），所以内置一层。
+    tries = int(os.environ.get('TTS_CLONE_TRIES', '4'))
+    last = ''
+    for n in range(1, tries + 1):
+        try:
+            syn = SpeechSynthesizer(model=model, voice=voice,
+                                    format=AudioFormat.PCM_24000HZ_MONO_16BIT)
+            audio = syn.call(text)
+            if audio:
+                sys.stdout.buffer.write(audio)
+                return 0
+            # SDK 失败时返回 None 而不抛异常 —— 不显式检查就会写出 0 字节、
+            # 一路拼接到最后才发现整段静音。
+            last = f'返回空音频（requestId={syn.get_last_request_id()}）'
+        except Exception as e:
+            last = f'{type(e).__name__}: {e}'
+        if n < tries:
+            print(f'tts_clone: 第 {n}/{tries} 次失败（{last}），退避重试', file=sys.stderr)
+            time.sleep(1.5 * n)
+    print(f'tts_clone: {tries} 次均失败 —— {last}', file=sys.stderr)
+    return 1
 
 
 if __name__ == '__main__':
