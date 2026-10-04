@@ -15,6 +15,10 @@ const baseFields = {
   cover: z.string().optional(),
   // Pre-generated read-aloud audio (mp3 on R2). Set by scripts/gen-audio.mjs.
   audio: z.string().url().optional(),
+  // 配套视频：自托管 mp4（与音频同一个 R2 桶）。CSP 的 media-src 已覆盖 <video>。
+  video: z.string().url().optional(),
+  // 站外观看链接（B 站等），可选；平台审核出号后再补。
+  videoLink: z.string().url().optional(),
 };
 
 const garden = defineCollection({

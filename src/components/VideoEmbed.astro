@@ -1,0 +1,65 @@
+---
+// src/components/VideoEmbed.astro
+// 文章配套视频。自托管 mp4（和音频同一个 R2 桶）+ 可选的站外观看链接。
+//
+// 为什么自托管而不是嵌 B 站播放器：
+//   CSP 里 `media-src 'self' https://audio.tommickey.cn` 已经覆盖 <video>，
+//   自托管一行都不用改；而 iframe 嵌播放器要新开 frame-src，还会把第三方
+//   追踪和广告带进页面。站外平台只给一个文字链接。
+export interface Props {
+  src: string;
+  poster?: string;
+  /** 站外观看链接（B 站等）。审核出号前可以先不填。 */
+  link?: string;
+  linkLabel?: string;
+}
+const { src, poster, link, linkLabel = 'B 站' } = Astro.props;
+---
+<figure class="video-embed not-prose">
+  <video
+    class="ve-player"
+    controls
+    preload="metadata"
+    playsinline
+    poster={poster}
+    src={src}
+  ></video>
+  <figcaption class="ve-cap">
+    <span class="ve-label">
+      <span lang="zh">配套视频</span><span class="biling-sep" aria-hidden="true"> / </span><span lang="en">Accompanying video</span>
+    </span>
+    {link && (
+      <a href={link} target="_blank" rel="noopener noreferrer"
+         aria-label={`在${linkLabel}观看 (opens in new tab)`}>
+        <span lang="zh">在{linkLabel}观看</span><span class="biling-sep" aria-hidden="true"> / </span><span lang="en">Watch on {linkLabel}</span><span aria-hidden="true"> ↗</span>
+      </a>
+    )}
+  </figcaption>
+</figure>
+
+<style>
+  .video-embed {
+    margin: 2.5rem 0;
+  }
+  .ve-player {
+    width: 100%;
+    /* 竖屏片子按原比例会顶满整屏，限个高度；横屏的不受影响 */
+    max-height: 70vh;
+    border-radius: 0.5rem;
+    background: var(--color-border);
+    display: block;
+    margin-inline: auto;
+  }
+  .ve-cap {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    font-size: 0.75rem;
+    color: var(--color-muted);
+  }
+  .ve-cap a { color: var(--color-muted); }
+  .ve-cap a:hover { color: var(--color-accent); }
+</style>

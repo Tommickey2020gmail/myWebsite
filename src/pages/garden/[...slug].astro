@@ -4,6 +4,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import PostMeta from '../../components/PostMeta.astro';
 import Pageview from '../../components/Pageview.astro';
 import ReadAloud from '../../components/ReadAloud.astro';
+import VideoEmbed from '../../components/VideoEmbed.astro';
 import Backlinks from '../../components/Backlinks.astro';
 import Comments from '../../components/Comments.astro';
 import Share from '../../components/Share.astro';
@@ -93,6 +94,9 @@ const jsonLd = [blogPosting, breadcrumb];
       )}
     </header>
     <Content />
+    {entry.data.video && (
+      <VideoEmbed src={entry.data.video} poster={entry.data.cover} link={entry.data.videoLink} />
+    )}
   </article>
   <Share title={entry.data.title} description={entry.data.description} path={`/garden/${slugHref(entry.id)}/`} />
   <Backlinks links={backlinks} />
