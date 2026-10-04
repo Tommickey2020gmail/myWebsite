@@ -4,7 +4,7 @@
 // back into the article's frontmatter as `audio:`.
 //
 // Usage:
-//   node --env-file=.env scripts/gen-audio.mjs <path-to-md> [--provider=ali|ali-clone|volc] [--dry] [--force] [--no-upload]
+//   node --env-file=.env scripts/gen-audio.mjs <path-to-md> [--provider=ali|ali-clone|volc] [--dry] [--force] [--no-upload] [--upload-only]
 //   ali-clone = 用户本人声纹（需 ALI_CLONE_VOICE），走 scripts/tts_clone.py
 //   默认 ali（火山自 2026-07-27 账号级失权，见下方 provider 处注释）
 //
@@ -27,6 +27,12 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { spawn } from 'node:child_process';
+import dns from 'node:dns';
+
+// 🔴 undici 优先试 AAAA，而本机到 Cloudflare R2 的 IPv6 走不通 ⇒ 传 R2 时
+//    UND_ERR_CONNECT_TIMEOUT（attempted addresses: 2606:4700:...）。
+//    2026-10-04 实测：34 块全部合成完（约 14 分钟），最后倒在上传上。
+dns.setDefaultResultOrder('ipv4first');
 // undici fetch so we can route the (cn) TTS host through a proxy when needed.
 import { fetch, ProxyAgent, Agent } from 'undici';
 
@@ -67,6 +73,9 @@ const mdPath = args.find((a) => !a.startsWith('--'));
 const dry = args.includes('--dry');
 const force = args.includes('--force');
 const noUpload = args.includes('--no-upload');
+// 合成贵（克隆音色约 2.6 倍实时，一篇十几分钟），上传只要几秒却更容易失败。
+// --upload-only 直接拿 audio-out/<slug>.mp3 重传，不重新合成。
+const uploadOnly = args.includes('--upload-only');
 // 🔴 默认是 ali，不是 volc。火山 openspeech 自 2026-07-27 起**账号级失权**，
 //    任何音色都返回 `TTS 3001: requested resource not granted`，不是临时故障、充值也不解决。
 //    默认值指向一个已死的 provider，结果是每次发布都先失败一次再手动加 --provider=ali
@@ -76,7 +85,7 @@ const noUpload = args.includes('--no-upload');
 const provider = (args.find((a) => a.startsWith('--provider='))?.split('=')[1] ?? 'ali').toLowerCase();
 
 if (!mdPath) {
-  console.error('Usage: node --env-file=.env scripts/gen-audio.mjs <path-to-md> [--provider=volc|ali] [--dry] [--force] [--no-upload]');
+  console.error('Usage: node --env-file=.env scripts/gen-audio.mjs <path-to-md> [--provider=volc|ali] [--dry] [--force] [--no-upload] [--upload-only]');
   process.exit(1);
 }
 if (!['volc', 'ali', 'ali-clone'].includes(provider)) {
@@ -310,13 +319,13 @@ if (dry) {
   process.exit(0);
 }
 
-if (existingAudio && !force) {
+if (existingAudio && !force && !uploadOnly) {
   console.log('\n✓ audio already set (use --force to regenerate). Nothing to do.');
   process.exit(0);
 }
 
 // Validate credentials only now (so --dry works without them).
-const missTts = (provider === 'ali-clone' ? ['DASHSCOPE_API_KEY', 'ALI_CLONE_VOICE']
+const missTts = uploadOnly ? [] : (provider === 'ali-clone' ? ['DASHSCOPE_API_KEY', 'ALI_CLONE_VOICE']
   : provider === 'ali' ? ['DASHSCOPE_API_KEY'] : ['VOLC_TTS_APPID', 'VOLC_TTS_TOKEN'])
   .filter((k) => !process.env[k]);
 if (missTts.length) { console.error(`\n✗ Missing TTS env: ${missTts.join(', ')}`); process.exit(1); }
@@ -328,19 +337,30 @@ if (!noUpload) {
 
 // 1) Synthesize each chunk. volc returns mp3 frames (concatenable as-is);
 //    ali returns raw PCM that has to be encoded once at the end.
-console.log(`\n🔊 synthesizing… (provider: ${provider}, voice: ${provider === 'ali-clone' ? ALI_CLONE_VOICE : provider === 'ali' ? ALI_VOICE : VOICE})`);
-const parts = [];
-for (let i = 0; i < chunks.length; i++) {
-  process.stdout.write(`   chunk ${i + 1}/${chunks.length}\r`);
-  parts.push(await withRetry(
-    () => (provider === 'ali-clone' ? synthChunkAliClone(chunks[i])
-         : provider === 'ali' ? synthChunkAli(chunks[i]) : synthChunk(chunks[i])),
-    `chunk ${i + 1}`,
-  ));
+let mp3;
+if (uploadOnly) {
+  const reuse = path.join('audio-out', `${slug}.mp3`);
+  try {
+    mp3 = await fs.readFile(reuse);
+  } catch {
+    console.error(`\n✗ --upload-only 需要已有的 ${reuse}，没找到`); process.exit(1);
+  }
+  console.log(`\n♻️  --upload-only: 复用 ${reuse} (${(mp3.length / 1024 / 1024).toFixed(2)} MB)，跳过合成`);
+} else {
+  console.log(`\n🔊 synthesizing… (provider: ${provider}, voice: ${provider === 'ali-clone' ? ALI_CLONE_VOICE : provider === 'ali' ? ALI_VOICE : VOICE})`);
+  const parts = [];
+  for (let i = 0; i < chunks.length; i++) {
+    process.stdout.write(`   chunk ${i + 1}/${chunks.length}\r`);
+    parts.push(await withRetry(
+      () => (provider === 'ali-clone' ? synthChunkAliClone(chunks[i])
+           : provider === 'ali' ? synthChunkAli(chunks[i]) : synthChunk(chunks[i])),
+      `chunk ${i + 1}`,
+    ));
+  }
+  const merged = Buffer.concat(parts);
+  const mp3 = provider.startsWith('ali') ? await pcmToMp3(merged) : merged;   // 两条 ali 路径都产 PCM
+  console.log(`\n   mp3 size: ${(mp3.length / 1024 / 1024).toFixed(2)} MB`);
 }
-const merged = Buffer.concat(parts);
-const mp3 = provider.startsWith('ali') ? await pcmToMp3(merged) : merged;   // 两条 ali 路径都产 PCM
-console.log(`\n   mp3 size: ${(mp3.length / 1024 / 1024).toFixed(2)} MB`);
 
 // 2) Always keep a local copy (gitignored) for re-upload / inspection.
 const outDir = 'audio-out';

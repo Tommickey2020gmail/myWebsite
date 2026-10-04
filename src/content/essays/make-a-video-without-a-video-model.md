@@ -7,7 +7,7 @@ lang: zh
 tags: [ai, video, tools, claude-code, writing]
 created: 2026-10-04
 cover: /illustrations/make-a-video-without-a-video-model/cover.jpg
-audio: https://audio.tommickey.cn/make-a-video-without-a-video-model.mp3?v=2ac7ff23
+audio: https://audio.tommickey.cn/make-a-video-without-a-video-model.mp3?v=81452c44
 ---
 ![做一个视频，不需要视频模型](/illustrations/make-a-video-without-a-video-model/cover.jpg)
 
