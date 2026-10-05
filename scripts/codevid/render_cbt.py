@@ -20,7 +20,7 @@ NF = int(round(EDGE[-1] * lib.FPS))
 def frame(n):
     ts = n / lib.FPS
     i = next((k for k in range(len(DUR)) if ts < EDGE[k + 1]), len(DUR) - 1)
-    c = lib.Canvas(); SC.SCENES[i](c, max(0.0, min(1.0, (ts - EDGE[i]) / DUR[i])))
+    c = lib.Canvas2(); SC.SCENES[i](c, max(0.0, min(1.0, (ts - EDGE[i]) / DUR[i])))
     c.out().save(FR / f'f{n:05d}.png')
 
 def srt_t(s):
