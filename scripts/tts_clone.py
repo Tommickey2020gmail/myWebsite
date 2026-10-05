@@ -16,6 +16,7 @@
 环境：  DASHSCOPE_API_KEY（必需）  ALI_CLONE_VOICE（必需，形如 cosyvoice-v2-xxx-<hash>）
         ALI_CLONE_MODEL（可选，默认 cosyvoice-v2）
 """
+import math
 import os
 import sys
 import time
@@ -23,6 +24,14 @@ import time
 import dashscope
 from dashscope.audio.tts_v2 import AudioFormat, SpeechSynthesizer
 
+
+# 🔴 这里曾经有个 trim_leadin()：前置「嗯，」后按能量凹口自动裁掉牺牲音节。
+#    2026-10-05 撤掉 —— 实测它会把正文开头较轻的那个窗口当成凹口切进去
+#    （第 0 块反而只救回 1 个字，第 9 块毫无改善）。
+#    丢头这件事目前没有可靠的单点修法：前置「嗯，」对某些句子有效、对另一些无效，
+#    而数音节峰这类代理指标本身就不准（「甲乙丙丁戊己庚辛壬癸」10 字能数出 11 段）。
+#    ⇒ 正确做法是**合成后验证**，不是假设某个前缀一定管用。
+#       见 scripts/codevid/synth_verified.py：逐块 ASR 验头，没过就换前缀重合。
 
 def main() -> int:
     key = os.environ.get('DASHSCOPE_API_KEY')
@@ -35,6 +44,18 @@ def main() -> int:
     text = sys.stdin.buffer.read().decode('utf-8').strip()
     if not text:
         print('tts_clone: stdin 为空', file=sys.stderr); return 2
+
+    # 🔴 CosyVoice 会吃掉开头约两个字 —— 2026-10-05 用 ASR 实证：
+    #      「很多人以为，认知…」→ 转写「人以为，认知…」（丢"很多"）
+    #      「关键那一列…」      → 转写「那一列…」    （丢"关键"）
+    #    不是每句都丢（「举个例子…」就完整），但丢的那几句，PCM 第 0 毫秒就是
+    #    -31dB 已在说话中，正常句子开头是 -44dB 有静音。成片音轨与源文件
+    #    逐样本一致（相关度 1.000），所以不是下游管线吃的，是模型吐出来就少了。
+    #
+    #    修法：给它两个字吃。前置「嗯，」，再按残留音节之后的那个凹口自动裁掉。
+    #    句号/空格做前缀无效（会被规范化剥掉，输出逐字节相同）。
+    lead = os.environ.get('TTS_CLONE_LEADIN', '')   # 默认不前置；要试前缀由调用方显式给
+    text_in = lead + text if lead else text
 
     dashscope.api_key = key
     model = os.environ.get('ALI_CLONE_MODEL', 'cosyvoice-v2')
@@ -49,7 +70,7 @@ def main() -> int:
         try:
             syn = SpeechSynthesizer(model=model, voice=voice,
                                     format=AudioFormat.PCM_24000HZ_MONO_16BIT)
-            audio = syn.call(text)
+            audio = syn.call(text_in)
             if audio:
                 sys.stdout.buffer.write(audio)
                 return 0
