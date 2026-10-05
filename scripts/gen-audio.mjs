@@ -358,7 +358,10 @@ if (uploadOnly) {
     ));
   }
   const merged = Buffer.concat(parts);
-  const mp3 = provider.startsWith('ali') ? await pcmToMp3(merged) : merged;   // 两条 ali 路径都产 PCM
+  // 🔴 这里不能写 const —— 外层是 `let mp3`，再 const 一次会在 else 块里新建同名变量把它遮住，
+  //    外层那个永远是 undefined，一路跑到最后 writeFile 才炸（ERR_INVALID_ARG_TYPE）。
+  //    2026-10-05 踩到：加 --upload-only 时把这段原样搬进 else 块，只测了新分支没回测老分支。
+  mp3 = provider.startsWith('ali') ? await pcmToMp3(merged) : merged;   // 两条 ali 路径都产 PCM
   console.log(`\n   mp3 size: ${(mp3.length / 1024 / 1024).toFixed(2)} MB`);
 }
 
