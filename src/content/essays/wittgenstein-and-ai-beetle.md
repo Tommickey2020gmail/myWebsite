@@ -8,7 +8,8 @@ tags: [哲学, AI, 维特根斯坦, 语言, 意识]
 created: 2026-10-09
 draft: false
 cover: /illustrations/wittgenstein-and-ai-beetle/cover.jpeg
-audio: https://audio.tommickey.cn/wittgenstein-and-ai-beetle.mp3?v=0cd772b9
+audio: https://audio.tommickey.cn/wittgenstein-and-ai-beetle.mp3?v=19c89245
+video: https://audio.tommickey.cn/wittgenstein-and-ai-beetle.mp4?v=6d30d908
 ---
 
 假如维特根斯坦活到今天，大概会对ChatGPT很感兴趣。
